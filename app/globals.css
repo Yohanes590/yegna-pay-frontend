@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+:root {
+  --background: #020617;
+}
+.un-responsive-phone{
+  display: none;
+}
+
+body {
+  background-color: var(--background);
+  color: #F8FAFC;
+}
+
+/* Custom CSS Marquee Animation */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-50% - 1rem)); } /* Accounts for the gap */
+}
+
+.animate-marquee {
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Custom scrollbar for dark mode */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #020617;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1E293B;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+@media ((max-width:674px)) {
+  .un-responsive-phone{
+    display: flex;
+  }
+}

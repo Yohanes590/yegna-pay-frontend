@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+
+
+<url>
+  <loc>https://yegna-pay.vercel.app/</loc>
+  <lastmod>2026-06-17T19:32:28+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://yegna-pay.vercel.app/documentation</loc>
+  <lastmod>2026-06-17T19:32:28+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://yegna-pay.vercel.app/connected-banks</loc>
+  <lastmod>2026-06-17T19:32:28+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://yegna-pay.vercel.app/blog</loc>
+  <lastmod>2026-06-17T19:32:28+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://yegna-pay.vercel.app/sign-in</loc>
+  <lastmod>2026-06-17T19:32:28+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://yegna-pay.vercel.app/sign-up</loc>
+  <lastmod>2026-06-17T19:32:28+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://yegna-pay.vercel.app/blog/we-just-launched-yegna-pay-a-developer-first-payment-gateway-for-ethiopia</loc>
+  <lastmod>2026-06-17T19:32:28+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://yegna-pay.vercel.app/blog/inside-yegna-pay-how-our-6-layer-payment-verification-system-works</loc>
+  <lastmod>2026-06-17T19:32:28+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://yegna-pay.vercel.app/blog/why-ethiopia-needs-a-developer-friendly-payment-infrastructure</loc>
+  <lastmod>2026-06-17T19:32:28+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://yegna-pay.vercel.app/blog/getting-started-with-yegna-pay-api-authentication-keys-and-first-request</loc>
+  <lastmod>2026-06-17T19:32:28+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://yegna-pay.vercel.app/blog/how-yegna-pay-protects-against-fraud-using-idempotency-and-transaction-hashing</loc>
+  <lastmod>2026-06-17T19:32:28+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://yegna-pay.vercel.app/blog/secure-webhooks-in-yegna-pay-preventing-replay-attacks-and-api-abuse</loc>
+  <lastmod>2026-06-17T19:32:28+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://yegna-pay.vercel.app/blog/building-reliable-payment-systems-in-africa-lessons-from-yegna-pay</loc>
+  <lastmod>2026-06-17T19:32:28+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://yegna-pay.vercel.app/blog/the-future-of-payment-apis-in-africa-where-yegna-pay-fits-in</loc>
+  <lastmod>2026-06-17T19:32:28+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+
+
+</urlset>

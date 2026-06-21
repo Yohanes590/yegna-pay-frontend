@@ -1,0 +1,47 @@
+[
+  {
+    "package_name": "Starter",
+    "pricing": 0,
+    "requests": 200,
+    "features": [
+      "Free tier for testing",
+      "Basic dashboard access",
+      "Community support"
+    ]
+  },
+  {
+    "package_name": "Basic",
+    "pricing": 50,
+    "requests": 1000,
+    "features": [
+      "Standard API access",
+      "Payment verification",
+      "Basic analytics dashboard",
+      "Email support"
+    ]
+  },
+  {
+    "package_name": "Growth",
+    "pricing": 200,
+    "requests": 5000,
+    "features": [
+      "Every thing basic",
+      "Detailed analytics dashboard",
+      "Webhook support",
+      "Priority email support"
+    ]
+  },
+  {
+    "package_name": "Pro",
+    "pricing": 600,
+    "requests": 20000,
+    "features": [
+      "Full API access",
+      "Advanced fraud detection (future-ready)",
+      "Transaction logs & insights",
+      "Webhook + retry system",
+      "Priority support",
+      "Early access to new features"
+    ]
+  }
+]
