@@ -180,7 +180,7 @@ export default function SignInPage() {
               Sign in to your developer account.
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-3 mb-8">
+          {/* <div className="grid grid-cols-2 gap-3 mb-8">
             <button
               onClick={() => ThirdPartyHandler("google")}
               className="flex items-center justify-center gap-2.5 px-4 py-3 bg-[#0F172A] border border-[#1E293B] rounded-xl hover:bg-[#1E293B] hover:border-[#334155] transition-all font-bold text-[#F8FAFC] text-sm active:scale-[0.98]"
@@ -210,7 +210,7 @@ export default function SignInPage() {
 
 
             </button>
-          </div>
+          </div> */}
           <div className="relative mb-8">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-[#1E293B]"></div>
