@@ -145,20 +145,8 @@ export default function SignUpPage() {
                     </div>
 
                     {/* Social Auth */}
-                    {/* <div className="flex flex-col sm:flex-row gap-3 mb-8">
+                    <div className="flex flex-col sm:flex-row gap-3 mb-8">
 
-                        <button disabled={LoadingButton} onClick={() => HandelThirdParty("google")} className="flex-1 flex items-center justify-center gap-2.5 px-4 py-3 bg-[#0F172A] border border-[#1E293B] rounded-xl hover:bg-[#1E293B] hover:border-[#334155] transition-all font-bold text-[#F8FAFC] text-sm active:scale-95">
-
-                            {
-                                LoadingButton ? (<>
-                                    <Loader2 className='w-4 h-4 animate-spin' />
-                                </>) : (<>
-                                    <Chrome size={16} className="text-[#34D399]" />
-                                    Google
-                                </>)
-                            }
-
-                        </button>
                         <button disabled={LoadingButton} onClick={() => HandelThirdParty("github")} className="flex-1 flex items-center justify-center gap-2.5 px-4 py-3 bg-[#0F172A] border border-[#1E293B] rounded-xl hover:bg-[#1E293B] hover:border-[#334155] transition-all font-bold text-[#F8FAFC] text-sm active:scale-95">
                             {
                                 LoadingButton ? (<>
@@ -170,7 +158,7 @@ export default function SignUpPage() {
                             }
 
                         </button>
-                    </div> */}
+                    </div>
 
                     <div className="relative mb-8">
                         <div className="absolute inset-0 flex items-center">

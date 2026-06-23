@@ -15,6 +15,7 @@ import Cookies from "js-cookie";
 import Link from "next/link";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { authClient } from "../lib/auth-client"; //import the auth client
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -25,6 +26,10 @@ export default function SignInPage() {
 
   const ThirdPartyHandler = async (provider: string) => {
     setLoading(true)
+
+
+
+
     const YegnaServer = await fetch(
       process.env.NEXT_PUBLIC_YEGNA_SERVER! + "/auth/third-party/",
       {
@@ -180,21 +185,7 @@ export default function SignInPage() {
               Sign in to your developer account.
             </p>
           </div>
-          {/* <div className="grid grid-cols-2 gap-3 mb-8">
-            <button
-              onClick={() => ThirdPartyHandler("google")}
-              className="flex items-center justify-center gap-2.5 px-4 py-3 bg-[#0F172A] border border-[#1E293B] rounded-xl hover:bg-[#1E293B] hover:border-[#334155] transition-all font-bold text-[#F8FAFC] text-sm active:scale-[0.98]"
-            >
-              {
-                LoadingButton ? (<>
-                  <Loader2 className='w-4 h-4 animate-spin' />
-                </>) : (<>
-                  <Chrome size={16} className="text-[#34D399]" />
-                  Google
-                </>)
-              }
-
-            </button>
+          <div className="grid gap-3 mb-8">
             <button
               onClick={() => ThirdPartyHandler("github")}
               className="flex items-center justify-center gap-2.5 px-4 py-3 bg-[#0F172A] border border-[#1E293B] rounded-xl hover:bg-[#1E293B] hover:border-[#334155] transition-all font-bold text-[#F8FAFC] text-sm active:scale-[0.98]"
@@ -210,7 +201,7 @@ export default function SignInPage() {
 
 
             </button>
-          </div> */}
+          </div>
           <div className="relative mb-8">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-[#1E293B]"></div>
