@@ -2,7 +2,7 @@ import prisma from "@/app/backend-service/prisma"
 import { Prisma } from "@/lib/generated/prisma/client";
 export async function SaveTransactionData(transactionData: any, projectID: string) {
     try {
-        await prisma.transaction.create({
+        const transactionSavedData = await prisma.transaction.create({
             data: {
                 transaction_amount: transactionData.transaction_amount,
                 transaction_id: String(transactionData.transaction_id),
@@ -16,7 +16,7 @@ export async function SaveTransactionData(transactionData: any, projectID: strin
             },
         })
 
-        return { message: "success", success: true }
+        return { message: "success", success: true, data: transactionSavedData }
 
     } catch (error: any) {
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {

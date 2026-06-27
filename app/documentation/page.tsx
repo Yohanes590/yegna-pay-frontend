@@ -4,11 +4,10 @@ import Link from 'next/link';
 import {
     ShieldAlert, Terminal, CheckCircle2, Copy, Layers,
     FileText, UserCheck, Calendar,
-    Lock, Search, CopyCheck, ArrowLeft,
-    ChevronRight, Info
+    Search, CopyCheck, ArrowLeft,
+    Info
 } from 'lucide-react';
 
-// --- Reusable Code Block Component ---
 const CodeBlock: React.FC<{ code: string; language: string }> = ({ code, language }) => {
     const [copied, setCopied] = useState(false);
 
@@ -64,7 +63,6 @@ export default function YegnaPayDocs() {
         { id: 'best-practices', label: 'Best Practices' },
     ];
 
-    // Filtered sections for search
     const filteredSections = useMemo(() => {
         if (!searchQuery) return sections;
         return sections.filter(section =>
@@ -76,9 +74,8 @@ export default function YegnaPayDocs() {
     // Scroll Spy Effect
     useEffect(() => {
         const handleScroll = () => {
-            const scrollPosition = window.scrollY + 120; // Increased offset for better accuracy
+            const scrollPosition = window.scrollY + 120;
 
-            // Check if user has scrolled to the absolute bottom of the page
             if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 10) {
                 setActiveSection(sections[sections.length - 1].id);
                 return;
@@ -94,7 +91,6 @@ export default function YegnaPayDocs() {
         };
 
         window.addEventListener('scroll', handleScroll);
-        // Run once on mount to set initial state
         handleScroll();
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
@@ -103,18 +99,17 @@ export default function YegnaPayDocs() {
         const element = document.getElementById(id);
         if (element) {
             window.scrollTo({
-                top: element.offsetTop - 100, // Adjusted offset
+                top: element.offsetTop - 100,
                 behavior: 'smooth'
             });
-            // Force set active section immediately for better UX
             setActiveSection(id);
         }
     };
 
     const bankPayloads = {
-        boa: `{\n  "full_name": "JOHN DOE ENTERPRISE",\n  "price_amount": "4000",\n  "platform": "BOA",\n  "currency": "ETB",\n  "transaction_id": "FT23123456789"\n}`,
-        cbe: `{\n  "full_name": "JOHN DOE ENTERPRISE",\n  "price_amount": "4000",\n  "platform": "CBE",\n  "currency": "ETB",\n  "transaction_id": "-2KCLVVWOY3-4R75E0"\n}`,
-        awash: `{\n  "full_name": "JOHN DOE ENTERPRISE",\n  "price_amount": "4000",\n  "platform": "awash",\n  "currency": "ETB",\n  "transaction_id": "AW1209384756"\n}`
+        boa: `{\n  "full_name": "JOHN DOE ENTERPRISE",\n  "price_amount": "4000",\n  "platform": "CBE",\n  "currency": "ETB",\n  "transaction_id": "FT23123456..."\n}`,
+        cbe: `{\n  "full_name": "JOHN DOE ENTERPRISE",\n  "price_amount": "4000",\n  "platform": "awash",\n  "currency": "ETB",\n  "transaction_id": "-2KCLVVWOY3-4R..."\n}`,
+        awash: `{\n  "full_name": "JOHN DOE ENTERPRISE",\n  "price_amount": "4000",\n  "platform": "BOA",\n  "currency": "ETB",\n  "transaction_id": "FT26133F833J..."\n}`
     };
 
     const bankLogos = {
@@ -124,7 +119,7 @@ export default function YegnaPayDocs() {
     };
 
     const integrationPayloads = {
-        javascript: `const url = 'https://yegna-pay-api.vercel.app/api/transaction/create';
+        javascript: `const url = 'https://yegna-pay.vercel.app/api/transaction-create';
 const token = 'sk_live_...';
 
 const payload = {
@@ -132,7 +127,7 @@ const payload = {
   price_amount: "4000",
   platform: "awash",
   currency: "ETB",
-  transaction_id: "-2KCLVVWOY3-4R75E0"
+  transaction_id: "-2KCLVVWOY3-67..."
 };
 
 fetch(url, {
@@ -155,7 +150,7 @@ fetch(url, {
   transaction_id: string;
 }
 
-const url = 'https://yegna-pay-api.vercel.app/api/transaction/create';
+const url = 'https://yegna-pay.vercel.app/api/transaction-create';
 const token = 'sk_live_...';
 
 const payload: TransactionPayload = {
@@ -163,7 +158,7 @@ const payload: TransactionPayload = {
   price_amount: "4000",
   platform: "awash",
   currency: "ETB",
-  transaction_id: "-2KCLVVWOY3-4R75E0"
+  transaction_id: "--2KCLVVWOY3-67..."
 };
 
 async function createTransaction() {
@@ -185,14 +180,14 @@ async function createTransaction() {
 
         python: `import requests
 
-url = "https://yegna-pay-api.vercel.app/api/transaction/create"
+url = "https://yegna-pay.vercel.app/api/transaction-create"
 
 payload = {
   "full_name": "MULUGETA KASSAW CLEANING SERVICE",
   "price_amount": "4000",
   "platform": "awash",
   "currency": "ETB",
-  "transaction_id": "-2KCLVVWOY3-4R75E0"
+  "transaction_id": "-2KCLVVWOY3-67..."
 }
 
 headers = {
@@ -204,14 +199,14 @@ response = requests.post(url, json=payload, headers=headers)
 print(response.json())`,
 
         php: `<?php
-$url = "https://yegna-pay-api.vercel.app/api/transaction/create";
+$url = "https://yegna-pay.vercel.app/api/transaction-create";
 
 $payload = json_encode(array(
   "full_name" => "MULUGETA KASSAW CLEANING SERVICE",
   "price_amount" => "4000",
   "platform" => "awash",
   "currency" => "ETB",
-  "transaction_id" => "-2KCLVVWOY3-4R75E0"
+  "transaction_id" => "-2KCLVVWOY3-67..."
 ));
 
 $ch = curl_init($url);
@@ -242,12 +237,12 @@ public class Main {
               "price_amount": "4000",
               "platform": "awash",
               "currency": "ETB",
-              "transaction_id": "-2KCLVVWOY3-4R75E0"
+              "transaction_id": "-2KCLVVWOY3-67..."
             }
             """;
 
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("https://yegna-pay-api.vercel.app/api/transaction/create"))
+            .uri(URI.create("https://yegna-pay.vercel.app/api/transaction-create"))
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer sk_live_...")
             .POST(HttpRequest.BodyPublishers.ofString(payload))
@@ -276,9 +271,9 @@ int main() {
         headers = curl_slist_append(headers, "Content-Type: application/json");
         headers = curl_slist_append(headers, "Authorization: Bearer sk_live_...");
 
-        std::string payload = R"({"full_name":"MULUGETA KASSAW CLEANING SERVICE","price_amount":"4000","platform":"awash","currency":"ETB","transaction_id":"-2KCLVVWOY3-4R75E0"})";
+        std::string payload = R"({"full_name":"MULUGETA KASSAW CLEANING SERVICE","price_amount":"4000","platform":"awash","currency":"ETB","transaction_id":"-2KCLVVWOY3-67..."})";
 
-        curl_easy_setopt(curl, CURLOPT_URL, "https://yegna-pay-api.vercel.app/api/transaction/create");
+        curl_easy_setopt(curl, CURLOPT_URL, "https://yegna-pay.vercel.app/api/transaction-create");
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.c_str());
 
@@ -301,14 +296,14 @@ import (
 )
 
 func main() {
-    url := "https://yegna-pay-api.vercel.app/api/transaction/create"
+    url := "https://yegna-pay.vercel.app/api/transaction-create"
 
     payload := []byte(\`{
       "full_name": "MULUGETA KASSAW CLEANING SERVICE",
       "price_amount": "4000",
       "platform": "awash",
       "currency": "ETB",
-      "transaction_id": "-2KCLVVWOY3-4R75E0"
+      "transaction_id": "-2KCLVVWOY3-67..."
     }\`)
 
     req, _ := http.NewRequest("POST", url, bytes.NewBuffer(payload))
@@ -415,7 +410,7 @@ func main() {
                         <h2 className="text-2xl font-bold text-[#F8FAFC] mb-4 pb-2 border-b border-[#1E293B]">API Endpoint</h2>
                         <div className="flex items-center gap-4 bg-[#0F172A] rounded-xl p-4 border border-[#1E293B] shadow-sm">
                             <span className="px-3 py-1 rounded bg-[#38bdf8]/10 text-[#38bdf8] font-bold text-xs uppercase tracking-wider border border-[#38bdf8]/20 shrink-0">POST</span>
-                            <span className="font-mono text-[#F8FAFC] text-sm select-all overflow-hidden text-ellipsis whitespace-nowrap">https://yegna-pay-api.vercel.app/api/transaction/create</span>
+                            <span className="font-mono text-[#F8FAFC] text-sm select-all overflow-hidden text-ellipsis whitespace-nowrap">https://yegna-pay.vercel.app/api/transaction-create</span>
                         </div>
                     </section>
 
@@ -521,7 +516,7 @@ func main() {
                         <div className="rounded-xl border border-[#1E293B] bg-[#0F172A] p-2 shadow-sm">
                             <CodeBlock
                                 language="json"
-                                code={`{\n  "success": true,\n  "data": {\n    "verified": true,\n    "amount": 4000,\n    "platform": "CBE",\n    "transaction_id": "-2KCLVVWOY3-4R75E0",\n    "timestamp": "2026-06-12T01:17:00Z"\n  }\n}`}
+                                code={`{\n  "success": true,\n  "data": {\n    "verified": true,\n    "amount": 4000,\n    "platform": "awash",\n    "transaction_id": "-2KCLVVWOY3-4R75E0",\n    "timestamp": "2026-06-12T01:17:00Z"\n  }\n}`}
                             />
                         </div>
                     </section>
@@ -608,7 +603,7 @@ func main() {
                             {activeRequestTab === 'fetch' ? (
                                 <CodeBlock
                                     language="javascript"
-                                    code={`const response = await fetch(\n  "/api/transaction/create", \n  {\n    method: "POST",\n    headers: {\n      "Content-Type": "application/json",\n      "Authorization": "Bearer sk_... "\n    },\n    body: JSON.stringify({\n      platform: "CBE",\n      amount: "4000",\n      currency: "ETB",\n      transaction_id: "REF"\n    })\n  }\n);\n\nconst data = await response.json();`}
+                                    code={`const response = await fetch(\n  "/api/transaction-create", \n  {\n    method: "POST",\n    headers: {\n      "Content-Type": "application/json",\n      "Authorization": "Bearer sk_... "\n    },\n    body: JSON.stringify({\n      platform: "CBE",\n      amount: "4000",\n      currency: "ETB",\n      transaction_id: "REF"\n    })\n  }\n);\n\nconst data = await response.json();`}
                                 />
                             ) : (
                                 <CodeBlock
@@ -622,7 +617,7 @@ func main() {
                             <span className="text-[11px] font-bold uppercase tracking-widest text-[#64748B] block mb-4 mt-4">Expected Response</span>
                             <CodeBlock
                                 language="json"
-                                code={`{\n  "success": true,\n  "data": {\n    "verified": true,\n    "amount": 4000\n  }\n}`}
+                                code={`{\n  "success": true,\n  "message": "Transaction verified and saved successfully.",\n  "data": {\n    "id": "28ec00dd-7536-4a17-a621-3693e8b82cf1",\n    "transaction_id": "-2KCLVVWOY3-4R75E0",\n    "transaction_amount": "4000",\n    "created_at": "2026-06-27T13:17:25.101Z",\n    "method": "link",\n    "transaction_status": "verified",\n    "from": "DITTO TSEGAYE LEGESSE",\n    "to": "DITTO TSEGAYE LEGESSE",\n    "currency": "ETB",\n    "projectId": "b56a09cf-27b9-4fc1-b269-6e18916e3aac",\n    "risk_score": 0\n  }\n}`}
                             />
                         </div>
                     </div>

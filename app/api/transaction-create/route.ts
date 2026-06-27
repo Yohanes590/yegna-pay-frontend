@@ -288,7 +288,7 @@ async function BOAChecker(transactionData: any, APIKey: string | undefined, clie
         return {
             success: SavedData.success,
             message: SavedData.success ? "Transaction verified and saved successfully." : "Transaction verified but failed to save.",
-            data: SavedData
+            data: SavedData.data
         }
     }
 }
@@ -385,7 +385,7 @@ async function AwashbankChecker(transactionData: any, APIKey: string | undefined
             return {
                 success: SavedData.success,
                 message: SavedData.success ? "Transaction verified and saved successfully." : "Transaction verified but failed to save.",
-                data: SavedData
+                data: SavedData.data
             }
         }
     }
