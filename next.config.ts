@@ -24,10 +24,15 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // Placed right at the root level of your configuration
+  // Explicitly include both the playwright layout configuration AND the chromium binary folder
   outputFileTracingIncludes: {
-    '/api/**/*': ['./node_modules/playwright-core/browsers.json'],
+    '/api/**/*': [
+      './node_modules/playwright-core/browsers.json',
+      './node_modules/@sparticuz/chromium/bin/**/*', // Force bundles the .br executables
+    ],
   },
+
+  // Tells Next.js not to modify or treeshake these modules
   serverExternalPackages: ['@sparticuz/chromium', 'playwright-core'],
 };
 
