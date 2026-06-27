@@ -5,7 +5,7 @@ const token = Cookies.get("access_token")
 
 // user authentication function
 export const UserInfo = async () => {
-    const TokenSending = await fetch(process.env.NEXT_PUBLIC_YEGNA_SERVER! + "/auth/check", {
+    const TokenSending = await fetch("/api/auth/info", {
         method: "POST",
         headers: {
             'Content-Type': "application/json"

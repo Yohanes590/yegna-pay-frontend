@@ -11,7 +11,7 @@ export default function DetailedLayout({
 }>) {
     const pathName = usePathname()
     const { user, function: fetchUser, loading } = useUserData()
-    const [loadingState, setLoading] = useState<boolean>(true)
+    const [loadingState, setLoading] = useState<boolean>(false)
     const [checkPathName, setPathName] = useState<boolean>(true)
     useEffect(() => {
         fetchUser()
@@ -25,8 +25,7 @@ export default function DetailedLayout({
             setLoading(true)
         } else if (!loading) {
             const findProject = user?.projects.find((project: any) => project.id == pathId)
-
-            if (!findProject) {
+            if (findProject === undefined) {
                 setPathName(true)
             } else {
                 setPathName(false)

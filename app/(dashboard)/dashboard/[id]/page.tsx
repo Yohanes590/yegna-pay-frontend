@@ -15,10 +15,10 @@ import DashboardSettings from "@/components/dashboard/settings";
 export default function DashboardPage() {
     const { user, function: fetchUser, loading } = useUserData()
     const pathname = usePathname()
-    
+
     // Tab State (could be synced to search params later if preferred, but local state is fine per prompt)
     const [activeTab, setActiveTab] = useState<"overview" | "transactions" | "buy-request" | "settings">("overview")
-    
+
     // Project Data
     const [currentProject, setCurrentProject] = useState<any>(null)
     const [stats, setStats] = useState({ totalTransaction: 0, verifiedTransaction: 0, totalProjects: 0 })
@@ -32,7 +32,7 @@ export default function DashboardPage() {
             const projectId = pathname.split("/")[2]
             const project = user?.projects?.find((p: any) => p.id === projectId)
             setCurrentProject(project)
-            
+
             if (project) {
                 const transactions = project.transactions || []
                 const verified = transactions.filter((t: any) => t.transaction_status === "verified").length
@@ -58,7 +58,7 @@ export default function DashboardPage() {
 
     return (
         <div className="min-h-screen">
-            
+
             {/* Header */}
             <div className="mb-8">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -81,11 +81,10 @@ export default function DashboardPage() {
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
-                            className={`flex items-center gap-2 px-5 py-3 border-b-2 text-sm font-bold transition-all whitespace-nowrap ${
-                                isActive 
-                                    ? "border-[#10B981] text-[#10B981] bg-[#10B981]/5" 
-                                    : "border-transparent text-[#64748B] hover:text-[#94A3B8] hover:bg-[#1E293B]/30 hover:border-[#1E293B]"
-                            }`}
+                            className={`flex items-center gap-2 px-5 py-3 border-b-2 text-sm font-bold transition-all whitespace-nowrap ${isActive
+                                ? "border-[#10B981] text-[#10B981] bg-[#10B981]/5"
+                                : "border-transparent text-[#64748B] hover:text-[#94A3B8] hover:bg-[#1E293B]/30 hover:border-[#1E293B]"
+                                }`}
                         >
                             <Icon size={16} />
                             {tab.label}
@@ -97,21 +96,21 @@ export default function DashboardPage() {
             {/* Dynamic Section Mapping */}
             <div className="pb-16 relative">
                 {activeTab === "overview" && (
-                    <DashboardOverview 
-                        totalTransaction={stats.totalTransaction} 
-                        verifiedTransaction={stats.verifiedTransaction} 
-                        totalProjects={stats.totalProjects} 
+                    <DashboardOverview
+                        totalTransaction={stats.totalTransaction}
+                        verifiedTransaction={stats.verifiedTransaction}
+                        totalProjects={stats.totalProjects}
                     />
                 )}
-                
+
                 {activeTab === "transactions" && (
                     <DashboardTransactions />
                 )}
-                
+
                 {activeTab === "buy-request" && (
                     <DashboardBuyRequest />
                 )}
-                
+
                 {activeTab === "settings" && (
                     <DashboardSettings project={currentProject} />
                 )}

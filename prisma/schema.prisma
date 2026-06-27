@@ -1,0 +1,116 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model Users {
+  id                String     @id @default(uuid())
+  full_name         String
+  email             String     @unique
+  password          String?
+  avatar_url        String?
+  Provider          String?
+  account_status    String
+  payment_plan      String
+  verified          Boolean
+  request_available Int
+  projects          Projects[]
+  revenues          Revenue[]  // <--- ADD THIS LINE HERE
+}
+
+
+
+model Admin {
+  id String @id @default(uuid())
+  user_name String
+  user_email String
+  password String
+  user_role String
+  user_permission Json
+  is_active Boolean
+  two_factor_enabled Boolean
+  author_name String
+  authorized_date String
+  last_login String
+  Projects Projects[]
+}
+
+model Projects {
+  id String @id @default(uuid())
+  project_name String 
+  api_sec_key String
+  call_back_url String
+  project_description String
+  user_Id String 
+  adminID String?
+  user Users @relation(fields: [user_Id] ,references: [id] ,onDelete: Cascade)
+  Admin_projects Admin? @relation(fields: [adminID] , references: [id] ,onDelete: Cascade)
+  ProjectBalance String 
+  transactions Transaction[]
+  before_expires String?
+  receiver_name String?
+}
+
+
+
+model Transaction {
+  id String @id @default(uuid())
+  transaction_id String @unique
+  transaction_amount Decimal
+  created_at DateTime @default(now())
+  method String
+  transaction_status String
+  from String
+  to String 
+  currency String  @default("ETB")
+  projectId String
+  projects Projects @relation(fields: [projectId] , references: [id] , onDelete: Cascade)
+  risk_score Int
+  Logs TransactionLog[]
+}
+
+model TransactionLog {
+  id String @id @default(uuid())
+  transaction_id String?
+  transactions Transaction? @relation(fields: [transaction_id], references: [transaction_id] , onDelete: Cascade)
+  event String        
+  message String      
+  transaction_status String  
+  transaction_bank String   
+  created_at DateTime @default(now())
+}
+
+model PricingTable {
+  id String @id @default(uuid())
+  price_name String
+  amount Int
+  features Json[]
+  requests Int
+}
+
+model DatabaseCronJob {
+  id String @id @default(uuid()) @unique
+  CronJob String 
+}
+
+
+
+model Revenue {
+  id            String   @id @default(uuid())
+  payer_name    String
+  paid_requests Int      
+  currency      String   @default("ETB")
+  time_stamp    DateTime @default(now())
+  user_id       String
+  user          Users    @relation(fields: [user_id], references: [id], onDelete: Cascade) 
+}

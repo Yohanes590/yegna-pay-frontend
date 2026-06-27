@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useUserData } from "@/lib/hooks/user_data_fetch"
 import { useEffect, useState } from "react"
 import { ClipLoader } from "react-spinners"
+import { UserDataFetch } from "@/app/backend-service/api-fetch/fetch-user-data"
 import Confirm from "@/components/toast/confirm-toast"
 import toast from "react-hot-toast"
 
@@ -27,6 +28,16 @@ export default function DashboardLanding() {
         setLoadingState(loading)
         setProjectArray(user?.projects || [])
     }, [user, loading])
+
+    const userData = async () => {
+        const functionResponse = await UserDataFetch()
+    }
+
+    useEffect(() => {
+        userData()
+    }, [])
+
+
 
     const DeleteProject = async (transactionId: string, transaction_name: string) => {
         const ToastConfirmation = document.querySelector(".delete-toast") as HTMLElement;
@@ -54,7 +65,7 @@ export default function DashboardLanding() {
         <>
             <Confirm project_id={idPasser} project_name={namePasser} SendResponse={DeletingResponse} />
             <div className="min-h-[calc(100vh-70px)]">
-                
+
                 {/* Page Header */}
                 <div className="mb-10">
                     <div className="flex items-center gap-3 mb-2">
@@ -84,7 +95,7 @@ export default function DashboardLanding() {
 
                 {/* Projects Grid */}
                 <div className="flex gap-6 flex-wrap">
-                    
+
                     {/* Create Project Card */}
                     <div
                         onClick={() => window.location.href = "/dashboard/create-project"}

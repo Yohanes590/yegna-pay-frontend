@@ -51,7 +51,7 @@ export default function DashboardSettings({ project }: { project: any }) {
     } else {
       setSaveLoadingState(true);
       const saveAPIRequest = await fetch(
-        `${process.env.NEXT_PUBLIC_YEGNA_SERVER!}/user/edit-project`,
+        `/api/user/edit-project`,
         {
           method: "post",
           headers: {
@@ -65,28 +65,26 @@ export default function DashboardSettings({ project }: { project: any }) {
         setSaveLoadingState(false);
         toast.success("Project updated successfully");
         setTimeout(() => {
-          router.refresh();
+          window.location.reload()
         }, 2000);
       } else {
         toast.error(SaveApiResponse.message);
       }
     };
   }
-
-
   const DeleteProject = async () => {
     if (confirm("Are you sure to delete this project?")) {
-      const project_id = pathName.split("/")[2];
-      const user_token = Cookies.get("access_token");
+      const id = pathName.split("/")[2];
+      const token = Cookies.get("access_token");
       setDeleteState(true);
       const DeleteRequest = await fetch(
-        `${process.env.NEXT_PUBLIC_YEGNA_SERVER}/user/delete-project`,
+        `/api/user/delete-project`,
         {
           method: "post",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ project_id, user_token }),
+          body: JSON.stringify({ id, token }),
         },
       );
       const deletingResponse = await DeleteRequest.json();

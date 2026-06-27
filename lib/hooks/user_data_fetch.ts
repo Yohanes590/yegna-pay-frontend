@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { UserInfo } from '../api_end_poing'
+import { UserDataFetch } from '@/app/backend-service/api-fetch/fetch-user-data'
 type UserData = {
     email: string,
     avatar_url: string,
@@ -26,7 +26,7 @@ export const useUserData = create<StorageType>((set, get) => ({
         if (get().user) return
         set({ loading: true })
         try {
-            const userInfo: any = await UserInfo()
+            const userInfo: any = await UserDataFetch()
             if (userInfo.message != "success") {
                 set({ user: userInfo.user, loading: true, message: userInfo.message })
             } else {

@@ -30,25 +30,25 @@ export default function ProjectCreationRender() {
 
         setLoading(true)
         const CookieToken = Cookies.get("access_token")
-        
+
         try {
-            const RequestServer = await fetch(process.env.NEXT_PUBLIC_YEGNA_SERVER! + "/user/create-project", {
+            const RequestServer = await fetch("/api/user/create-project", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     token: CookieToken,
                     project_name: projectName,
-                    api_sec: GeneratedKey,
-                    webcall_back: webcall_back,
-                    project_discription: projectDiscription,
-                    expiresDate: expiresDate,
-                    paymentReceiverName: paymentReceiverName
+                    apiKey: GeneratedKey,
+                    call_back: webcall_back,
+                    discription: projectDiscription,
+                    date_expire: expiresDate,
+                    receiver_name: paymentReceiverName
                 })
             })
             const ServerResponse = await RequestServer.json()
             if (!RequestServer.ok) {
                 toast.error("Internal Server Error")
-            } else if (ServerResponse.status == 200) {
+            } else if (ServerResponse.success == true) {
                 toast.success(ServerResponse.message)
                 setTimeout(() => window.location.href = "/dashboard", 1000)
             } else {
@@ -87,8 +87,8 @@ export default function ProjectCreationRender() {
                             <input
                                 value={projectName}
                                 onChange={(e) => setProjectName(e.target.value)}
-                                className="w-full bg-[#020617] border border-[#1E293B] text-[#F8FAFC] text-sm font-bold px-4 py-3 rounded-xl focus:ring-1 focus:ring-[#10B981]/50 focus:border-[#10B981] outline-none transition-all placeholder:text-[#475569] placeholder:font-medium" 
-                                placeholder="e.g. Acme Ecommerce" 
+                                className="w-full bg-[#020617] border border-[#1E293B] text-[#F8FAFC] text-sm font-bold px-4 py-3 rounded-xl focus:ring-1 focus:ring-[#10B981]/50 focus:border-[#10B981] outline-none transition-all placeholder:text-[#475569] placeholder:font-medium"
+                                placeholder="e.g. Acme Ecommerce"
                             />
                         </div>
 
@@ -97,8 +97,8 @@ export default function ProjectCreationRender() {
                             <input
                                 value={webcall_back}
                                 onChange={(e) => setCallBackURL(e.target.value)}
-                                className="w-full bg-[#020617] border border-[#1E293B] text-[#F8FAFC] text-sm font-mono px-4 py-3 rounded-xl focus:ring-1 focus:ring-[#10B981]/50 focus:border-[#10B981] outline-none transition-all placeholder:text-[#475569]" 
-                                placeholder="https://api.yourdomain.com/webhook" 
+                                className="w-full bg-[#020617] border border-[#1E293B] text-[#F8FAFC] text-sm font-mono px-4 py-3 rounded-xl focus:ring-1 focus:ring-[#10B981]/50 focus:border-[#10B981] outline-none transition-all placeholder:text-[#475569]"
+                                placeholder="https://api.yourdomain.com/webhook"
                             />
                         </div>
 
@@ -107,8 +107,8 @@ export default function ProjectCreationRender() {
                             <input
                                 value={expiresDate}
                                 onChange={(e) => setExpiresDate(e.target.value)}
-                                type="date" 
-                                className="w-full bg-[#020617] border border-[#1E293B] text-[#F8FAFC] text-sm font-medium px-4 py-3 rounded-xl focus:ring-1 focus:ring-[#10B981]/50 focus:border-[#10B981] outline-none transition-all [&::-webkit-calendar-picker-indicator]:invert-[0.8]" 
+                                type="date"
+                                className="w-full bg-[#020617] border border-[#1E293B] text-[#F8FAFC] text-sm font-medium px-4 py-3 rounded-xl focus:ring-1 focus:ring-[#10B981]/50 focus:border-[#10B981] outline-none transition-all [&::-webkit-calendar-picker-indicator]:invert-[0.8]"
                             />
                         </div>
 
@@ -118,8 +118,8 @@ export default function ProjectCreationRender() {
                                 value={paymentReceiverName}
                                 onChange={(e) => setPaymentReceiverName(e.target.value)}
                                 placeholder="Legal Entity or Merchant Name"
-                                type="text" 
-                                className="w-full bg-[#020617] border border-[#1E293B] text-[#F8FAFC] text-sm font-bold px-4 py-3 rounded-xl focus:ring-1 focus:ring-[#10B981]/50 focus:border-[#10B981] outline-none transition-all placeholder:text-[#475569] placeholder:font-medium" 
+                                type="text"
+                                className="w-full bg-[#020617] border border-[#1E293B] text-[#F8FAFC] text-sm font-bold px-4 py-3 rounded-xl focus:ring-1 focus:ring-[#10B981]/50 focus:border-[#10B981] outline-none transition-all placeholder:text-[#475569] placeholder:font-medium"
                             />
                         </div>
                     </div>
@@ -129,8 +129,8 @@ export default function ProjectCreationRender() {
                         <textarea
                             value={projectDiscription}
                             onChange={(e) => setDisc(e.target.value)}
-                            className="w-full bg-[#020617] border border-[#1E293B] text-[#F8FAFC] text-sm font-medium p-4 rounded-xl h-[120px] focus:ring-1 focus:ring-[#10B981]/50 focus:border-[#10B981] outline-none transition-all placeholder:text-[#475569]" 
-                            placeholder="Briefly describe what this project represents..." 
+                            className="w-full bg-[#020617] border border-[#1E293B] text-[#F8FAFC] text-sm font-medium p-4 rounded-xl h-[120px] focus:ring-1 focus:ring-[#10B981]/50 focus:border-[#10B981] outline-none transition-all placeholder:text-[#475569]"
+                            placeholder="Briefly describe what this project represents..."
                         />
                     </div>
                 </div>
@@ -144,26 +144,26 @@ export default function ProjectCreationRender() {
                         </h2>
                         <p className="text-xs text-[#94A3B8] font-medium mt-1">This generated key will authenticate your API requests.</p>
                     </div>
-                    
+
                     <div className="flex items-center gap-3 bg-[#020617] border border-[#1E293B] rounded-xl p-2 pl-4 focus-within:border-[#10B981]/50 transition-colors mt-2">
-                        <input 
+                        <input
                             type={ShowApiKey ? "text" : "password"}
                             readOnly
                             value={GeneratedKey}
                             className="w-full bg-transparent border-none outline-none text-sm font-mono text-[#34D399] font-bold"
                         />
                         <div className="flex items-center gap-1">
-                            <button 
-                                onClick={() => setAPIkey(!ShowApiKey)} 
+                            <button
+                                onClick={() => setAPIkey(!ShowApiKey)}
                                 className="p-2 hover:bg-[#1E293B] rounded-lg text-[#64748B] hover:text-[#F8FAFC] transition-colors"
                             >
                                 {ShowApiKey ? <EyeClosed size={16} /> : <Eye size={16} />}
                             </button>
-                            <button 
+                            <button
                                 onClick={async () => {
                                     await navigator.clipboard.writeText(GeneratedKey)
                                     toast.success("API key copied to clipboard!")
-                                }} 
+                                }}
                                 className="p-2 hover:bg-[#1E293B] rounded-lg text-[#64748B] hover:text-[#F8FAFC] transition-colors bg-[#10B981]/10 hover:bg-[#10B981]/20 text-[#10B981]"
                             >
                                 <Copy size={16} />

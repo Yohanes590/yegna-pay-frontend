@@ -14,7 +14,6 @@ import {
 import { useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
-
 export default function SignUpPage() {
     const [loadingScreen, setLoadingScreen] = useState<boolean>(false)
     const [FirstName, setFirstName] = useState<string>("")
@@ -25,48 +24,51 @@ export default function SignUpPage() {
     const [LoadingButton, setLoading] = useState<boolean>(false)
 
 
-    const HandelThirdParty = async (locator: string) => {
+    const HandelThirdParty = async () => {
         setLoading(true)
-        const YegnaServer = await fetch(process.env.NEXT_PUBLIC_YEGNA_SERVER! + "/auth/third-party", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ data: locator })
-        })
-        const serverResponse = await YegnaServer.json()
-        if (!YegnaServer.ok) {
-            toast.error("Internal Server Error")
-        } else {
-            if (serverResponse.status == 200) {
-                window.location.href = serverResponse.url
-            } else {
-                toast.error("Something went wrong!!")
+
+        const authToGithub = await fetch("/api/auth",
+            {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    method: "user"
+                })
             }
+        )
+        const serverResponse = await authToGithub.json()
+        if (authToGithub.ok) {
+            window.location.href = serverResponse.generatedLink
+        } else {
+            toast.error("Internal server error!")
         }
-    }
+    };
 
     const signUpForm = async () => {
         if (FirstName == "" || LastName == "" || EmailAddress == "" || Password == "") {
             toast.error("Please fill in the necessary credentials")
         } else {
-            toast.success("check your email for verification")
             setLoadingScreen(true)
-            const ServerRequest = await fetch(process.env.NEXT_PUBLIC_YEGNA_SERVER! + '/auth/email-signup', {
+            const signUpRequest = await fetch("/api/auth/email-sign-up", {
                 method: "post",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ first_name: FirstName, last_name: LastName, email: EmailAddress, password: Password })
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    first_name: FirstName,
+                    last_name: LastName,
+                    email: EmailAddress,
+                    password: Password
+                })
             })
-            const ServerResponse = await ServerRequest.json()
-            if (ServerRequest.ok) {
-                if (ServerResponse.status == 200) {
-                    setLoadingScreen(false)
-                    toast.success(ServerResponse.message)
-                } else {
-                    toast(ServerResponse.message)
-                    setLoadingScreen(false)
-                }
+            const serverResponse = await signUpRequest.json()
+            if (serverResponse.success == true) {
+                toast.success(serverResponse.message)
             } else {
                 setLoadingScreen(false)
-                toast.error(ServerResponse.message)
+                toast.error(serverResponse.message)
             }
         }
     }
@@ -147,7 +149,7 @@ export default function SignUpPage() {
                     {/* Social Auth */}
                     <div className="flex flex-col sm:flex-row gap-3 mb-8">
 
-                        <button disabled={LoadingButton} onClick={() => HandelThirdParty("github")} className="flex-1 flex items-center justify-center gap-2.5 px-4 py-3 bg-[#0F172A] border border-[#1E293B] rounded-xl hover:bg-[#1E293B] hover:border-[#334155] transition-all font-bold text-[#F8FAFC] text-sm active:scale-95">
+                        <button disabled={LoadingButton} onClick={() => HandelThirdParty()} className="flex-1 flex items-center justify-center gap-2.5 px-4 py-3 bg-[#0F172A] border border-[#1E293B] rounded-xl hover:bg-[#1E293B] hover:border-[#334155] transition-all font-bold text-[#F8FAFC] text-sm active:scale-95">
                             {
                                 LoadingButton ? (<>
                                     <Loader2 className='w-4 h-4 animate-spin' />

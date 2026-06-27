@@ -9,7 +9,7 @@ export default function TokenVerification() {
 
     useEffect(() => {
         const VerifyTokenFunction = async () => {
-            const RequestServer = await fetch(process.env.NEXT_PUBLIC_YEGNA_SERVER! + "/auth/verify-token", {
+            const RequestServer = await fetch("/api/auth/verify-token", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -19,9 +19,9 @@ export default function TokenVerification() {
                 })
             })
             const serverResponse = await RequestServer.json()
-            // console.log(serverResponse)
-            if (serverResponse.status == 200) {
-                Cookie.set('access_token', serverResponse.token.message,)
+            if (serverResponse.success == true) {
+                Cookie.set('access_token', serverResponse.access_token)
+                toast.success(serverResponse.message)
                 window.location.href = "/dashboard"
             } else {
                 toast.error(serverResponse.message)

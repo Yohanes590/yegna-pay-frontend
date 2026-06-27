@@ -15,38 +15,30 @@ import Cookies from "js-cookie";
 import Link from "next/link";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { authClient } from "../lib/auth-client"; //import the auth client
-
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [emailAddress, setEmailAddress] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [LoadingButton, setLoading] = useState<boolean>(false)
-
-  const ThirdPartyHandler = async (provider: string) => {
+  const ThirdPartyHandler = async () => {
     setLoading(true)
-
-
-
-
-    const YegnaServer = await fetch(
-      process.env.NEXT_PUBLIC_YEGNA_SERVER! + "/auth/third-party/",
+    const authToGithub = await fetch("/api/auth",
       {
         method: "post",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: provider }),
-      },
-    );
-    if (!YegnaServer.ok) {
-      toast.error("Internal server error");
-    } else {
-      const YegnaResponse = await YegnaServer.json();
-      if (YegnaResponse.status == 200) {
-        window.location.href = YegnaResponse.url;
-      } else {
-        toast.error("Something went wrong!!");
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          method: "user"
+        })
       }
+    )
+    const serverResponse = await authToGithub.json()
+    if (authToGithub.ok) {
+      window.location.href = serverResponse.generatedLink
+    } else {
+      toast.error("Internal server error!")
     }
   };
   const handleSubmit = async () => {
@@ -54,20 +46,19 @@ export default function SignInPage() {
       toast("Please provide necessary information");
     } else {
       setIsLoading(true);
-      const ServerRequest = await fetch(
-        process.env.NEXT_PUBLIC_YEGNA_SERVER! + "/auth/login",
+      const ServerRequest = await fetch("/api/auth/login",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            email_address: emailAddress,
+            email: emailAddress,
             password: password,
           }),
         },
       );
       const ServerResponse = await ServerRequest.json();
       if (ServerRequest.ok) {
-        if (ServerResponse.status == 200) {
+        if (ServerResponse.status == true) {
           toast.success(ServerResponse.message);
           Cookies.set("access_token", ServerResponse.token);
           setTimeout(() => {
@@ -187,7 +178,7 @@ export default function SignInPage() {
           </div>
           <div className="grid gap-3 mb-8">
             <button
-              onClick={() => ThirdPartyHandler("github")}
+              onClick={() => ThirdPartyHandler()}
               className="flex items-center justify-center gap-2.5 px-4 py-3 bg-[#0F172A] border border-[#1E293B] rounded-xl hover:bg-[#1E293B] hover:border-[#334155] transition-all font-bold text-[#F8FAFC] text-sm active:scale-[0.98]"
             >
               {

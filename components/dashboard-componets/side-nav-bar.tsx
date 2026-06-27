@@ -24,7 +24,10 @@ export default function SideNavRender() {
     }, [fetchUserData]);
 
     useEffect(() => {
-        if (!user || Object.keys(user).length === 0) {
+        const access_token = Cookies.get("access_token")
+        if (!access_token) {
+            window.location.href = "/"
+        } if (!user || Object.keys(user).length === 0) {
             return;
         }
 
@@ -46,7 +49,7 @@ export default function SideNavRender() {
         // { title: "Home", icon: <HomeIcon size={18} />, href: "/" },
         { title: "Dashboard", icon: <LayoutDashboard size={18} />, href: "/dashboard" },
         { title: "New Project", icon: <PlusCircle size={18} />, href: "/dashboard/create-project" },
-        { title: "Notification", icon: <BellDot size={18} />, href: "/dashboard/notification" },
+        // { title: "Notification", icon: <BellDot size={18} />, href: "/dashboard/notification" },
         { title: "API Docs", icon: <FileCode2 size={18} />, href: "/documentation" },
     ];
 
