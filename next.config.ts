@@ -18,10 +18,15 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '*.googleusercontent.com', // Using '*' catches lh3, lh4, etc.
+        hostname: '*.googleusercontent.com',
         pathname: '/**',
       }
     ],
+  },
+
+  // Placed right at the root level of your configuration
+  outputFileTracingIncludes: {
+    '/api/**/*': ['./node_modules/playwright-core/browsers.json'],
   },
 };
 
