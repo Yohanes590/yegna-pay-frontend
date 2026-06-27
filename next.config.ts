@@ -28,6 +28,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     '/api/**/*': ['./node_modules/playwright-core/browsers.json'],
   },
+  serverExternalPackages: ['@sparticuz/chromium', 'playwright-core'],
 };
 
 export default nextConfig;
