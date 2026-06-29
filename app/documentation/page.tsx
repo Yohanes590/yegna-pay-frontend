@@ -107,9 +107,9 @@ export default function YegnaPayDocs() {
     };
 
     const bankPayloads = {
-        boa: `{\n  "full_name": "JOHN DOE ENTERPRISE",\n  "price_amount": "4000",\n  "platform": "CBE",\n  "currency": "ETB",\n  "transaction_id": "FT23123456..."\n}`,
-        cbe: `{\n  "full_name": "JOHN DOE ENTERPRISE",\n  "price_amount": "4000",\n  "platform": "awash",\n  "currency": "ETB",\n  "transaction_id": "-2KCLVVWOY3-4R..."\n}`,
-        awash: `{\n  "full_name": "JOHN DOE ENTERPRISE",\n  "price_amount": "4000",\n  "platform": "BOA",\n  "currency": "ETB",\n  "transaction_id": "FT26133F833J..."\n}`
+        boa: `{\n  "full_name": "JOHN DOE ENTERPRISE",\n  "price_amount": "4000",\n  "platform": "BOA",\n  "currency": "ETB",\n  "transaction_id": "FT23123456..."\n}`,
+        cbe: `{\n  "full_name": "JOHN DOE ENTERPRISE",\n  "price_amount": "4000",\n  "platform": "CBE",\n  "currency": "ETB",\n  "transaction_id": "FT26133F833J..."\n}`,
+        awash: `{\n  "full_name": "JOHN DOE ENTERPRISE",\n  "price_amount": "4000",\n  "platform": "AWASH",\n  "currency": "ETB",\n  "transaction_id": "-2KCLVVWOY3-4R..."\n}`
     };
 
     const bankLogos = {
