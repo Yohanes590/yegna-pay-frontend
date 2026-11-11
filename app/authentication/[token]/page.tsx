@@ -1,7 +1,7 @@
 "use client"
 import { useParams } from "next/navigation"
 import { useEffect } from "react"
-import toast from "react-hot-toast"
+import { toast } from "sonner"
 import Cookie from 'js-cookie'
 export default function TokenVerification() {
     const Params = useParams()

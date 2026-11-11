@@ -1,17 +1,13 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../lib/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
-
 
 model Users {
   id                String     @id @default(uuid())
@@ -22,13 +18,15 @@ model Users {
   Provider          String?
   account_status    String
   payment_plan      String
-  verified          Boolean
-  request_available Int
-  projects          Projects[]
-  revenues          Revenue[]  // <--- ADD THIS LINE HERE
+  verified                Boolean
+  request_available       Int
+  free_requests_remaining Int        @default(200)
+  free_requests_used      Int        @default(0)
+  paid_requests_balance   Int        @default(0)
+  paid_requests_used      Int        @default(0)
+  projects                Projects[]
+  revenues                Revenue[]
 }
-
-
 
 model Admin {
   id String @id @default(uuid())
@@ -60,8 +58,6 @@ model Projects {
   before_expires String?
   receiver_name String?
 }
-
-
 
 model Transaction {
   id String @id @default(uuid())
@@ -103,8 +99,6 @@ model DatabaseCronJob {
   CronJob String 
 }
 
-
-
 model Revenue {
   id            String   @id @default(uuid())
   payer_name    String
@@ -112,5 +106,8 @@ model Revenue {
   currency      String   @default("ETB")
   time_stamp    DateTime @default(now())
   user_id       String
+  amount        Decimal? @default(0)
+  status        String   @default("verified")
+  method        String   @default("CBE")
   user          Users    @relation(fields: [user_id], references: [id], onDelete: Cascade) 
 }

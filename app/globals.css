@@ -1,21 +1,82 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #020617;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --surface: #ffffff;
+  --surface-raised: #f8fafc;
+  --border-subtle: #e2e8f0;
+  --border-emerald: rgba(5, 150, 105, 0.2);
+  --emerald-primary: #059669;
+  --emerald-deep: #064e3b;
+  --emerald-forest: #022c22;
+  --emerald-mint: #10b981;
 }
-.un-responsive-phone{
-  display: none;
+
+.dark {
+  --background: #070d14;
+  --foreground: #f8fafc;
+  --surface: #0b131e;
+  --surface-raised: #131d2a;
+  --border-subtle: #1e293b;
+  --border-emerald: rgba(16, 185, 129, 0.25);
+  --emerald-primary: #10b981;
+  --emerald-deep: #064e3b;
+  --emerald-forest: #022c22;
+  --emerald-mint: #34d399;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
 }
 
 body {
   background-color: var(--background);
-  color: #F8FAFC;
+  color: #f1f5f9;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar for dark mode */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #060a0f;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1a2736;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #047857;
+}
+
+/* Subtle architectural grid pattern */
+.bg-grid-architectural {
+  background-size: 48px 48px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+.bg-dot-matrix {
+  background-size: 24px 24px;
+  background-image: radial-gradient(rgba(16, 185, 129, 0.12) 1px, transparent 0);
 }
 
 /* Custom CSS Marquee Animation */
 @keyframes marquee {
   from { transform: translateX(0); }
-  to { transform: translateX(calc(-50% - 1rem)); } /* Accounts for the gap */
+  to { transform: translateX(calc(-50% - 1rem)); }
 }
 
 .animate-marquee {
@@ -24,29 +85,4 @@ body {
 
 .animate-marquee:hover {
   animation-play-state: paused;
-}
-
-/* Custom scrollbar for dark mode */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #020617;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #1E293B;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #334155;
-}
-
-@media ((max-width:674px)) {
-  .un-responsive-phone{
-    display: flex;
-  }
 }

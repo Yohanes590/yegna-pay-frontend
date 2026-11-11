@@ -1,41 +1,65 @@
-"use client"
-import { Search } from "lucide-react"
-import { useState } from "react"
-import DashboardTable from "./dashboard-table"
+"use client";
 
-export default function DashboardTransactions() {
-    const [searchQuery, setSearchQuery] = useState("")
-    const [selectedFilter, setSelectedFilter] = useState("all")
+import { useMemo } from "react";
+import { ArrowLeftRight, Download, Filter } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { formatTransactionId } from "@/lib/utils";
+import DashboardTable from "@/components/dashboard/dashboard-table";
+
+interface TransactionsProps {
+    project: any;
+}
+
+export default function DashboardTransactions({ project }: TransactionsProps) {
+    const transactions = useMemo(() => project?.transactions || [], [project]);
+
+    const handleExportCSV = () => {
+        if (!transactions.length) return;
+        const headers = ["Transaction ID", "Bank", "Amount", "Currency", "Status", "Sender", "Date"];
+        const rows = transactions.map((t: any) => [
+            formatTransactionId(t.transaction_id),
+            t.method,
+            t.transaction_amount,
+            t.currency || "ETB",
+            t.transaction_status,
+            `"${t.from || ""}"`,
+            t.created_at,
+        ]);
+        const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((e: any[]) => e.join(","))].join("\n");
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `yegna_pay_transactions_${Date.now()}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
     return (
-        <div className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
-            <div className="flex flex-col md:flex-row items-center gap-4 bg-[#0F172A] p-4 rounded-2xl border border-[#1E293B] shadow-xl">
-                <div className="flex-1 flex items-center gap-3 w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl focus-within:border-[#10B981] focus-within:ring-1 focus-within:ring-[#10B981]/30 transition-all">
-                    <Search size={16} className="text-[#64748B]" />
-                    <input 
-                        type="text" 
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search using Transaction ID, Date or Sender name..." 
-                        className="bg-transparent border-none outline-none w-full text-sm font-medium text-[#F8FAFC] placeholder:text-[#475569]"
-                    />
+        <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-white dark:bg-[#0c141f] border border-[#e2e8f0] dark:border-[#1e293b] rounded-xl shadow-2xs">
+                <div>
+                    <h2 className="text-lg font-bold text-[#0f172a] dark:text-[#f8fafc] flex items-center gap-2">
+                        <ArrowLeftRight size={20} className="text-[#059669] dark:text-[#34d399]" />
+                        Transaction Ledger
+                    </h2>
+                    <p className="text-xs text-[#64748b] dark:text-[#94a3b8] mt-0.5">
+                        Complete verifiable log of incoming payment transactions across connected banking rails
+                    </p>
                 </div>
-                <div className="w-full md:w-48">
-                    <select 
-                        value={selectedFilter}
-                        onChange={(e) => setSelectedFilter(e.target.value)}
-                        className="w-full px-4 py-3.5 bg-[#020617] border border-[#1E293B] rounded-xl outline-none focus:border-[#10B981] text-sm font-bold text-[#94A3B8] appearance-none focus:ring-1 focus:ring-[#10B981]/30 transition-all cursor-pointer"
-                    >
-                        <option value="all">All Statuses</option>
-                        <option value="verified">Verified</option>
-                        <option value="pending">Pending</option>
-                        <option value="rejected">Rejected</option>
-                    </select>
-                </div>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleExportCSV}
+                    disabled={transactions.length === 0}
+                    className="gap-2 text-xs"
+                >
+                    <Download size={14} />
+                    <span>Export CSV</span>
+                </Button>
             </div>
 
-            {/* Reusing the Table component */}
-            <DashboardTable />
+            <DashboardTable transactions={transactions} showControls={true} />
         </div>
-    )
+    );
 }

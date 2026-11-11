@@ -1,21 +1,22 @@
 import SideNavRender from "@/components/dashboard-componets/side-nav-bar";
 import TopSideNav from "@/components/dashboard-componets/top-side-nav";
 import Unresponsive from "@/components/un-responsive";
+
 export default function DashboardLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
     return (
-        <main className="min-h-screen bg-[#020617]">
+        <div className="min-h-screen bg-[#f8fafc] dark:bg-[#070d14] text-[#0f172a] dark:text-[#f8fafc] transition-colors">
             <Unresponsive />
             <SideNavRender />
             <TopSideNav />
-            <div className="pl-[260px] pt-[70px] min-h-screen bg-[#020617]">
-                <div className="p-8 max-w-7xl">
+            <main className="md:pl-[260px] pt-[64px] min-h-screen bg-[#f8fafc] dark:bg-[#070d14] transition-colors">
+                <div className="p-4 sm:p-8 max-w-7xl mx-auto">
                     {children}
                 </div>
-            </div>
-        </main>
+            </main>
+        </div>
     );
 }

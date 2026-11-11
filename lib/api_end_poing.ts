@@ -1,56 +1,74 @@
-import Cookies from "js-cookie"
-import { userInfo } from "os"
-const token = Cookies.get("access_token")
+import Cookies from "js-cookie";
 
+const getToken = () => Cookies.get("access_token");
 
-// user authentication function
+// User authentication function
 export const UserInfo = async () => {
-    const TokenSending = await fetch("/api/auth/info", {
-        method: "POST",
-        headers: {
-            'Content-Type': "application/json"
-        },
-        credentials: "include",
-        body: JSON.stringify({
-            token: token
-        })
-    })
-    const ServerResponse = await TokenSending.json()
-    console.log(ServerResponse)
-    if (token == undefined) {
-        window.location.href = "/"
-    } else if (ServerResponse.status == 200) {
-        return {
-            message: "success",
-            user: ServerResponse.fetchEmail
-        }
+    const token = getToken();
 
-    } else if (ServerResponse.status == 500) {
-        window.location.href = "/"
-    } else if (ServerResponse.status == 400) {
-        return {
-            message: ServerResponse.message, user: {
-                message: "The user is baned",
-                status: "400"
+    try {
+        const res = await fetch("/api/user/info", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: token || "" }),
+        });
+        const data = await res.json();
+        if (res.ok && data?.user) {
+            if (data?.token) {
+                Cookies.set("access_token", data.token, { expires: 7 });
             }
+            return {
+                message: "success",
+                user: data.user,
+            };
         }
+        return {
+            message: data?.message || "Failed to fetch user profile",
+            user: null,
+        };
+    } catch {
+        return {
+            message: "Network error",
+            user: null,
+        };
     }
-}
+};
 
+export const FetchBillingInfo = async () => {
+    const token = getToken();
+    try {
+        const res = await fetch("/api/user/buy-request", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token ? { "Authorization": `Bearer ${token}` } : {})
+            }
+        });
+        return await res.json();
+    } catch {
+        return { success: false, message: "Network connection error" };
+    }
+};
 
+export const BuyRequestFunction = async (requestAmount: number, transaction_id: string, platform?: string) => {
+    const token = getToken();
 
-export const BuyRequestFunction = async (requestAmount: number, transaction_id: string) => {
-    const BuyAPIRequest = await fetch(`${process.env.NEXT_PUBLIC_YEGNA_SERVER!}/user/buy-request`, {
-        method: "post",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            token: token,
-            requestAmount: requestAmount,
-            transaction_id: transaction_id
-        })
-    })
-    const ServerResponse = await BuyAPIRequest.json()
-    return ServerResponse
-}
+    try {
+        const res = await fetch("/api/user/buy-request", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token ? { "Authorization": `Bearer ${token}` } : {})
+            },
+            body: JSON.stringify({
+                token,
+                requestAmount,
+                transaction_id,
+                platform
+            }),
+        });
+        return await res.json();
+    } catch {
+        return { success: false, message: "Network connection error" };
+    }
+};

@@ -1,28 +1,37 @@
 import Cookies from "js-cookie";
 
-const token = Cookies.get("access_token")
-
 export async function UserDataFetch() {
-    const fetchingUserInformation = await fetch("/api/user/info", {
-        method: "post",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            token: token
-        })
-    })
-    const serverResponse = await fetchingUserInformation.json()
-    if (fetchingUserInformation.ok) {
-        return {
-            message: "success",
-            user: serverResponse.user
-        }
-    } else {
-        return {
-            message: "error",
-            user: null
-        }
-    }
+    const token = Cookies.get("access_token");
+    try {
+        const fetchingUserInformation = await fetch("/api/user/info", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                token: token || ""
+            })
+        });
 
+        const serverResponse = await fetchingUserInformation.json();
+        if (fetchingUserInformation.ok && serverResponse.user) {
+            if (serverResponse.token) {
+                Cookies.set("access_token", serverResponse.token, { expires: 7 });
+            }
+            return {
+                message: "success",
+                user: serverResponse.user
+            };
+        } else {
+            return {
+                message: serverResponse?.message || "error",
+                user: null
+            };
+        }
+    } catch {
+        return {
+            message: "network_error",
+            user: null
+        };
+    }
 }

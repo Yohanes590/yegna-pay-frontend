@@ -1,41 +1,21 @@
-import { DecodeToken } from "@/app/backend-service/jwt";
-import prisma from "@/app/backend-service/prisma";
 import { NextResponse } from "next/server";
+import { getBackendUrl } from "@/lib/backend-url";
+
 export async function POST(req: Request) {
-    const body = await req.json()
-    if (body.updatedData.length > 6) {
-        return NextResponse.json({
-            success: false,
-            message: "you are trying un authorized access!!"
-        })
-    } else {
-        const decodeUser = await DecodeToken(body.token)
-        if (decodeUser.success == false) {
-            return NextResponse.json({
-                success: false,
-                message: "please login again!!"
-            })
-        } else {
-            try {
+    try {
+        const body = await req.json();
+        const headers: Record<string, string> = { "Content-Type": "application/json" };
+        const cookie = req.headers.get("cookie");
+        if (cookie) headers["cookie"] = cookie;
 
-                await prisma.projects.update({
-                    where: {
-                        id: body.id
-                    },
-                    data: body.updatedData,
-                })
-                return NextResponse.json({
-                    success: true,
-                    message: "project edited successfully"
-                })
-            } catch (error: any) {
-                return NextResponse.json({
-                    success: false,
-                    message: "internal server error can't edit project"
-                })
-            }
-        }
-
-
+        const backendRes = await fetch(`${getBackendUrl()}/user/edit-project`, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(body),
+        });
+        const data = await backendRes.json();
+        return NextResponse.json(data, { status: backendRes.status });
+    } catch {
+        return NextResponse.json({ success: false, message: "Backend connection error" }, { status: 502 });
     }
 }

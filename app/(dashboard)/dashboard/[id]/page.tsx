@@ -1,121 +1,132 @@
-"use client"
-import LoadingScreen from "@/components/loading";
-import NoProjects from "@/components/dashboard-componets/no-projects";
+"use client";
+
+import { useEffect, useState, useMemo } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import {
+    LayoutDashboard, CheckCircle2, ArrowLeftRight, QrCode,
+    KeyRound, Code2, Receipt, Settings, FolderOpen, AlertCircle
+} from "lucide-react";
 import { useUserData } from "@/lib/hooks/user_data_fetch";
-import { useEffect, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
-import { Copy, Eye, CopyCheck, FolderOpen, Activity, Terminal, Settings } from "lucide-react";
-
-// Modular Components
 import DashboardOverview from "@/components/dashboard/overview";
+import DashboardVerifications from "@/components/dashboard/verifications";
 import DashboardTransactions from "@/components/dashboard/transactions";
-import DashboardBuyRequest from "@/components/dashboard/buy-request";
+import DashboardQrImages from "@/components/dashboard/qr-images";
+import DashboardApiKeys from "@/components/dashboard/api-keys";
+import DashboardDevelopers from "@/components/dashboard/developer-experience";
+import DashboardBilling from "@/components/dashboard/usage-billing";
 import DashboardSettings from "@/components/dashboard/settings";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default function DashboardPage() {
-    const { user, function: fetchUser, loading } = useUserData()
-    const pathname = usePathname()
+export default function ProjectDashboardPage() {
+    const { user, function: fetchUser, loading } = useUserData();
+    const pathname = usePathname();
+    const router = useRouter();
+    const searchParams = useSearchParams();
 
-    // Tab State (could be synced to search params later if preferred, but local state is fine per prompt)
-    const [activeTab, setActiveTab] = useState<"overview" | "transactions" | "buy-request" | "settings">("overview")
-
-    // Project Data
-    const [currentProject, setCurrentProject] = useState<any>(null)
-    const [stats, setStats] = useState({ totalTransaction: 0, verifiedTransaction: 0, totalProjects: 0 })
-
-    useEffect(() => {
-        fetchUser()
-    }, [fetchUser])
+    const activeTab = searchParams.get("tab") || "overview";
 
     useEffect(() => {
-        if (!loading && user) {
-            const projectId = pathname.split("/")[2]
-            const project = user?.projects?.find((p: any) => p.id === projectId)
-            setCurrentProject(project)
+        fetchUser();
+    }, [fetchUser]);
 
-            if (project) {
-                const transactions = project.transactions || []
-                const verified = transactions.filter((t: any) => t.transaction_status === "verified").length
-                setStats({
-                    totalTransaction: transactions.length,
-                    verifiedTransaction: verified,
-                    totalProjects: user.projects.length
-                })
-            }
-        }
-    }, [user, loading, pathname])
+    const projectId = useMemo(() => {
+        const parts = pathname.split("/").filter(Boolean);
+        return parts.length >= 2 ? parts[1] : "";
+    }, [pathname]);
 
+    const currentProject = useMemo(() => {
+        return user?.projects?.find((p: any) => p.id === projectId) || user?.projects?.[0];
+    }, [user, projectId]);
 
-    if (loading && !currentProject) return <div className="h-full flex items-center justify-center min-h-[500px]"><div className="w-8 h-8 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin"></div></div>;
-    if (!loading && !currentProject && user?.projects) return <NoProjects />;
+    const handleTabChange = (tab: string) => {
+        router.push(`/dashboard/${projectId}?tab=${tab}`);
+    };
 
-    const tabs = [
-        { id: "overview", label: "Overview", icon: FolderOpen },
-        { id: "transactions", label: "Transactions", icon: Activity },
-        { id: "buy-request", label: "Buy Request", icon: Terminal },
+    if (loading && !currentProject) {
+        return (
+            <div className="space-y-6">
+                <Skeleton className="h-14 w-full" />
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <Skeleton className="h-28 w-full" />
+                    <Skeleton className="h-28 w-full" />
+                    <Skeleton className="h-28 w-full" />
+                </div>
+                <Skeleton className="h-72 w-full" />
+            </div>
+        );
+    }
+
+    if (!loading && !currentProject) {
+        return (
+            <div className="p-8 bg-white dark:bg-[#0c141f] border border-[#e2e8f0] dark:border-[#1e293b] rounded-2xl text-center max-w-lg mx-auto mt-12">
+                <div className="w-12 h-12 rounded-full bg-[#f1f5f9] dark:bg-[#131d2a] flex items-center justify-center mx-auto text-[#64748b] dark:text-[#94a3b8] mb-4">
+                    <FolderOpen size={24} />
+                </div>
+                <h3 className="text-base font-bold text-[#0f172a] dark:text-[#f8fafc]">Workspace Not Found</h3>
+                <p className="text-xs text-[#64748b] dark:text-[#94a3b8] mt-1.5 mb-6">
+                    This project may have been deleted or you do not have permission to access it.
+                </p>
+                <a href="/dashboard" className="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold bg-[#064e3b] dark:bg-[#059669] text-white rounded-lg">
+                    Return to Workspaces
+                </a>
+            </div>
+        );
+    }
+
+    const tabList = [
+        { id: "overview", label: "Overview", icon: LayoutDashboard },
+        { id: "verifications", label: "Verifications", icon: CheckCircle2 },
+        { id: "transactions", label: "Transactions", icon: ArrowLeftRight },
+        { id: "qr-images", label: "QR Images", icon: QrCode },
+        { id: "apikeys", label: "API Keys", icon: KeyRound },
+        { id: "developers", label: "Developer API", icon: Code2 },
+        { id: "billing", label: "Usage & Billing", icon: Receipt },
         { id: "settings", label: "Settings", icon: Settings },
-    ] as const;
+    ];
 
     return (
-        <div className="min-h-screen">
-
-            {/* Header */}
-            <div className="mb-8">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                    <div>
-                        <h1 className="text-3xl font-black text-[#F8FAFC] tracking-tight">{currentProject?.project_name || "Project"}</h1>
-                        <div className="flex items-center gap-2 mt-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
-                            <p className="text-[11px] font-bold text-[#64748B] uppercase tracking-widest">{currentProject?.id}</p>
-                        </div>
-                    </div>
+        <div className="space-y-6 pb-12">
+            {/* Top Workspace Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
+                <div>
+                    <h1 className="text-2xl font-black text-[#0f172a] dark:text-[#f8fafc] tracking-tight">
+                        {currentProject?.project_name || "Workspace"}
+                    </h1>
+                    <p className="text-xs text-[#64748b] dark:text-[#94a3b8] mt-0.5">
+                        {currentProject?.project_description || "Enterprise payment verification console"}
+                    </p>
                 </div>
             </div>
 
-            {/* Inner Navigation Tabs */}
-            <div className="flex gap-2 border-b border-[#1E293B] mb-8 overflow-x-auto no-scrollbar">
-                {tabs.map(tab => {
-                    const Icon = tab.icon;
-                    const isActive = activeTab === tab.id;
-                    return (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id as any)}
-                            className={`flex items-center gap-2 px-5 py-3 border-b-2 text-sm font-bold transition-all whitespace-nowrap ${isActive
-                                ? "border-[#10B981] text-[#10B981] bg-[#10B981]/5"
-                                : "border-transparent text-[#64748B] hover:text-[#94A3B8] hover:bg-[#1E293B]/30 hover:border-[#1E293B]"
-                                }`}
-                        >
-                            <Icon size={16} />
-                            {tab.label}
-                        </button>
-                    )
-                })}
+            {/* Inner Tabs Bar */}
+            <div className="overflow-x-auto no-scrollbar">
+                <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+                    <TabsList className="bg-[#f1f5f9] p-1 border border-[#e2e8f0] flex w-max sm:w-auto">
+                        {tabList.map((t) => {
+                            const Icon = t.icon;
+                            return (
+                                <TabsTrigger key={t.id} value={t.id} className="gap-2 text-xs font-semibold">
+                                    <Icon size={14} />
+                                    <span>{t.label}</span>
+                                </TabsTrigger>
+                            );
+                        })}
+                    </TabsList>
+                </Tabs>
             </div>
 
-            {/* Dynamic Section Mapping */}
-            <div className="pb-16 relative">
-                {activeTab === "overview" && (
-                    <DashboardOverview
-                        totalTransaction={stats.totalTransaction}
-                        verifiedTransaction={stats.verifiedTransaction}
-                        totalProjects={stats.totalProjects}
-                    />
-                )}
-
-                {activeTab === "transactions" && (
-                    <DashboardTransactions />
-                )}
-
-                {activeTab === "buy-request" && (
-                    <DashboardBuyRequest />
-                )}
-
-                {activeTab === "settings" && (
-                    <DashboardSettings project={currentProject} />
-                )}
+            {/* Tab Views */}
+            <div className="pt-2">
+                {activeTab === "overview" && <DashboardOverview project={currentProject} />}
+                {activeTab === "verifications" && <DashboardVerifications project={currentProject} />}
+                {activeTab === "transactions" && <DashboardTransactions project={currentProject} />}
+                {activeTab === "qr-images" && <DashboardQrImages project={currentProject} />}
+                {activeTab === "apikeys" && <DashboardApiKeys project={currentProject} />}
+                {activeTab === "developers" && <DashboardDevelopers project={currentProject} />}
+                {activeTab === "billing" && <DashboardBilling project={currentProject} user={user} />}
+                {activeTab === "settings" && <DashboardSettings project={currentProject} />}
             </div>
-
         </div>
     );
 }

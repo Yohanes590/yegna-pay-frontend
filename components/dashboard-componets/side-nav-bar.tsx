@@ -1,146 +1,180 @@
-"use client"
-import { LayoutDashboard, LogOut, HomeIcon, PlusCircle, FolderOpen, FileCode2, Bell, BellDot } from "lucide-react"
+"use client";
+
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useUserData } from "@/lib/hooks/user_data_fetch";
-import toast from "react-hot-toast";
 import Cookies from "js-cookie";
-import LoadingScreen from "../loading";
+import { toast } from "sonner";
+import {
+    LayoutDashboard, CheckCircle2, ArrowLeftRight,
+    LogOut, Plus, FolderKanban
+} from "lucide-react";
+import { useUserData } from "@/lib/hooks/user_data_fetch";
+import { authClient } from "@/lib/auth-client";
+import ThemeToggle from "@/components/theme-toggle";
+import {
+    AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+    AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle
+} from "@/components/ui/alert-dialog";
 
 export default function SideNavRender() {
-    const pathName = usePathname();
+    const pathname = usePathname();
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const { user, loading, function: fetchUser } = useUserData();
+    const [showSignOut, setShowSignOut] = useState(false);
+    const [imgError, setImgError] = useState(false);
 
-    const pathSegments = pathName.split('/').filter(Boolean);
-    const isProjectDetailPage = pathSegments.length >= 3;
-    const projectId = pathSegments[1];
-    const [LoaderScreen, setLoadingScreen] = useState<boolean>(true)
-    const StoredData = useUserData()
-
-    const { user, function: fetchUserData } = StoredData
-
-    useEffect(() => {
-        fetchUserData();
-    }, [fetchUserData]);
+    useEffect(() => { fetchUser(); }, [fetchUser]);
 
     useEffect(() => {
-        const access_token = Cookies.get("access_token")
-        if (!access_token) {
-            window.location.href = "/"
-        } if (!user || Object.keys(user).length === 0) {
-            return;
-        }
+        if (loading) return;
+        const token = Cookies.get("access_token") || Cookies.get("better-auth.session_token");
+        if (!token && !user) router.push("/sign-in");
+    }, [user, loading, router]);
 
-        const responseStatus = user?.status || user?.data?.status;
+    const pathSegments = pathname.split("/").filter(Boolean);
+    const isProjectDetail = pathSegments.length >= 2 && pathSegments[0] === "dashboard" && pathSegments[1] !== "create-project" && pathSegments[1] !== "notification";
+    const projectId = isProjectDetail ? pathSegments[1] : (user?.projects?.[0]?.id || "");
+    const currentProject = user?.projects?.find((p: any) => p.id === projectId) || user?.projects?.[0];
 
-        // console.log("Current user object state:", user);
+    const currentTab = searchParams.get("tab") || "overview";
+    const avatarUrl = user?.avatar_url || (user as any)?.image || "";
 
-        const isSuccessfulFetch = responseStatus === 200 || (user && !responseStatus && (user.id || user._id || user.email));
+    const navItems = useMemo(() => [
+        { label: "Overview", icon: LayoutDashboard, tab: "overview" },
+        { label: "Verifications", icon: CheckCircle2, tab: "verifications" },
+        { label: "Transactions", icon: ArrowLeftRight, tab: "transactions" },
+    ], []);
 
-        if (isSuccessfulFetch) {
-            setLoadingScreen(false)
+    const handleNavClick = (tab: string) => {
+        if (projectId) {
+            router.push(`/dashboard/${projectId}?tab=${tab}`);
+        } else if (user?.projects?.length) {
+            router.push(`/dashboard/${user.projects[0].id}?tab=${tab}`);
         } else {
-            toast.error("This user account is banned! Please contact us.")
-            setTimeout(() => { window.location.href = "/" }, 2500)
+            toast.error("Please create a workspace first.");
+            router.push("/dashboard/create-project");
         }
-    }, [user])
-
-    const topLevelNav = [
-        // { title: "Home", icon: <HomeIcon size={18} />, href: "/" },
-        { title: "Dashboard", icon: <LayoutDashboard size={18} />, href: "/dashboard" },
-        { title: "New Project", icon: <PlusCircle size={18} />, href: "/dashboard/create-project" },
-        // { title: "Notification", icon: <BellDot size={18} />, href: "/dashboard/notification" },
-        { title: "API Docs", icon: <FileCode2 size={18} />, href: "/documentation" },
-    ];
-
-    const projectNav = [
-        { title: "Back to Projects", icon: <HomeIcon size={18} />, href: "/dashboard" },
-        { title: "Overview", icon: <FolderOpen size={18} />, href: `/dashboard/${projectId}` },
-    ];
-
-    const navItems = isProjectDetailPage ? projectNav : topLevelNav;
-
-    const isActive = (href: string) => {
-        if (href === "/dashboard" && pathName === "/dashboard") return true;
-        if (href === "/dashboard" && isProjectDetailPage) return false;
-        if (href !== "/dashboard" && href !== "/") return pathName.startsWith(href);
-        return false;
     };
 
-    if (LoaderScreen) {
-        return (<LoadingScreen />)
-    }
+    const handleSignOutConfirm = async () => {
+        Cookies.remove("access_token");
+        try { await authClient.signOut(); } catch { }
+        toast.success("Signed out successfully.");
+        router.push("/sign-in");
+    };
 
     return (
-        <div className="w-[260px] h-screen fixed left-0 top-0 z-40 bg-[#0A0F1C] border-r border-[#1E293B] flex flex-col shadow-[4px_0_30px_rgba(0,0,0,0.5)]">
-
-            {/* Logo */}
-            <div className="px-6 pt-8 pb-6 border-b border-[#1E293B]">
-                <Link href="/" className="flex items-center gap-3 group cursor-pointer">
-                    <div className="w-9 h-9 bg-[#10B981] rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)] group-hover:shadow-[0_0_22px_rgba(16,185,129,0.55)] transition-all">
-                        <span className="text-[#020617] font-black text-lg">Y</span>
-                    </div>
-                    <div>
-                        <h1 className="text-base font-black text-[#F8FAFC] tracking-tight leading-none">
-                            Yegna<span className="text-[#10B981]">Pay</span>
-                        </h1>
-                        <p className="text-[9px] font-bold text-[#475569] uppercase tracking-widest mt-1">Developer Console</p>
-                    </div>
-                </Link>
-            </div>
-
-            {/* Context Label */}
-            <div className="px-6 pt-5 pb-1">
-                <p className="text-[9px] font-bold text-[#475569] uppercase tracking-[0.2em]">
-                    {isProjectDetailPage ? "Project" : "Workspace"}
-                </p>
-            </div>
-
-            {/* Nav Items */}
-            <div className="flex-1 px-3 pt-2 space-y-1 overflow-y-auto">
-                {navItems.map((feature, index) => {
-                    const active = isActive(feature.href);
-                    return (
-                        <Link
-                            key={index}
-                            href={feature.href}
-                            className={`flex items-center gap-3.5 px-4 py-3 rounded-xl cursor-pointer transition-all duration-200 group border ${active
-                                ? "bg-[#10B981]/10 text-[#34D399] border-[#10B981]/25 shadow-[0_0_12px_rgba(16,185,129,0.1)]"
-                                : "text-[#94A3B8] hover:bg-[#0F172A] hover:text-[#F8FAFC] border-transparent"
-                                }`}
-                        >
-                            <div className={`transition-colors duration-200 shrink-0 ${active ? "text-[#34D399]" : "text-[#64748B] group-hover:text-[#10B981]"
-                                }`}>
-                                {feature.icon}
-                            </div>
-                            <span className="text-sm font-bold tracking-tight">{feature.title}</span>
-                            {active && (
-                                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#10B981] shadow-[0_0_8px_rgba(16,185,129,1)] shrink-0" />
-                            )}
-                        </Link>
-                    );
-                })}
-            </div>
-
-            {/* Sign Out */}
-            <div className="p-3 border-t border-[#1E293B]">
-                <div
-                    onClick={() => {
-                        if (confirm("Are you sure you want to sign out?")) {
-                            Cookies.remove("access_token")
-                            setTimeout(() => { window.location.href = "/" }, 800)
-                        } else {
-                            toast.success("Sign out cancelled.")
-                        }
-                    }}
-                    className="flex items-center gap-3.5 px-4 py-3 rounded-xl cursor-pointer transition-all duration-200 text-[#94A3B8] hover:bg-rose-500/10 hover:text-rose-400 border border-transparent hover:border-rose-500/20 group"
-                >
-                    <div className="group-hover:-translate-x-0.5 transition-transform duration-200 shrink-0">
-                        <LogOut size={18} />
-                    </div>
-                    <span className="text-sm font-bold uppercase tracking-wider">Sign Out</span>
+        <>
+            <aside className="hidden md:flex w-[260px] h-screen fixed left-0 top-0 z-40 bg-white dark:bg-[#0b131e] border-r border-[#e2e8f0] dark:border-[#1e293b] flex-col shadow-xs transition-colors">
+                {/* Brand Header */}
+                <div className="p-4 border-b border-[#f1f5f9] dark:border-[#1e293b] flex items-center justify-between">
+                    <Link href="/" className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-lg bg-[#064e3b] dark:bg-[#059669] flex items-center justify-center text-white font-black text-sm shadow-xs">
+                            Y
+                        </div>
+                        <div>
+                            <span className="font-extrabold text-sm text-[#0f172a] dark:text-[#f8fafc] tracking-tight block">
+                                Yegna<span className="text-[#059669] dark:text-[#34d399]">Pay</span>
+                            </span>
+                            <span className="text-[9px] text-[#64748b] dark:text-[#94a3b8] font-semibold tracking-wide uppercase block">
+                                Banking Infrastructure
+                            </span>
+                        </div>
+                    </Link>
                 </div>
-            </div>
-        </div>
+
+                {/* Workspace Hub Links */}
+                <div className="p-3 border-b border-[#f1f5f9] dark:border-[#1e293b] space-y-1">
+                    <Link
+                        href="/dashboard"
+                        className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${pathname === "/dashboard"
+                            ? "bg-[#ecfdf5] dark:bg-[#064e3b]/30 text-[#064e3b] dark:text-[#34d399] font-bold"
+                            : "text-[#475569] dark:text-[#94a3b8] hover:bg-[#f8fafc] dark:hover:bg-[#131d2a]"
+                            }`}
+                    >
+                        <span className="flex items-center gap-2"><FolderKanban size={15} /> All Workspaces</span>
+                        <span className="text-[10px] font-mono font-bold bg-[#f1f5f9] dark:bg-[#1e293b] px-1.5 py-0.5 rounded">{user?.projects?.length || 0}</span>
+                    </Link>
+                    <Link
+                        href="/dashboard/create-project"
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#059669] dark:text-[#34d399] hover:bg-[#ecfdf5] dark:hover:bg-[#064e3b]/20 transition-colors"
+                    >
+                        <Plus size={14} /> <span>New Workspace</span>
+                    </Link>
+                </div>
+
+                {/* Navigation Links */}
+                <div className="flex-1 px-3 py-3 space-y-1 overflow-y-auto">
+                    <p className="px-3 pb-1.5 text-[10px] uppercase font-bold tracking-wider text-[#94a3b8] dark:text-[#64748b]">Console Controls</p>
+                    {navItems.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = isProjectDetail && currentTab === item.tab;
+                        return (
+                            <button
+                                key={item.tab}
+                                type="button"
+                                onClick={() => handleNavClick(item.tab)}
+                                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer text-left ${isActive
+                                    ? "bg-[#ecfdf5] dark:bg-[#064e3b]/30 text-[#064e3b] dark:text-[#34d399] font-bold border border-[#059669]/20"
+                                    : "text-[#475569] dark:text-[#94a3b8] hover:bg-[#f8fafc] dark:hover:bg-[#131d2a] hover:text-[#0f172a] dark:hover:text-[#f8fafc] border border-transparent"
+                                    }`}
+                            >
+                                <Icon size={16} className={isActive ? "text-[#059669] dark:text-[#34d399]" : "text-[#64748b] dark:text-[#64748b]"} />
+                                <span>{item.label}</span>
+                                {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#059669] dark:bg-[#34d399]" />}
+                            </button>
+                        );
+                    })}
+                </div>
+
+                {/* Footer User Profile & Sign Out */}
+                <div className="p-3 border-t border-[#f1f5f9] dark:border-[#1e293b] bg-[#fafafa] dark:bg-[#09101a]">
+                    <div className="flex items-center justify-between p-2 rounded-lg">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                            {avatarUrl && !imgError ? (
+                                <img
+                                    src={avatarUrl}
+                                    alt={user?.full_name || "Profile"}
+                                    onError={() => setImgError(true)}
+                                    className="w-8 h-8 rounded-full object-cover border-2 border-[#059669] shrink-0"
+                                />
+                            ) : (
+                                <div className="w-8 h-8 rounded-full bg-[#064e3b] text-white flex items-center justify-center text-xs font-bold uppercase shrink-0">
+                                    {user?.full_name?.charAt(0) || user?.email?.charAt(0) || "U"}
+                                </div>
+                            )}
+                            <div className="min-w-0">
+                                <p className="text-xs font-bold text-[#0f172a] dark:text-[#f8fafc] truncate">{user?.full_name || "Merchant"}</p>
+                                <p className="text-[10px] text-[#059669] dark:text-[#34d399] font-semibold truncate font-mono">
+                                    {user?.request_available ?? 200} reqs left
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => setShowSignOut(true)}
+                            className="p-1.5 text-[#64748b] hover:text-[#e11d48] rounded hover:bg-[#fff1f2] dark:hover:bg-[#e11d48]/10 transition-colors cursor-pointer"
+                            title="Sign out"
+                        >
+                            <LogOut size={15} />
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <AlertDialog open={showSignOut} onOpenChange={setShowSignOut}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Sign out of Yegna Pay?</AlertDialogTitle>
+                        <AlertDialogDescription>Your active session will be closed on this device.</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleSignOutConfirm}>Sign Out</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </>
     );
 }

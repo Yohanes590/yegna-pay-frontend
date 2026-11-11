@@ -1,118 +1,143 @@
-"use client"
-import { PieChart, LineChart, Line, XAxis, YAxis, Tooltip, Legend, Pie, ResponsiveContainer } from 'recharts';
-import { Check, TriangleAlert } from 'lucide-react';
-import { useUserData } from '@/lib/hooks/user_data_fetch';
-import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+"use client";
 
-export default function DashboardChartRender() {
-    const [ChartData, setChartData] = useState<object[]>([])
-    const [verifiedTransactions, setVerifiedTransactions] = useState<any>(0)
-    const [unVerifiedTransaction, setUnVerifiedTransaction] = useState<any>(0)
-    const data = ChartData
+import { useState, useMemo } from "react";
+import {
+    AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend
+} from "recharts";
+import { Calendar, BarChart3, AlertCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
-    const VerifiedData = [
-        { name: 'Verified', value: verifiedTransactions },
-        { name: 'Unverified', value: unVerifiedTransaction },
-    ]
+interface ChartProps {
+    transactions: any[];
+}
 
-    const { user, function: fetchTransactionData } = useUserData()
-    const pathName = usePathname()
-    
-    useEffect(() => {
-        fetchTransactionData()
-    }, [fetchTransactionData])
+export default function DashboardChartRender({ transactions }: ChartProps) {
+    const [metricType, setMetricType] = useState<"volume" | "count">("volume");
 
-    useEffect(() => {
-        const extractedID = pathName.split("/")[2];
-        const TransactionData = user?.projects.find((projects: any) => projects?.id == extractedID);
-        const transactions = TransactionData?.transactions || [];
-        const DateFormatter = new Intl.DateTimeFormat('en-US', { month: 'long' });
-        const chartDate = transactions.map((t: any) => ({
-            name: DateFormatter.format(new Date(t.created_at)),
-            sales: Number(t.transaction_amount || 0)
-        }));
+    const chartData = useMemo(() => {
+        if (!transactions || transactions.length === 0) return [];
 
-        setChartData(chartDate);
+        const grouped: Record<string, { date: string; volume: number; verified: number; failed: number }> = {};
 
-        const verifiedCount = transactions.filter((t: any) => t.transaction_status === "verified").length;
-        const rejectedCount = transactions.filter((t: any) => t.transaction_status === "rejected").length;
+        transactions.forEach((t: any) => {
+            const dateObj = new Date(t.created_at || Date.now());
+            const key = isNaN(dateObj.getTime())
+                ? "Recent"
+                : new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(dateObj);
 
-        setVerifiedTransactions(verifiedCount);
-        setUnVerifiedTransaction(rejectedCount);
+            if (!grouped[key]) {
+                grouped[key] = { date: key, volume: 0, verified: 0, failed: 0 };
+            }
 
-    }, [pathName, user])
+            const amount = Number(t.transaction_amount || 0);
+            grouped[key].volume += amount;
+            if (t.transaction_status === "verified") grouped[key].verified += 1;
+            else if (t.transaction_status === "rejected") grouped[key].failed += 1;
+        });
+
+        return Object.values(grouped);
+    }, [transactions]);
 
     return (
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6 cursor-default">
-            
-            <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl shadow-xl p-6">
-                <div className="mb-6">
-                    <h1 className="text-lg font-bold text-[#F8FAFC]">Monthly Revenue Data</h1>
-                    <p className="text-xs text-[#94A3B8] font-medium mt-0.5">Aggregated incoming volumes</p>
+        <Card className="border-[#e2e8f0] dark:border-[#1e293b] bg-white dark:bg-[#0c141f] shadow-xs">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 gap-4">
+                <div>
+                    <CardTitle className="text-base font-bold text-[#0f172a] dark:text-[#f8fafc]">
+                        Verification Activity & Volume
+                    </CardTitle>
+                    <CardDescription className="text-xs text-[#64748b] dark:text-[#94a3b8]">
+                        Real-time settlement throughput across Ethiopian banking rails
+                    </CardDescription>
                 </div>
-                <div className="h-[300px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={data}>
-                            <XAxis dataKey="name" stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} />
-                            <YAxis stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} />
-                            <Tooltip 
-                                contentStyle={{ backgroundColor: '#020617', border: '1px solid #1E293B', borderRadius: '12px' }}
-                                itemStyle={{ color: '#10B981' }}
-                            />
-                            <Legend wrapperStyle={{ fontSize: '12px', color: '#94A3B8' }} />
-                            <Line type="monotone" dataKey="sales" stroke='#10B981' strokeWidth={3} dot={{ r: 4, fill: '#0F172A', stroke: '#10B981', strokeWidth: 2 }} activeDot={{ r: 6, fill: '#10B981' }} />
-                        </LineChart>
-                    </ResponsiveContainer>
+                <div className="flex items-center gap-1.5 p-1 bg-[#f1f5f9] dark:bg-[#131d2a] rounded-lg border border-[#e2e8f0] dark:border-[#1e293b] self-start sm:self-auto">
+                    <Button
+                        size="sm"
+                        variant={metricType === "volume" ? "default" : "ghost"}
+                        onClick={() => setMetricType("volume")}
+                        className={`h-7 px-3 text-xs ${metricType === "volume" ? "bg-[#064e3b] text-white" : "text-[#64748b] dark:text-[#94a3b8]"}`}
+                    >
+                        Volume (ETB)
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant={metricType === "count" ? "default" : "ghost"}
+                        onClick={() => setMetricType("count")}
+                        className={`h-7 px-3 text-xs ${metricType === "count" ? "bg-[#064e3b] text-white" : "text-[#64748b] dark:text-[#94a3b8]"}`}
+                    >
+                        Requests
+                    </Button>
                 </div>
-            </div>
+            </CardHeader>
 
-            <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl shadow-xl p-6 flex flex-col items-center xl:items-start text-center xl:text-left">
-                <div className="mb-6 w-full">
-                    <h1 className="text-lg font-bold text-[#F8FAFC]">Payment Verification</h1>
-                    <p className="text-xs text-[#94A3B8] font-medium mt-0.5">Real-time anomaly metrics</p>
-                </div>
-
-                <div className="h-[240px] w-full flex items-center justify-center">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                            <Pie 
-                                data={VerifiedData}
-                                fill='#10B981'
-                                label={({ value }) => value > 0 ? value : ''}
-                                stroke='#0F172A'
-                                strokeWidth={4}
-                            />
-                            <Tooltip 
-                                contentStyle={{ backgroundColor: '#020617', border: '1px solid #1E293B', borderRadius: '8px' }}
-                                itemStyle={{ color: '#F8FAFC' }}
-                            />
-                        </PieChart>
-                    </ResponsiveContainer>
-                </div>
-
-                <div className="flex gap-8 mt-auto w-full justify-center xl:justify-start pt-4 border-t border-[#1E293B]">
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-[#10B981]/10 border border-[#10B981]/20 flex items-center justify-center text-[#34D399]">
-                            <Check size={16} />
+            <CardContent>
+                {chartData.length === 0 ? (
+                    <div className="h-[280px] flex flex-col items-center justify-center text-center p-6 bg-[#f8fafc] dark:bg-[#0c141f] rounded-xl border border-dashed border-[#cbd5e1] dark:border-[#1e293b]">
+                        <div className="w-10 h-10 rounded-full bg-[#f1f5f9] dark:bg-[#131d2a] flex items-center justify-center text-[#94a3b8] mb-3">
+                            <BarChart3 size={20} />
                         </div>
-                        <div className="text-left">
-                            <h3 className="text-[10px] uppercase tracking-widest font-bold text-[#64748B]">Verified</h3>
-                            <span className='font-bold text-[#F8FAFC]'>{VerifiedData[0].value}</span>
-                        </div>
+                        <h4 className="text-sm font-bold text-[#0f172a] dark:text-[#f8fafc]">No Verification Activity Recorded</h4>
+                        <p className="text-xs text-[#64748b] dark:text-[#94a3b8] max-w-sm mt-1">
+                            Once your application sends verification requests through the Yegna Pay API, activity analytics will automatically plot here.
+                        </p>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
-                            <TriangleAlert size={16} />
-                        </div>
-                        <div className="text-left">
-                            <h3 className="text-[10px] uppercase tracking-widest font-bold text-[#64748B]">Unverified</h3>
-                            <span className='font-bold text-[#F8FAFC]'>{VerifiedData[1].value}</span>
-                        </div>
+                ) : (
+                    <div className="h-[280px] w-full pt-2">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                <defs>
+                                    <linearGradient id="emeraldGradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#059669" stopOpacity={0.25} />
+                                        <stop offset="95%" stopColor="#059669" stopOpacity={0.0} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                                <XAxis dataKey="date" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
+                                <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: '#0f172a',
+                                        borderRadius: '8px',
+                                        border: '1px solid #1e293b',
+                                        color: '#ffffff',
+                                        fontSize: '12px'
+                                    }}
+                                    itemStyle={{ color: '#34d399' }}
+                                />
+                                {metricType === "volume" ? (
+                                    <Area
+                                        type="monotone"
+                                        dataKey="volume"
+                                        name="Settled Volume (ETB)"
+                                        stroke="#059669"
+                                        strokeWidth={2.5}
+                                        fill="url(#emeraldGradient)"
+                                    />
+                                ) : (
+                                    <>
+                                        <Area
+                                            type="monotone"
+                                            dataKey="verified"
+                                            name="Verified Requests"
+                                            stroke="#059669"
+                                            strokeWidth={2}
+                                            fill="url(#emeraldGradient)"
+                                        />
+                                        <Area
+                                            type="monotone"
+                                            dataKey="failed"
+                                            name="Rejected Requests"
+                                            stroke="#e11d48"
+                                            strokeWidth={2}
+                                            fill="none"
+                                        />
+                                    </>
+                                )}
+                            </AreaChart>
+                        </ResponsiveContainer>
                     </div>
-                </div>
-            </div>
-
-        </div>
-    )
+                )}
+            </CardContent>
+        </Card>
+    );
 }

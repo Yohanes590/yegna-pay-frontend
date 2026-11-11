@@ -1,42 +1,33 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Calendar, Clock, ChevronRight, Tag, Bookmark } from "lucide-react";
-import { BLOG_POSTS } from "../blog"; // Adjust path based on your file structure
-import CodeBlock from "./code-block";
+import { Calendar, Clock, ChevronRight } from "lucide-react";
+import { BLOG_POSTS } from "../blog";
+import ArticleContent from "./article-content";
 
 interface Props {
     params: Promise<{ slug: string }>;
 }
 
-// Global deterministic URL slugifier helper
 const getSlug = (title: string) =>
     title
         .toLowerCase()
         .replace(/[^a-z0-9\s-]/g, "")
         .replace(/\s+/g, "-");
 
-/**
- * 1. SSG Optimization: generateStaticParams
- * Instructs Next.js to pre-compile these HTML nodes during production build pipelines
- */
 export async function generateStaticParams() {
     return BLOG_POSTS.map((post) => ({
         slug: getSlug(post.title),
     }));
 }
 
-/**
- * 2. Search Engine Optimization: generateMetadata
- * Compiles unique structural metadata headers dynamically for crawling bots
- */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params;
     const post = BLOG_POSTS.find((p) => getSlug(p.title) === slug);
 
     if (!post) return {};
 
-    const siteUrl = "https://yegnapay.com"; // Swap with production host domain
+    const siteUrl = "https://yegnapay.com";
     const articleUrl = `${siteUrl}/blog/${slug}`;
 
     return {
@@ -63,34 +54,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
-/**
- * 3. Server Core Page Component
- */
 export default async function BlogDetails({ params }: Props) {
     const { slug } = await params;
     const post = BLOG_POSTS.find((p) => getSlug(p.title) === slug);
 
-    // If the record parameter isn't found, trigger the native global Next.js 404 router
     if (!post) {
         notFound();
     }
 
     return (
         <div className="min-h-screen bg-[#020617] text-slate-300 font-sans antialiased selection:bg-emerald-500/20 pb-32">
-
-            {/* Atmospheric background element */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[400px] bg-gradient-to-b from-emerald-500/5 to-transparent blur-[120px] pointer-events-none" />
 
             <div className="max-w-3xl mx-auto px-6 pt-28 relative z-10">
-
-                {/* Clean Breadcrumb Trail */}
                 <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-medium text-slate-500 mb-10">
                     <Link href="/blog" className="hover:text-emerald-400 transition-colors">Blog</Link>
                     <ChevronRight size={12} className="text-slate-600" />
                     <span className="text-slate-400 truncate max-w-[250px] sm:max-w-none">{post.title}</span>
                 </nav>
 
-                {/* Semantic Article Wrapper */}
                 <article>
                     <header className="space-y-4 mb-8">
                         <div className="flex flex-wrap items-center gap-3">
@@ -100,19 +82,17 @@ export default async function BlogDetails({ params }: Props) {
                             <div className="flex items-center gap-4 text-xs font-medium text-slate-500">
                                 <span className="flex items-center gap-1.5">
                                     <Calendar size={13} />
-                                    <time dateTime={new Date(post.date).toISOString().split('T')}>{post.date}</time>
+                                    <time dateTime={new Date(post.date).toISOString().split('T')[0]}>{post.date}</time>
                                 </span>
                                 <span className="flex items-center gap-1.5"><Clock size={13} /> {post.readingTime}</span>
                             </div>
                         </div>
 
-                        {/* Highly-Critical Semantic H1 Entry Point */}
                         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-[1.15]">
                             {post.title}
                         </h1>
                     </header>
 
-                    {/* Team Profile Block */}
                     <div className="flex items-center justify-between border-y border-slate-800/80 py-4 mb-12">
                         <div className="flex items-center gap-3">
                             <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-emerald-400 flex items-center justify-center font-bold text-slate-950 shadow-inner">
@@ -130,62 +110,9 @@ export default async function BlogDetails({ params }: Props) {
                         </div>
                     </div>
 
-                    {/* Post Content Sections */}
-                    <div className="space-y-8 text-slate-300 text-[16px] sm:text-[17px] leading-relaxed">
-
-                        {/* Excerpt Block */}
-                        <p className="text-lg text-slate-200 font-medium border-l-2 border-emerald-500 pl-5 my-6 py-1 bg-slate-900/40 rounded-r-xl leading-relaxed">
-                            {post.excerpt}
-                        </p>
-
-                        {/* Content Preview Paragraph Loop */}
-                        <div className="space-y-6">
-                            {post.contentPreview.map((paragraph, index) => (
-                                <p key={index} className="text-slate-300 font-normal">
-                                    {paragraph}
-                                </p>
-                            ))}
-                        </div>
-
-                        {/* Technical Highlights Section */}
-                        {post.highlights && post.highlights.length > 0 && (
-                            <section className="my-8 p-6 rounded-2xl bg-[#090f1e]/60 border border-slate-800/80" aria-label="Key Highlights">
-                                <h3 className="text-sm font-semibold tracking-wider uppercase text-slate-400 mb-4 flex items-center gap-2">
-                                    <Bookmark size={14} className="text-emerald-400" /> Key Engineering Highlights
-                                </h3>
-                                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                                    {post.highlights.map((highlight, index) => (
-                                        <li key={index} className="flex items-start gap-2 text-slate-300">
-                                            <span className="text-emerald-400 mt-1 font-bold" aria-hidden="true">✓</span>
-                                            <span>{highlight}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </section>
-                        )}
-
-                        {/* Isolated Client Component Code Snippet */}
-                        {/* <CodeBlock slug={slug} /> */}
-
-                        {/* Tags Infrastructure Layout */}
-                        {post.tags && post.tags.length > 0 && (
-                            <footer className="pt-4 flex flex-wrap items-center gap-2">
-                                <Tag size={13} className="text-slate-500 mr-1" aria-hidden="true" />
-                                {post.tags.map((tag, index) => (
-                                    <span
-                                        key={index}
-                                        className="text-xs font-medium text-slate-400 bg-slate-900 border border-slate-800/60 px-2.5 py-1 rounded-lg"
-                                    >
-                                        #{tag}
-                                    </span>
-                                ))}
-                            </footer>
-                        )}
-
-                    </div>
+                    <ArticleContent post={post} />
                 </article>
 
-                {/* Outer Document Footer Metadata */}
                 <div className="mt-16 pt-8 border-t border-slate-800 flex flex-col sm:flex-row gap-4 justify-between items-center text-xs font-medium text-slate-500">
                     <span>© 2026 Yegna Pay Inc. All rights reserved.</span>
                     <a
@@ -197,7 +124,6 @@ export default async function BlogDetails({ params }: Props) {
                         Read Technical Documentation →
                     </a>
                 </div>
-
             </div>
         </div>
     );

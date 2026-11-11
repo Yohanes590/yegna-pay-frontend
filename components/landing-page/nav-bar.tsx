@@ -1,132 +1,139 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ChevronDown, Terminal, Database, Menu, X, ArrowRight } from "lucide-react";
+import { Terminal, Database, Menu, X, ArrowUpRight, Activity } from "lucide-react";
+import MobileNavDrawer from "./mobile-nav-drawer";
 
 export default function NavigationBarRender() {
     const pathname = usePathname();
-    const [isDevHovered, setIsDevHovered] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-    const { scrollY } = useScroll();
-    const yTransform = useTransform(scrollY, [0, 50], [0, 1]);
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 20);
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
-    // Active state tracker for /blog or /blog/[slug]
     const isBlogActive = pathname.startsWith("/blog");
 
     return (
-        <motion.div
-            className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-xl transition-all duration-300 border-b ${yTransform.get() > 0
-                ? "bg-[#020617]/80 border-[#1E293B] shadow-[0_4px_30px_rgba(0,0,0,0.5)]"
-                : "bg-transparent border-transparent"
-                }`}
+        <header
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+                scrolled
+                    ? "bg-[#060a0f]/90 backdrop-blur-md border-b border-white/[0.08] shadow-[0_12px_40px_-15px_rgba(0,0,0,0.8)]"
+                    : "bg-transparent border-b border-white/[0.04]"
+            }`}
         >
-            <div className="max-w-7xl mx-auto h-20 px-6 flex items-center justify-between">
-                <div className="flex items-center gap-12">
-                    <Link href="/" className="flex items-center gap-2 group cursor-pointer z-50">
-                        <h1 className="font-extrabold text-2xl tracking-tight text-[#F8FAFC]">
-                            Yegna<span className="text-[#10B981]">Pay</span>
-                        </h1>
+            <div className="max-w-7xl mx-auto h-20 px-6 sm:px-8 flex items-center justify-between">
+                <div className="flex items-center gap-10">
+                    <Link href="/" className="flex items-center gap-3 group">
+                        <div className="relative w-9 h-9 rounded-lg bg-gradient-to-br from-[#064e3b] to-[#022c22] border border-[#10b981]/40 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.15)] group-hover:border-[#10b981] transition-all">
+                            <span className="font-mono text-xs font-black text-[#34d399] tracking-tighter">YP</span>
+                            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="font-sans font-black text-lg tracking-tight text-white flex items-center gap-1">
+                                YEGNA<span className="text-[#34d399] font-light">PAY</span>
+                            </span>
+                            <span className="text-[9px] uppercase tracking-[0.22em] text-[#64748b] font-medium -mt-1">
+                                National Clearing Engine
+                            </span>
+                        </div>
                     </Link>
 
+                    <div className="hidden xl:flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#022c22]/40 border border-[#10b981]/25 text-[11px] font-mono text-[#34d399]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#10b981] animate-ping" />
+                        <span className="text-[10px] uppercase tracking-wider font-semibold">4 Banking Rails Online</span>
+                    </div>
+
                     <nav className="hidden md:flex items-center gap-1">
-                        <Link href="/#about" className="px-4 py-2 text-sm font-semibold text-[#94A3B8] hover:text-[#F8FAFC] bg-transparent hover:bg-[#0F172A] rounded-lg transition-all duration-200">
-                            Platform
-                        </Link>
-
-                        {/* Developer Submenu Container */}
-                        <div
-                            className="relative py-2"
-                            onMouseEnter={() => setIsDevHovered(true)}
-                            onMouseLeave={() => setIsDevHovered(false)}
+                        <Link
+                            href="/#product-showcase"
+                            className="px-3.5 py-1.5 text-xs uppercase tracking-widest font-semibold text-[#94a3b8] hover:text-white hover:bg-white/[0.04] rounded transition-colors"
                         >
-                            <button className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 flex items-center gap-1.5 ${isDevHovered ? 'text-[#F8FAFC] bg-[#0F172A]' : 'text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#0F172A]'}`}>
-                                Developers
-                                <ChevronDown size={14} className={`transition-transform duration-200 ${isDevHovered ? 'rotate-180 text-[#10B981]' : 'text-[#64748B]'}`} />
-                            </button>
-
-                            <div className={`absolute left-0 top-[90%] pt-2 w-72 transition-all duration-300 origin-top-left ${isDevHovered ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
-                                <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl shadow-xl p-2 flex flex-col gap-1 relative overflow-hidden">
-                                    <Link href="/documentation" className="flex gap-4 p-3 rounded-xl hover:bg-[#020617] transition-colors group">
-                                        <div className="w-10 h-10 rounded-lg bg-[#020617] border border-[#1E293B] flex items-center justify-center text-[#94A3B8] group-hover:border-[#10B981]/50 group-hover:text-[#10B981] group-hover:shadow-[0_0_15px_rgba(16,185,129,0.2)] transition-all">
-                                            <Terminal size={18} />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-bold text-[#F8FAFC]">API Documentation</p>
-                                            <p className="text-xs text-[#94A3B8] mt-0.5">Integration guides & SDKs</p>
-                                        </div>
-                                    </Link>
-
-                                    <Link href="/connected-banks" className="flex gap-4 p-3 rounded-xl hover:bg-[#020617] transition-colors group">
-                                        <div className="w-10 h-10 rounded-lg bg-[#020617] border border-[#1E293B] flex items-center justify-center text-[#94A3B8] group-hover:border-[#10B981]/50 group-hover:text-[#10B981] group-hover:shadow-[0_0_15px_rgba(16,185,129,0.2)] transition-all">
-                                            <Database size={18} />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-bold text-[#F8FAFC]">Bank Nodes</p>
-                                            <p className="text-xs text-[#94A3B8] mt-0.5">Live core banking connections</p>
-                                        </div>
-                                    </Link>
-                                </div>
-                            </div>
-                        </div>
-
-                        <Link href="/#pricing" className="px-4 py-2 text-sm font-semibold text-[#94A3B8] hover:text-[#F8FAFC] bg-transparent hover:bg-[#0F172A] rounded-lg transition-all duration-200">
+                            Console
+                        </Link>
+                        <Link
+                            href="/#bank-infrastructure"
+                            className="px-3.5 py-1.5 text-xs uppercase tracking-widest font-semibold text-[#94a3b8] hover:text-white hover:bg-white/[0.04] rounded transition-colors"
+                        >
+                            Networks
+                        </Link>
+                        <Link
+                            href="/#developer-api"
+                            className="px-3.5 py-1.5 text-xs uppercase tracking-widest font-semibold text-[#94a3b8] hover:text-white hover:bg-white/[0.04] rounded transition-colors"
+                        >
+                            API Docs
+                        </Link>
+                        <Link
+                            href="/#pricing"
+                            className="px-3.5 py-1.5 text-xs uppercase tracking-widest font-semibold text-[#94a3b8] hover:text-white hover:bg-white/[0.04] rounded transition-colors"
+                        >
                             Pricing
                         </Link>
-
-                        {/* Clean active dynamic state applied here */}
                         <Link
                             href="/blog"
-                            className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${isBlogActive
-                                ? "text-[#10B981] bg-[#10B981]/10 border border-[#10B981]/20 shadow-[0_0_15px_rgba(16,185,129,0.05)]"
-                                : "text-[#94A3B8] hover:text-[#F8FAFC] bg-transparent hover:bg-[#0F172A]"
-                                }`}
+                            className={`px-3.5 py-1.5 text-xs uppercase tracking-widest font-semibold rounded transition-colors ${
+                                isBlogActive
+                                    ? "text-[#34d399] bg-[#064e3b]/30 border border-[#10b981]/30"
+                                    : "text-[#94a3b8] hover:text-white hover:bg-white/[0.04]"
+                            }`}
                         >
-                            Blog
+                            Dispatches
                         </Link>
                     </nav>
                 </div>
 
-                {/* Right side CTA Action Links */}
-                <div className="hidden md:flex items-center gap-4">
-                    <Link href="/sign-in" className="px-5 py-2.5 text-sm font-bold text-[#94A3B8] hover:text-[#F8FAFC] transition-colors">
+                <div className="hidden sm:flex items-center gap-4">
+                    <Link
+                        href="/documentation"
+                        className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-[#94a3b8] hover:text-[#34d399] transition-colors"
+                    >
+                        <span>DOCS</span>
+                        <ArrowUpRight size={13} />
+                    </Link>
+
+                    <div className="h-4 w-px bg-white/10" />
+
+                    <Link
+                        href="/sign-in"
+                        className="px-4 py-2 text-xs uppercase tracking-widest font-semibold text-[#cbd5e1] hover:text-white hover:bg-white/[0.04] rounded-lg transition-colors"
+                    >
                         Sign In
                     </Link>
-                    <Link href="/sign-up" className="group flex items-center gap-2 px-5 py-2.5 text-sm font-bold bg-[#10B981] text-[#020617] rounded-lg hover:bg-[#34D399] transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] active:scale-95">
-                        Start Building <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+
+                    <Link
+                        href="/sign-up"
+                        className="relative group inline-flex items-center justify-center px-4 py-2 text-xs uppercase tracking-widest font-bold text-white rounded-lg overflow-hidden transition-all"
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#059669] to-[#10b981] group-hover:from-[#10b981] group-hover:to-[#34d399] transition-all" />
+                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-white/10" />
+                        <span className="relative z-10 flex items-center gap-1.5">
+                            Start Building
+                        </span>
                     </Link>
                 </div>
 
-                <div className="md:hidden flex items-center z-50">
-                    <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-[#F8FAFC] p-2 hover:bg-[#0F172A] rounded-lg transition-colors">
-                        {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                <div className="flex md:hidden items-center gap-3">
+                    <button
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        className="w-10 h-10 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center text-[#94a3b8] hover:text-white"
+                        aria-label="Toggle navigation menu"
+                    >
+                        {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
                     </button>
                 </div>
             </div>
 
-            {/* Mobile Menu */}
-            {mobileMenuOpen && (
-                <div className="md:hidden absolute top-0 left-0 w-full h-screen bg-[#020617] pt-24 px-6 flex flex-col gap-6 z-40 border-b border-[#1E293B]">
-                    <Link onClick={() => setMobileMenuOpen(false)} href="/#about" className="text-2xl font-bold text-[#F8FAFC] border-b border-[#1E293B] pb-4">Platform Features</Link>
-                    <Link onClick={() => setMobileMenuOpen(false)} href="/documentation" className="text-2xl font-bold text-[#F8FAFC] border-b border-[#1E293B] pb-4">API Documentation</Link>
-                    <Link onClick={() => setMobileMenuOpen(false)} href="/#pricing" className="text-2xl font-bold text-[#F8FAFC] border-b border-[#1E293B] pb-4">Pricing Plans</Link>
-                    <Link
-                        onClick={() => setMobileMenuOpen(false)}
-                        href="/blog"
-                        className={`text-2xl font-bold border-b border-[#1E293B] pb-4 ${isBlogActive ? 'text-[#10B981]' : 'text-[#F8FAFC]'}`}
-                    >
-                        Blog Insights
-                    </Link>
-
-                    <div className="flex flex-col gap-4 mt-4">
-                        <Link onClick={() => setMobileMenuOpen(false)} href="/sign-in" className="w-full py-4 text-center text-lg font-bold text-[#F8FAFC] bg-[#0F172A] border border-[#1E293B] rounded-xl">Sign In</Link>
-                        <Link onClick={() => setMobileMenuOpen(false)} href="/sign-up" className="w-full py-4 text-center text-lg font-bold text-[#020617] bg-[#10B981] rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.3)]">Create Account</Link>
-                    </div>
-                </div>
-            )}
-        </motion.div>
+            <MobileNavDrawer
+                isOpen={mobileMenuOpen}
+                onClose={() => setMobileMenuOpen(false)}
+            />
+        </header>
     );
 }

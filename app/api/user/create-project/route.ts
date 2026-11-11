@@ -1,53 +1,21 @@
 import { NextResponse } from "next/server";
-import prisma from "@/app/backend-service/prisma";
-import { DecodeToken } from "@/app/backend-service/jwt";
+import { getBackendUrl } from "@/lib/backend-url";
 
 export async function POST(req: Request) {
-    const body = await req.json()
+    try {
+        const body = await req.json();
+        const headers: Record<string, string> = { "Content-Type": "application/json" };
+        const cookie = req.headers.get("cookie");
+        if (cookie) headers["cookie"] = cookie;
 
-    const { token, apiKey, call_back, discription, project_name, date_expire, receiver_name } = body
-    if (!token) {
-        return NextResponse.json({
-            message: "un authorized access",
-            success: false,
-        })
-    } else {
-        const tokenDecoding = await DecodeToken(token)
-        if (tokenDecoding.success == false) {
-            return NextResponse.json({
-                message: "please login again",
-                success: false,
-            })
-        } else {
-            const userId = tokenDecoding?.data?.id
-            try {
-                await prisma.projects.create({
-                    data: {
-                        api_sec_key: apiKey,
-                        call_back_url: call_back,
-                        project_description: discription,
-                        project_name: project_name,
-                        ProjectBalance: "100",
-                        before_expires: date_expire,
-                        receiver_name: receiver_name,
-                        user: {
-                            connect: { id: userId }
-                        }
-                    },
-                },
-                )
-                return NextResponse.json({
-                    message: "project created successfully",
-                    success: true
-                })
-            } catch (error: any) {
-                return NextResponse.json({
-                    message: error.message,
-                    success: false
-                })
-            }
-
-        }
+        const backendRes = await fetch(`${getBackendUrl()}/user/create-project`, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(body),
+        });
+        const data = await backendRes.json();
+        return NextResponse.json(data, { status: backendRes.status });
+    } catch {
+        return NextResponse.json({ success: false, message: "Backend connection error" }, { status: 502 });
     }
-
 }

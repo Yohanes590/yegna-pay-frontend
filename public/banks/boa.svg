@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" fill="none">
+  <rect width="400" height="120" rx="16" fill="#0A1E14" />
+  <g transform="translate(24, 20)">
+    <!-- BOA Icon Globe / Emblem -->
+    <circle cx="40" cy="40" r="36" fill="#064E3B" stroke="#10B981" stroke-width="2.5" />
+    <path d="M 40 8 A 32 32 0 0 1 72 40 A 32 32 0 0 1 40 72 A 32 32 0 0 1 8 40 A 32 32 0 0 1 40 8 Z" fill="none" stroke="#34D399" stroke-width="1.5" stroke-dasharray="4 2" />
+    <path d="M 16 40 Q 40 20 64 40 Q 40 60 16 40 Z" fill="#F59E0B" opacity="0.9" />
+    <path d="M 40 16 Q 60 40 40 64 Q 20 40 40 16 Z" fill="#10B981" opacity="0.85" />
+    <circle cx="40" cy="40" r="8" fill="#F8FAFC" />
+  </g>
+  <g transform="translate(120, 48)">
+    <text font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="28" fill="#FFFFFF" letter-spacing="2">BANK OF AFRICA</text>
+    <text y="24" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="12" fill="#34D399" letter-spacing="3.5">GROUPE BANK OF AFRICA</text>
+  </g>
+</svg>
+

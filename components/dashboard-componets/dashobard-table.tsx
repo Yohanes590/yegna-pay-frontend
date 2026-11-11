@@ -1,9 +1,10 @@
 "use client"
 
-import { Check, TriangleAlert, BadgeAlertIcon } from "lucide-react"
+import { Check, TriangleAlert, BadgeAlertIcon, ExternalLink } from "lucide-react"
 import { useUserData } from "@/lib/hooks/user_data_fetch";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { formatTransactionId, getReceiptUrl } from "@/lib/utils";
 export default function DashboardTable() {
 
     const pathName = usePathname()
@@ -37,6 +38,7 @@ export default function DashboardTable() {
                             <th className="px-4 py-4 font-medium">Amount</th>
                             <th className="px-4 py-4 font-medium">Method</th>
                             <th className="px-4 py-4 font-medium text-center">Trust Status</th>
+                            <th className="px-4 py-4 font-medium text-center">Receipt</th>
                             <th className="px-4 py-4 font-medium text-right">Action</th>
                         </tr>
                     </thead>
@@ -45,7 +47,7 @@ export default function DashboardTable() {
                             const status = data.transaction_status.toLowerCase();
                             return (
                                 <tr key={index} className="group hover:bg-slate-50/80 transition-colors">
-                                    <td className="px-4 py-4 text-sm font-mono text-slate-600 uppercase">{data.transaction_id}</td>
+                                    <td className="px-4 py-4 text-sm font-mono text-slate-600 uppercase">{formatTransactionId(data.transaction_id)}</td>
                                     <td className="px-4 py-4 text-sm font-semibold text-slate-700 uppercase">{data.from}</td>
                                     <td className="px-4 py-4 text-sm text-slate-600 font-medium uppercase">{data.transaction_amount} {data.currency}</td>
                                     <td className="px-4 py-4 text-sm text-slate-500">{data.method}</td>
@@ -59,6 +61,17 @@ export default function DashboardTable() {
                                             {status === "rejected" && <TriangleAlert className="w-3.5 h-3.5" />}
                                             <span className="capitalize">{data.transaction_status}</span>
                                         </div>
+                                    </td>
+                                    <td className="px-4 py-4 text-center">
+                                        <a
+                                            href={getReceiptUrl(data)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:underline"
+                                        >
+                                            <ExternalLink size={12} />
+                                            <span>Receipt</span>
+                                        </a>
                                     </td>
                                     <td className="px-4 py-4 text-right">
                                         <button className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors hover:underline">

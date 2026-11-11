@@ -1,24 +1,25 @@
-"use client"
-import HeroSectionRender from "@/components/landing-page/hero-section";
+"use client";
+
 import NavigationBarRender from "@/components/landing-page/nav-bar";
-import AboutPageRender from "@/components/landing-page/about-page";
-import PricingRender from "@/components/landing-page/pricing-section";
-import HowItWorks from "@/components/landing-page/how-it-works";
-import ContactPage from "@/components/landing-page/contact-page";
+import HeroSectionRender from "@/components/landing-page/hero-section";
+import ProductShowcase from "@/components/landing-page/product-showcase";
+import BankInfrastructure from "@/components/landing-page/bank-infrastructure";
+import DeveloperExperience from "@/components/landing-page/developer-experience";
+import FeaturesAndPricing from "@/components/landing-page/features-and-pricing";
+import ContactSection from "@/components/landing-page/contact-section";
 import LongFooter from "@/components/landing-page/footer";
-import BankVerification from "@/components/landing-page/connected-banks";
+
 export default function Home() {
   return (
-    <div className="root-container relative bg-slate-950 min-h-screen text-slate-50 selection:bg-blue-500/30 selection:text-blue-200">
-
+    <main className="root-container relative bg-[#060a0f] min-h-screen text-[#f1f5f9] selection:bg-[#10b981]/25 selection:text-[#34d399] overflow-x-hidden">
       <NavigationBarRender />
       <HeroSectionRender />
-      <BankVerification />
-      <AboutPageRender />
-      <PricingRender />
-      <HowItWorks />
-      <ContactPage />
+      <ProductShowcase />
+      <BankInfrastructure />
+      <DeveloperExperience />
+      <FeaturesAndPricing />
+      <ContactSection />
       <LongFooter />
-    </div>
+    </main>
   );
 }

@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "react-hot-toast";
-import Unresponsive from "@/components/un-responsive";
+import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/lib/theme-context";
+
 const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
+  display: "swap",
+  fallback: ["system-ui", "sans-serif"],
 });
 
 export const metadata: Metadata = {
@@ -71,7 +74,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/assets/Banner.jpg",
+        url: "/assets/hero-laptop-workspace.jpg",
         width: 1200,
         height: 630,
         alt: "Yegna Pay Platform",
@@ -84,7 +87,7 @@ export const metadata: Metadata = {
     title: "Yegna Pay",
     description:
       "Developer-first payment verification platform for Ethiopia.",
-    images: ["/assets/Banner.jpg"],
+    images: ["/assets/hero-laptop-workspace.jpg"],
   },
 
   alternates: {
@@ -106,16 +109,19 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${poppins.className} h-full antialiased bg-[#020617]`}
+      suppressHydrationWarning
+      className={`${poppins.className} dark h-full antialiased bg-[#060a0f]`}
     >
       <head>
         <meta name="google-site-verification" content="4OoJ6t55cvK2bVTcORgbP_2Z2tjvoIhru5DjCc0bfJY" />
       </head>
       <body
         cz-shortcut-listen="true"
-        className="min-h-full flex flex-col bg-[#020617] text-[#F8FAFC] selection:bg-[#10B981]/30 selection:text-[#34D399]">
-        <Toaster />
-        {children}
+        className="min-h-full flex flex-col bg-[#060a0f] text-[#F1F5F9] selection:bg-[#10B981]/25 selection:text-[#34D399]">
+        <ThemeProvider>
+          <Toaster />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

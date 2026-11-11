@@ -1,190 +1,174 @@
-"use client"
+"use client";
 
-import { Copy, Eye, EyeClosed, Server, Settings2 } from "lucide-react"
-import { useState, useEffect } from "react"
-import toast from "react-hot-toast"
-import cryptoRandomString from "crypto-random-string"
-import Cookies from "js-cookie"
-import { ClipLoader } from "react-spinners"
+import { useState, useEffect } from "react";
+import { Settings2, Plus, ArrowLeft, Loader2, KeyRound } from "lucide-react";
+import Link from "next/link";
+import { toast } from "sonner";
+import cryptoRandomString from "crypto-random-string";
+import Cookies from "js-cookie";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import ApiKeyField from "./api-key-field";
+
+function getLocalDateString(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+}
 
 export default function ProjectCreationRender() {
-    const [ShowApiKey, setAPIkey] = useState<boolean>(false)
-    const [GeneratedKey, setGeneratedKey] = useState<string>("")
-    const [projectName, setProjectName] = useState<string>("")
-    const [webcall_back, setCallBackURL] = useState<string>("")
-    const [Loading, setLoading] = useState<boolean>(false)
-    const [projectDiscription, setDisc] = useState<string>("")
-    const [expiresDate, setExpiresDate] = useState<string>("")
-    const [paymentReceiverName, setPaymentReceiverName] = useState<string>("")
+    const [generatedKey, setGeneratedKey] = useState<string>("");
+    const [projectName, setProjectName] = useState<string>("");
+    const [webcall_back, setCallBackURL] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(false);
+    const [projectDiscription, setDisc] = useState<string>("");
+    const [expiresDate, setExpiresDate] = useState<string>(() => getLocalDateString());
+    const [paymentReceiverName, setPaymentReceiverName] = useState<string>("");
 
     useEffect(() => {
-        const GenAPIKey = cryptoRandomString({ length: 32, type: "hex" })
-        setGeneratedKey(GenAPIKey)
-    }, [])
+        const genAPIKey = `yegna_live_${cryptoRandomString({ length: 32, type: "hex" })}`;
+        setGeneratedKey(genAPIKey);
+    }, []);
 
-    const CreateProjectHandler = async () => {
-        if (!projectName || !GeneratedKey || !projectDiscription || !expiresDate || !paymentReceiverName) {
-            toast.error("Please provide all required information")
-            return
+    const createProjectHandler = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!projectName || !generatedKey || !projectDiscription || !paymentReceiverName || !expiresDate) {
+            toast.error("Please fill in project name, receiver name, start date, and description.");
+            return;
         }
 
-        setLoading(true)
-        const CookieToken = Cookies.get("access_token")
+        setLoading(true);
+        const cookieToken = Cookies.get("access_token");
 
         try {
-            const RequestServer = await fetch("/api/user/create-project", {
+            const requestServer = await fetch("/api/user/create-project", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    token: CookieToken,
+                    token: cookieToken,
                     project_name: projectName,
-                    apiKey: GeneratedKey,
+                    apiKey: generatedKey,
                     call_back: webcall_back,
                     discription: projectDiscription,
                     date_expire: expiresDate,
+                    transaction_start_date: expiresDate,
                     receiver_name: paymentReceiverName
                 })
-            })
-            const ServerResponse = await RequestServer.json()
-            if (!RequestServer.ok) {
-                toast.error("Internal Server Error")
-            } else if (ServerResponse.success == true) {
-                toast.success(ServerResponse.message)
-                setTimeout(() => window.location.href = "/dashboard", 1000)
+            });
+            const serverResponse = await requestServer.json();
+            if (serverResponse.success === true) {
+                toast.success(serverResponse.message || "Project created successfully!");
+                setTimeout(() => window.location.href = "/dashboard", 1000);
             } else {
-                toast.error(ServerResponse.message)
+                toast.error(serverResponse.message || "Failed to create project.");
             }
-        } catch (error) {
-            toast.error("Network constraint: failed to communicate with server.")
+        } catch {
+            toast.error("Network constraint: failed to communicate with server.");
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
 
     return (
-        <div className="max-w-4xl min-h-[calc(100vh-140px)] pb-12 animate-in fade-in duration-300">
-            {/* Header */}
-            <div className="mb-10">
-                <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 bg-[#10B981]/10 border border-[#10B981]/20 rounded-xl flex items-center justify-center text-[#34D399]">
-                        <Settings2 size={20} />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl font-black text-[#F8FAFC] tracking-tight">Create Workspace</h1>
-                        <p className="text-[#94A3B8] text-sm font-medium mt-0.5">Initialize a new project environment</p>
-                    </div>
+        <div className="max-w-3xl space-y-6 pb-12">
+            <div className="flex items-center gap-3">
+                <Link href="/dashboard" className="p-2 text-[#64748b] dark:text-[#94a3b8] hover:text-[#0f172a] dark:hover:text-[#f8fafc] hover:bg-[#f1f5f9] dark:hover:bg-[#131d2a] rounded-lg">
+                    <ArrowLeft size={16} />
+                </Link>
+                <div>
+                    <h1 className="text-2xl font-black text-[#0f172a] dark:text-[#f8fafc] tracking-tight">Create New Workspace</h1>
+                    <p className="text-xs text-[#64748b] dark:text-[#94a3b8]">Configure your payment integration environment and credentials</p>
                 </div>
             </div>
 
-            <div className="w-full h-[1px] bg-[#1E293B] mb-10" />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                {/* General Settings Card */}
-                <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-6 shadow-xl space-y-6 md:col-span-2">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-[#64748B] ml-1">Project Name</label>
-                            <input
-                                value={projectName}
-                                onChange={(e) => setProjectName(e.target.value)}
-                                className="w-full bg-[#020617] border border-[#1E293B] text-[#F8FAFC] text-sm font-bold px-4 py-3 rounded-xl focus:ring-1 focus:ring-[#10B981]/50 focus:border-[#10B981] outline-none transition-all placeholder:text-[#475569] placeholder:font-medium"
-                                placeholder="e.g. Acme Ecommerce"
-                            />
+            <Card className="border-[#e2e8f0] dark:border-[#1e293b] bg-white dark:bg-[#0c141f] shadow-xs">
+                <CardHeader className="pb-3 border-b border-[#f1f5f9] dark:border-[#1e293b]">
+                    <CardTitle className="text-sm font-bold text-[#0f172a] dark:text-[#f8fafc]">Project Details</CardTitle>
+                    <CardDescription className="text-xs text-[#64748b] dark:text-[#94a3b8]">
+                        These parameters define your merchant endpoint and verification rules
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-4">
+                    <form onSubmit={createProjectHandler} className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label className="text-[11px] font-bold text-[#475569] dark:text-[#94a3b8] uppercase block mb-1">Project Name</label>
+                                <Input
+                                    value={projectName}
+                                    onChange={(e) => setProjectName(e.target.value)}
+                                    placeholder="e.g. Telebirr Ecommerce Store"
+                                    className="h-9"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="text-[11px] font-bold text-[#475569] dark:text-[#94a3b8] uppercase block mb-1">Payment Receiver Name</label>
+                                <Input
+                                    value={paymentReceiverName}
+                                    onChange={(e) => setPaymentReceiverName(e.target.value)}
+                                    placeholder="e.g. Yegna Merchant LLC"
+                                    className="h-9"
+                                    required
+                                />
+                            </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-[#64748B] ml-1">Webhook URL <span className="text-[#475569] font-medium lowercase tracking-normal">(Optional)</span></label>
-                            <input
+                        <div>
+                            <label className="text-[11px] font-bold text-[#475569] dark:text-[#94a3b8] uppercase block mb-1">
+                                Webhook Callback URL <span className="text-[#94a3b8] font-normal lowercase">(Optional)</span>
+                            </label>
+                            <Input
                                 value={webcall_back}
                                 onChange={(e) => setCallBackURL(e.target.value)}
-                                className="w-full bg-[#020617] border border-[#1E293B] text-[#F8FAFC] text-sm font-mono px-4 py-3 rounded-xl focus:ring-1 focus:ring-[#10B981]/50 focus:border-[#10B981] outline-none transition-all placeholder:text-[#475569]"
-                                placeholder="https://api.yourdomain.com/webhook"
+                                placeholder="https://api.yourdomain.com/webhooks/yegna"
+                                className="h-9 font-mono"
                             />
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-[#64748B] ml-1">Accept Payments After</label>
-                            <input
+                        <div>
+                            <label className="text-[11px] font-bold text-[#475569] dark:text-[#94a3b8] uppercase block mb-1">
+                                Transaction Eligibility Start Date
+                            </label>
+                            <Input
+                                type="date"
                                 value={expiresDate}
                                 onChange={(e) => setExpiresDate(e.target.value)}
-                                type="date"
-                                className="w-full bg-[#020617] border border-[#1E293B] text-[#F8FAFC] text-sm font-medium px-4 py-3 rounded-xl focus:ring-1 focus:ring-[#10B981]/50 focus:border-[#10B981] outline-none transition-all [&::-webkit-calendar-picker-indicator]:invert-[0.8]"
+                                className="h-9"
+                                required
+                            />
+                            <p className="text-[11px] text-[#64748b] dark:text-[#94a3b8] mt-1">
+                                Only bank transactions dated on or after this date will be eligible for verification.
+                            </p>
+                        </div>
+
+                        <div>
+                            <label className="text-[11px] font-bold text-[#475569] dark:text-[#94a3b8] uppercase block mb-1">Project Description</label>
+                            <Input
+                                value={projectDiscription}
+                                onChange={(e) => setDisc(e.target.value)}
+                                placeholder="Brief summary of payment collection flow"
+                                className="h-9"
+                                required
                             />
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-[#64748B] ml-1">Receiver Name</label>
-                            <input
-                                value={paymentReceiverName}
-                                onChange={(e) => setPaymentReceiverName(e.target.value)}
-                                placeholder="Legal Entity or Merchant Name"
-                                type="text"
-                                className="w-full bg-[#020617] border border-[#1E293B] text-[#F8FAFC] text-sm font-bold px-4 py-3 rounded-xl focus:ring-1 focus:ring-[#10B981]/50 focus:border-[#10B981] outline-none transition-all placeholder:text-[#475569] placeholder:font-medium"
-                            />
+                        <div className="pt-2">
+                            <label className="text-[11px] font-bold text-[#475569] dark:text-[#94a3b8] uppercase block mb-1">Generated Live Secret Key</label>
+                            <ApiKeyField generatedKey={generatedKey} setGeneratedKey={setGeneratedKey} />
                         </div>
-                    </div>
 
-                    <div className="space-y-2 pt-2 border-t border-[#1E293B]">
-                        <label className="text-[10px] font-bold uppercase tracking-widest text-[#64748B] ml-1 block mt-4">Project Description</label>
-                        <textarea
-                            value={projectDiscription}
-                            onChange={(e) => setDisc(e.target.value)}
-                            className="w-full bg-[#020617] border border-[#1E293B] text-[#F8FAFC] text-sm font-medium p-4 rounded-xl h-[120px] focus:ring-1 focus:ring-[#10B981]/50 focus:border-[#10B981] outline-none transition-all placeholder:text-[#475569]"
-                            placeholder="Briefly describe what this project represents..."
-                        />
-                    </div>
-                </div>
-
-                {/* API Key Showcase */}
-                <div className="bg-[#0F172A] border border-[#10B981]/20 rounded-2xl p-6 shadow-[0_0_30px_rgba(16,185,129,0.05)] md:col-span-2">
-                    <div className="mb-4">
-                        <h2 className="text-lg font-bold text-[#F8FAFC] flex items-center gap-2">
-                            <Server size={18} className="text-[#10B981]" />
-                            API Secret Generation
-                        </h2>
-                        <p className="text-xs text-[#94A3B8] font-medium mt-1">This generated key will authenticate your API requests.</p>
-                    </div>
-
-                    <div className="flex items-center gap-3 bg-[#020617] border border-[#1E293B] rounded-xl p-2 pl-4 focus-within:border-[#10B981]/50 transition-colors mt-2">
-                        <input
-                            type={ShowApiKey ? "text" : "password"}
-                            readOnly
-                            value={GeneratedKey}
-                            className="w-full bg-transparent border-none outline-none text-sm font-mono text-[#34D399] font-bold"
-                        />
-                        <div className="flex items-center gap-1">
-                            <button
-                                onClick={() => setAPIkey(!ShowApiKey)}
-                                className="p-2 hover:bg-[#1E293B] rounded-lg text-[#64748B] hover:text-[#F8FAFC] transition-colors"
-                            >
-                                {ShowApiKey ? <EyeClosed size={16} /> : <Eye size={16} />}
-                            </button>
-                            <button
-                                onClick={async () => {
-                                    await navigator.clipboard.writeText(GeneratedKey)
-                                    toast.success("API key copied to clipboard!")
-                                }}
-                                className="p-2 hover:bg-[#1E293B] rounded-lg text-[#64748B] hover:text-[#F8FAFC] transition-colors bg-[#10B981]/10 hover:bg-[#10B981]/20 text-[#10B981]"
-                            >
-                                <Copy size={16} />
-                            </button>
+                        <div className="pt-4 border-t border-[#f1f5f9] dark:border-[#1e293b] flex justify-end">
+                            <Button type="submit" disabled={loading} className="h-9 px-6 gap-2 text-xs bg-[#064e3b] hover:bg-[#022c22]">
+                                {loading ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
+                                <span>Create Workspace</span>
+                            </Button>
                         </div>
-                    </div>
-                </div>
-
-            </div>
-
-            {/* Actions */}
-            <div className="flex justify-end pt-4 border-t border-[#1E293B]">
-                <button
-                    disabled={Loading}
-                    onClick={CreateProjectHandler}
-                    className={`inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-[#10B981] text-[#020617] text-sm font-extrabold rounded-xl hover:bg-[#34D399] transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] active:scale-[0.98]
-                    ${Loading ? "opacity-70 cursor-not-allowed" : ""}`}
-                >
-                    {Loading ? <ClipLoader size={16} color="#020617" /> : "Deploy Workspace"}
-                </button>
-            </div>
+                    </form>
+                </CardContent>
+            </Card>
         </div>
-    )
+    );
 }

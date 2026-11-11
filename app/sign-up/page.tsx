@@ -1,251 +1,178 @@
-"use client"
-import {
-    Github,
-    Chrome,
-    User,
-    Mail,
-    Lock,
-    CheckCircle2,
-    ShieldCheck,
-    ChevronRight,
-    Terminal,
-    Loader2
-} from 'lucide-react';
-import { useState } from 'react';
-import Link from 'next/link';
-import { toast } from 'react-hot-toast';
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { toast } from "sonner";
+import { Github, Eye, EyeOff, Lock, Mail, User, ArrowRight, Loader2 } from "lucide-react";
+import AuthSidePanel from "@/components/auth/auth-side-panel";
+import { authClient } from "@/lib/auth-client";
+
 export default function SignUpPage() {
-    const [loadingScreen, setLoadingScreen] = useState<boolean>(false)
-    const [FirstName, setFirstName] = useState<string>("")
-    const [LastName, setLastName] = useState<string>("")
-    const [EmailAddress, setEmail] = useState<string>("")
-    const [Password, setPassword] = useState<string>("")
+    const [showPassword, setShowPassword] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [fullName, setFullName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-    const [LoadingButton, setLoading] = useState<boolean>(false)
-
-
-    const HandelThirdParty = async () => {
-        setLoading(true)
-
-        const authToGithub = await fetch("/api/auth",
-            {
-                method: "post",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    method: "user"
-                })
+    const handleSocialSignUp = async () => {
+        setIsLoading(true);
+        localStorage.setItem("yegna_theme", "dark");
+        document.documentElement.classList.add("dark");
+        try {
+            const redirectUrl = typeof window !== "undefined" ? `${window.location.origin}/dashboard` : "http://localhost:3000/dashboard";
+            const res = await authClient.signIn.social({
+                provider: "github",
+                callbackURL: redirectUrl,
+            });
+            if (res?.error) {
+                toast.error("Please add your GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET in client/.env.local");
+                setIsLoading(false);
             }
-        )
-        const serverResponse = await authToGithub.json()
-        if (authToGithub.ok) {
-            window.location.href = serverResponse.generatedLink
-        } else {
-            toast.error("Internal server error!")
+        } catch {
+            toast.error("Please configure GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET in client/.env.local");
+            setIsLoading(false);
         }
     };
 
-    const signUpForm = async () => {
-        if (FirstName == "" || LastName == "" || EmailAddress == "" || Password == "") {
-            toast.error("Please fill in the necessary credentials")
-        } else {
-            setLoadingScreen(true)
-            const signUpRequest = await fetch("/api/auth/email-sign-up", {
-                method: "post",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+    const handleEmailSignUp = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!fullName || !email || !password) return toast.error("Please fill in all registration fields.");
+
+        setIsLoading(true);
+        localStorage.setItem("yegna_theme", "dark");
+        document.documentElement.classList.add("dark");
+        try {
+            const { error } = await authClient.signUp.email({
+                email,
+                password,
+                name: fullName,
+            });
+
+            if (error) throw error;
+            await fetch("/api/user/info", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" }).catch(() => null);
+            toast.success("Account created successfully.");
+            setTimeout(() => { window.location.href = "/dashboard"; }, 800);
+        } catch {
+            // Fallback to backend email signup endpoint
+            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+            const res = await fetch(`${backendUrl}/auth/email-signup`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    first_name: FirstName,
-                    last_name: LastName,
-                    email: EmailAddress,
-                    password: Password
-                })
-            })
-            const serverResponse = await signUpRequest.json()
-            if (serverResponse.success == true) {
-                toast.success(serverResponse.message)
+                    email_address: email,
+                    password,
+                    full_name: fullName,
+                }),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (res.ok && data?.status === 200) {
+                toast.success(data.message || "Registration successful.");
+                setTimeout(() => { window.location.href = "/sign-in"; }, 1500);
             } else {
-                setLoadingScreen(false)
-                toast.error(serverResponse.message)
+                toast.error(data?.message || "Registration failed.");
+                setIsLoading(false);
             }
         }
-    }
+    };
 
     return (
-        <div className="min-h-screen w-full flex bg-[#020617] font-sans text-[#F8FAFC]">
+        <div className="min-h-screen w-full flex bg-[#060a0f] text-[#f1f5f9] font-sans">
+            <AuthSidePanel subtitle="Start verifying bank payments with 200 free requests." />
 
-            {/* Abstract Background */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-[-10%] right-[-5%] w-[45%] h-[50%] rounded-full bg-[#10B981]/8 blur-[140px]" />
-                <div className="absolute bottom-[-15%] left-[-5%] w-[40%] h-[40%] rounded-full bg-[#34D399]/5 blur-[120px]" />
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#1E293B_1px,transparent_1px),linear-gradient(to_bottom,#1E293B_1px,transparent_1px)] bg-[size:40px_40px] opacity-20" />
-            </div>
-
-            {/* Left Brand Panel */}
-            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col justify-center p-20 border-r border-[#1E293B]">
-                <div className="relative z-10 space-y-10">
-                    <Link href="/" className="flex items-center gap-3 group cursor-pointer">
-                        <div className="w-10 h-10 bg-[#10B981] rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.4)] group-hover:scale-105 transition-all">
-                            <span className="text-[#020617] font-black text-xl">Y</span>
-                        </div>
-                        <span className="text-2xl font-black text-[#F8FAFC] tracking-tight">Yegna<span className="text-[#10B981]">Pay</span></span>
-                    </Link>
-
+            <div className="flex-1 flex items-center justify-center p-6 sm:p-12 relative z-10">
+                <div className="w-full max-w-md space-y-8 bg-[#0a1118] p-8 sm:p-10 rounded-2xl border border-white/[0.08] shadow-2xl">
                     <div>
-                        <h2 className="text-5xl font-black text-[#F8FAFC] leading-tight tracking-tight mb-4">
-                            Build the future of<br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#10B981] to-[#34D399]">Ethiopian Fintech.</span>
-                        </h2>
-                        <p className="text-[#94A3B8] font-medium">Join hundreds of developers building on Ethiopia's most reliable payment verification platform.</p>
-                    </div>
-
-                    <div className="space-y-3">
-                        {['No hidden monthly fees', 'API-first architecture', 'Automated receipt verification'].map((feature, i) => (
-                            <div key={i} className="flex items-center gap-3">
-                                <div className="w-5 h-5 rounded-full bg-[#10B981]/10 border border-[#10B981]/30 flex items-center justify-center">
-                                    <CheckCircle2 size={12} className="text-[#34D399]" />
-                                </div>
-                                <span className="text-[#cbd5e1] font-medium text-sm">{feature}</span>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Code Preview */}
-                    <div className="bg-[#0F172A] rounded-2xl border border-[#1E293B] p-5 font-mono text-xs shadow-2xl">
-                        <div className="flex gap-1.5 mb-4 items-center">
-                            <div className="w-3 h-3 rounded-full bg-rose-500/80" />
-                            <div className="w-3 h-3 rounded-full bg-amber-500/80" />
-                            <div className="w-3 h-3 rounded-full bg-[#10B981]/80" />
-                            <Terminal size={12} className="ml-2 text-[#64748B]" />
-                            <span className="ml-1 text-[#64748B]">yegnapay-sdk</span>
-                        </div>
-                        <div className="text-[#94A3B8] leading-relaxed">
-                            <span className="text-[#34D399]">const</span> <span className="text-[#F8FAFC]">yegna</span> = <span className="text-[#fbbf24]">require</span>(<span className="text-[#34D399]">'yegnapay-sdk'</span>);<br />
-                            <span className="text-[#F8FAFC]">yegna</span>.<span className="text-[#38bdf8]">verify</span>({"{"}amount: <span className="text-[#fbbf24]">1250</span>, currency: <span className="text-[#34D399]">'ETB'</span>{"}"})
-                            <br />&nbsp;&nbsp;.<span className="text-[#38bdf8]">then</span>(res =&gt; console.<span className="text-[#38bdf8]">log</span>(<span className="text-[#34D399]">'Verified! ✅'</span>));
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Right Form Panel */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 md:p-16 relative z-10">
-                <div className="w-full max-w-md">
-                    {/* Mobile Logo */}
-                    <div className="lg:hidden flex items-center gap-2 mb-10 justify-center">
-                        <div className="w-8 h-8 bg-[#10B981] rounded-lg flex items-center justify-center">
-                            <span className="text-[#020617] font-black">Y</span>
-                        </div>
-                        <span className="text-xl font-black text-[#F8FAFC]">Yegna<span className="text-[#10B981]">Pay</span></span>
-                    </div>
-
-                    <div className="mb-10">
-                        <h2 className="text-4xl font-black text-[#F8FAFC] mb-2 tracking-tight">Create account</h2>
-                        <p className="text-[#94A3B8] font-medium">Get started with your developer sandbox today.</p>
-                    </div>
-
-                    {/* Social Auth */}
-                    <div className="flex flex-col sm:flex-row gap-3 mb-8">
-
-                        <button disabled={LoadingButton} onClick={() => HandelThirdParty()} className="flex-1 flex items-center justify-center gap-2.5 px-4 py-3 bg-[#0F172A] border border-[#1E293B] rounded-xl hover:bg-[#1E293B] hover:border-[#334155] transition-all font-bold text-[#F8FAFC] text-sm active:scale-95">
-                            {
-                                LoadingButton ? (<>
-                                    <Loader2 className='w-4 h-4 animate-spin' />
-                                </>) : (<>
-                                    <Github size={16} />
-                                    GitHub
-                                </>)
-                            }
-
-                        </button>
-                    </div>
-
-                    <div className="relative mb-8">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-[#1E293B]"></div>
-                        </div>
-                        <div className="relative flex justify-center text-[10px] uppercase">
-                            <span className="bg-[#020617] px-4 text-[#64748B] font-black tracking-widest">Direct Registration</span>
-                        </div>
-                    </div>
-                    <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest ml-1">First Name</label>
-                                <div className="relative">
-                                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#64748B]" size={15} />
-                                    <input
-                                        value={FirstName}
-                                        onChange={(e: any) => setFirstName(e.target.value)}
-                                        type="text" placeholder="Abebe"
-                                        className="w-full pl-10 pr-4 py-4 bg-[#0F172A] border border-[#1E293B] rounded-xl focus:ring-2 focus:ring-[#10B981]/30 focus:border-[#10B981] outline-none transition-all font-medium text-sm text-[#F8FAFC] placeholder:text-[#475569]" />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest ml-1">Last Name</label>
-                                <input
-                                    value={LastName}
-                                    onChange={(e: any) => setLastName(e.target.value)}
-                                    type="text" placeholder="Kebede"
-                                    className="w-full px-4 py-4 bg-[#0F172A] border border-[#1E293B] rounded-xl focus:ring-2 focus:ring-[#10B981]/30 focus:border-[#10B981] outline-none transition-all font-medium text-sm text-[#F8FAFC] placeholder:text-[#475569]" />
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest ml-1">Email Address</label>
-                            <div className="relative">
-                                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#64748B]" size={15} />
-                                <input
-                                    value={EmailAddress}
-                                    onChange={(e: any) => setEmail(e.target.value)}
-                                    type="email" placeholder="abebe@tech.et"
-                                    className="w-full pl-10 pr-4 py-4 bg-[#0F172A] border border-[#1E293B] rounded-xl focus:ring-2 focus:ring-[#10B981]/30 focus:border-[#10B981] outline-none transition-all font-medium text-sm text-[#F8FAFC] placeholder:text-[#475569]" />
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest ml-1">Password</label>
-                            <div className="relative">
-                                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#64748B]" size={15} />
-                                <input
-                                    value={Password}
-                                    onChange={(e: any) => setPassword(e.target.value)}
-                                    type="password" placeholder="••••••••••••"
-                                    className="w-full pl-10 pr-4 py-4 bg-[#0F172A] border border-[#1E293B] rounded-xl focus:ring-2 focus:ring-[#10B981]/30 focus:border-[#10B981] outline-none transition-all font-medium text-sm text-[#F8FAFC] placeholder:text-[#475569]" />
-                            </div>
-                        </div>
-
-                        <div className="flex items-start gap-3 pt-1">
-                            <input type="checkbox" className="mt-1 w-4 h-4 rounded border-[#334155] bg-[#0F172A] text-[#10B981] focus:ring-[#10B981]/30" />
-                            <p className="text-xs text-[#94A3B8] leading-relaxed">
-                                I agree to the <Link href="#" className="text-[#34D399] font-bold hover:text-[#10B981]">Terms of Service</Link> and <Link href="#" className="text-[#34D399] font-bold hover:text-[#10B981]">Privacy Policy</Link>.
-                            </p>
-                        </div>
+                        <span className="font-mono text-xs uppercase tracking-widest text-[#34d399] font-bold">
+                            Developer Registration
+                        </span>
+                        <h2 className="text-2xl font-black text-white mt-1">Create workspace</h2>
+                        <p className="text-xs text-[#94a3b8] mt-1 font-mono">
+                            Includes 200 free sandbox API verification queries
+                        </p>
                     </div>
 
                     <button
-                        onClick={signUpForm}
-                        disabled={loadingScreen}
-                        className="w-full mt-6 py-4 bg-[#10B981] text-[#020617] font-extrabold rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] hover:bg-[#34D399] transition-all active:scale-[0.98] flex items-center justify-center gap-3 group disabled:opacity-50 disabled:cursor-not-allowed"
+                        type="button"
+                        onClick={handleSocialSignUp}
+                        disabled={isLoading}
+                        className="w-full py-3 px-4 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-white font-mono text-xs font-bold flex items-center justify-center gap-3 transition-all"
                     >
-                        {loadingScreen ? (
-                            <Loader2 size={20} className="animate-spin" />
-                        ) : (
-                            <>
-                                Create My Account
-                                <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                            </>
-                        )}
+                        <Github size={16} /> Sign up with GitHub
                     </button>
 
-                    <p className="mt-8 text-center text-[#94A3B8] font-medium text-sm">
-                        Already have an account?{' '}
-                        <Link href="/sign-in" className="text-[#34D399] font-bold hover:text-[#10B981] transition-colors">Sign in</Link>
-                    </p>
+                    <div className="flex items-center gap-4 text-xs font-mono text-[#64748b]">
+                        <span className="flex-1 h-px bg-white/10" /> OR REGISTER <span className="flex-1 h-px bg-white/10" />
+                    </div>
 
-                    <div className="mt-8 flex items-center justify-center gap-2 p-4 bg-[#0F172A] rounded-xl border border-[#1E293B]">
-                        <ShieldCheck size={16} className="text-[#10B981]" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-[#64748B]">Enterprise-grade security</span>
+                    <form onSubmit={handleEmailSignUp} className="space-y-4">
+                        <div className="space-y-1.5 font-mono text-xs">
+                            <label className="text-[#94a3b8]">Full Legal Name / Company</label>
+                            <div className="relative flex items-center">
+                                <User size={16} className="absolute left-3 text-[#64748b]" />
+                                <input
+                                    type="text"
+                                    required
+                                    value={fullName}
+                                    onChange={(e) => setFullName(e.target.value)}
+                                    placeholder="Abebe Kebede"
+                                    className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[#060a0f] border border-white/10 text-white placeholder:text-[#475569] focus:outline-none focus:border-[#10b981]"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-1.5 font-mono text-xs">
+                            <label className="text-[#94a3b8]">Work Email</label>
+                            <div className="relative flex items-center">
+                                <Mail size={16} className="absolute left-3 text-[#64748b]" />
+                                <input
+                                    type="email"
+                                    required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="abebe@fintech.et"
+                                    className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[#060a0f] border border-white/10 text-white placeholder:text-[#475569] focus:outline-none focus:border-[#10b981]"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-1.5 font-mono text-xs">
+                            <label className="text-[#94a3b8]">Secret Password</label>
+                            <div className="relative flex items-center">
+                                <Lock size={16} className="absolute left-3 text-[#64748b]" />
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    required
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="••••••••••••"
+                                    className="w-full pl-10 pr-10 py-2.5 rounded-lg bg-[#060a0f] border border-white/10 text-white placeholder:text-[#475569] focus:outline-none focus:border-[#10b981]"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 text-[#64748b] hover:text-white"
+                                >
+                                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                </button>
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="w-full py-3 rounded-lg bg-[#059669] hover:bg-[#10b981] text-white font-sans text-xs uppercase tracking-widest font-bold flex items-center justify-center gap-2 transition-all shadow-lg border border-[#34d399]/40 disabled:opacity-50"
+                        >
+                            {isLoading ? <Loader2 size={16} className="animate-spin" /> : (
+                                <>
+                                    <span>Create Free Account</span>
+                                    <ArrowRight size={14} />
+                                </>
+                            )}
+                        </button>
+                    </form>
+
+                    <div className="pt-4 border-t border-white/[0.06] text-center font-mono text-xs text-[#94a3b8]">
+                        Already registered? <Link href="/sign-in" className="text-[#34d399] font-bold hover:underline">Sign in here</Link>
                     </div>
                 </div>
             </div>
