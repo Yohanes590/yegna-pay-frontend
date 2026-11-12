@@ -25,11 +25,16 @@ export default function SignInPage() {
                 callbackURL: redirectUrl,
             });
             if (res?.error) {
-                toast.error("Please add your GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET in client/.env.local");
+                toast.error(res.error.message || "GitHub sign-in failed. Verify GitHub OAuth settings on the backend.");
                 setIsLoading(false);
             }
-        } catch {
-            toast.error("Please configure GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET in client/.env.local");
+        } catch (err: any) {
+            const backendUrl = (process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000").replace(/\/+$/, "");
+            if (typeof window !== "undefined" && window.location.protocol === "https:" && backendUrl.startsWith("http://")) {
+                toast.error("Mixed content blocked: NEXT_PUBLIC_BACKEND_URL must use https:// in production.");
+            } else {
+                toast.error(err?.message || "Unable to connect to authentication server. Check NEXT_PUBLIC_BACKEND_URL and backend CORS.");
+            }
             setIsLoading(false);
         }
     };
@@ -53,7 +58,7 @@ export default function SignInPage() {
             setTimeout(() => { window.location.href = "/dashboard"; }, 800);
         } catch {
             // Fallback to backend credential endpoint
-            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+            const backendUrl = (process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000").replace(/\/+$/, "");
             const res = await fetch(`${backendUrl}/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
