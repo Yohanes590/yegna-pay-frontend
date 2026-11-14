@@ -17,7 +17,7 @@ export default function DocsSidebar({
 
     return (
         <aside className="w-64 flex-shrink-0 hidden lg:block sticky top-24 self-start max-h-[calc(100vh-8rem)] overflow-y-auto pr-4">
-            <div className="font-mono text-xs uppercase tracking-wider text-[#64748B] mb-4 font-bold">
+            <div className="font-mono text-xs uppercase tracking-wider text-slate-500 dark:text-[#64748B] mb-4 font-bold">
                 Table of Contents
             </div>
             <nav className="space-y-1 font-mono text-xs">
@@ -29,8 +29,8 @@ export default function DocsSidebar({
                             onClick={() => onSelectSection(sec.id)}
                             className={`w-full text-left px-3 py-2 rounded-lg transition-colors block ${
                                 isActive
-                                    ? "bg-[#10B981]/15 text-[#34D399] font-bold border-l-2 border-[#10B981]"
-                                    : "text-[#94A3B8] hover:text-white hover:bg-white/[0.04]"
+                                    ? "bg-emerald-50 text-[#047857] dark:bg-[#10B981]/15 dark:text-[#34D399] font-bold border-l-2 border-[#059669] dark:border-[#10B981]"
+                                    : "text-slate-600 hover:text-slate-950 hover:bg-slate-100 dark:text-[#94A3B8] dark:hover:text-white dark:hover:bg-white/[0.04]"
                             }`}
                         >
                             {sec.label}

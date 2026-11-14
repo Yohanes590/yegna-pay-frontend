@@ -11,108 +11,72 @@ export default function BankInfrastructure() {
     const activeBank = bankNodes.find((b) => b.id === activeBankId) || bankNodes[0];
 
     return (
-        <section id="bank-infrastructure" className="relative py-28 sm:py-36 bg-[#060a0f] text-[#f1f5f9] border-b border-white/[0.06] overflow-hidden">
-            <div className="absolute inset-0 bg-grid-architectural opacity-30 pointer-events-none" />
-
-            <div className="max-w-7xl mx-auto px-6 sm:px-8 relative z-10">
-                <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-20 pb-8 border-b border-white/[0.08]">
-                    <div className="max-w-2xl">
-                        <div className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.25em] text-[#34d399] mb-4">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]" />
-                            <span>Supported Banking Rails // Ethiopia</span>
-                        </div>
-                        <h2 className="font-sans font-black text-3xl sm:text-5xl tracking-tight text-white leading-tight">
-                            Direct clearing rails.<br />
-                            One unified API schema.
-                        </h2>
-                    </div>
-                    <p className="text-sm sm:text-base text-[#94a3b8] max-w-md leading-relaxed font-normal">
-                        Verify payments originating from Ethiopia's principal financial institutions through standardized cryptographic verification adapters.
+        <section
+            id="bank-infrastructure"
+            className="py-20 sm:py-28 bg-slate-50 dark:bg-[#090e15] text-slate-900 dark:text-[#f1f5f9] border-b border-slate-200 dark:border-white/[0.07]"
+        >
+            <div className="max-w-7xl mx-auto px-5 sm:px-8">
+                <div className="max-w-2xl mb-12">
+                    <span className="font-mono text-xs text-[#059669] dark:text-[#34d399] uppercase tracking-wider block mb-3">
+                        Supported Payment Platforms
+                    </span>
+                    <h2 className="font-sans font-bold text-3xl sm:text-4xl tracking-tight text-slate-950 dark:text-white">
+                        One integration for Ethiopia&apos;s primary bank transfer rails.
+                    </h2>
+                    <p className="text-sm sm:text-base text-slate-600 dark:text-[#94a3b8] mt-3 leading-relaxed">
+                        Select a bank adapter below to inspect its verified receipt domain, reference format, and
+                        automated validation checks.
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-20">
-                    <div className="lg:col-span-5 space-y-3">
-                        <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#64748b] block mb-3">
-                            Select Network Node to Inspect Protocol
-                        </span>
-
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    <div className="lg:col-span-5 space-y-2.5">
                         {bankNodes.map((bank) => {
                             const isSelected = bank.id === activeBankId;
                             return (
                                 <button
                                     key={bank.id}
+                                    type="button"
                                     onClick={() => setActiveBankId(bank.id)}
-                                    className={`w-full text-left p-5 rounded-xl border transition-all flex items-center justify-between group ${
+                                    className={`w-full text-left p-4 rounded-xl border transition-colors flex items-center justify-between gap-4 ${
                                         isSelected
-                                            ? "bg-[#0a1118] border-[#10b981] shadow-[0_10px_30px_-10px_rgba(16,185,129,0.3)]"
-                                            : "bg-[#0a1118]/60 border-white/[0.08] hover:border-white/20 hover:bg-[#0a1118]"
+                                            ? "bg-white dark:bg-[#0c1219] border-[#059669] dark:border-[#10b981]/60 shadow-sm dark:shadow-none"
+                                            : "bg-white/70 dark:bg-[#0c1219]/50 border-slate-200 dark:border-white/[0.07] hover:border-slate-300 dark:hover:border-white/[0.16] hover:bg-white dark:hover:bg-[#0c1219]"
                                     }`}
                                 >
-                                    <div className="flex items-center gap-4">
-                                        <div className="relative w-12 h-12 rounded-lg bg-[#060a0f] border border-white/10 p-2 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                    <div className="flex items-center gap-3.5 min-w-0">
+                                        <div className="w-11 h-11 rounded-lg bg-slate-50 dark:bg-[#070b10] border border-slate-200 dark:border-white/[0.08] p-2 flex items-center justify-center shrink-0">
                                             <Image
                                                 src={bank.logo}
                                                 alt={bank.name}
-                                                width={40}
-                                                height={40}
+                                                width={36}
+                                                height={36}
                                                 className="object-contain"
                                             />
                                         </div>
-                                        <div>
-                                            <h4 className="font-sans font-bold text-base text-white group-hover:text-[#34d399] transition-colors">
+                                        <div className="min-w-0">
+                                            <h3 className="font-sans font-semibold text-sm sm:text-base text-slate-900 dark:text-white truncate">
                                                 {bank.name}
-                                            </h4>
-                                            <div className="flex items-center gap-2 mt-1 text-xs font-mono text-[#64748b]">
-                                                <span>{bank.railType}</span>
-                                                <span>•</span>
-                                                <span className="text-[#34d399]">{bank.latency}</span>
+                                            </h3>
+                                            <div className="flex items-center gap-2 mt-0.5 text-xs font-mono text-slate-500 dark:text-[#94a3b8]">
+                                                <span className="text-[#059669] dark:text-[#34d399]">{bank.shortName}</span>
+                                                <span className="text-slate-300 dark:text-[#334155]">•</span>
+                                                <span className="truncate">{bank.domain}</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <ArrowRight size={16} className={`transition-transform ${isSelected ? "text-[#34d399] translate-x-1" : "text-[#475569]"}`} />
+                                    <ArrowRight
+                                        size={15}
+                                        className={`shrink-0 transition-transform ${
+                                            isSelected ? "text-[#059669] dark:text-[#34d399] translate-x-0.5" : "text-slate-400 dark:text-[#475569]"
+                                        }`}
+                                    />
                                 </button>
                             );
                         })}
                     </div>
 
                     <BankNodeInspector activeBank={activeBank} />
-                </div>
-
-                <div className="rounded-2xl border border-white/[0.12] bg-[#0a1118] overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-center shadow-2xl">
-                    <div className="lg:col-span-5 p-8 sm:p-12">
-                        <span className="font-mono text-[11px] uppercase tracking-[0.25em] text-[#34d399] block mb-4">
-                            Infrastructure Assurance
-                        </span>
-                        <h3 className="font-sans font-black text-2xl sm:text-3xl text-white mb-6 leading-tight">
-                            Built directly for the realities of Ethiopian banking.
-                        </h3>
-                        <p className="text-sm text-[#94a3b8] leading-relaxed mb-6 font-normal">
-                            In Ethiopia, digital commerce often slows down at the payment confirmation step. Customers send SMS receipts, screenshots get photoshopped, and accounting teams waste hours refreshing statements.
-                        </p>
-                        <div className="flex items-center gap-6 font-mono text-xs text-[#64748b]">
-                            <div>
-                                <span className="block text-white font-bold text-base">24/7/365</span>
-                                <span>Continuous Polling</span>
-                            </div>
-                            <div className="h-8 w-px bg-white/10" />
-                            <div>
-                                <span className="block text-[#34d399] font-bold text-base">0.5 ETB</span>
-                                <span>Transparent Clearing Fee</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="lg:col-span-7 relative h-72 lg:h-[380px] w-full">
-                        <Image
-                            src="/assets/banking-infrastructure.jpg"
-                            alt="Yegna Pay core banking infrastructure and cryptographic server vault"
-                            fill
-                            className="object-cover object-center filter brightness-90 contrast-110"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#0a1118] via-transparent to-transparent hidden lg:block" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a1118] via-transparent to-transparent lg:hidden" />
-                    </div>
                 </div>
             </div>
         </section>

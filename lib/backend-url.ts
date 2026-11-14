@@ -11,3 +11,25 @@ export function getBackendUrl(): string {
     ).replace(/\/+$/, "");
 }
 
+/**
+ * Resolves the public backend base URL from NEXT_PUBLIC_BACKEND_URL
+ * with any trailing slashes removed to avoid duplicate `/` in endpoint paths.
+ */
+export function getPublicBackendUrl(
+    fallback: string = "https://your-real-backend-domain.com"
+): string {
+    const raw = (process.env.NEXT_PUBLIC_BACKEND_URL || "").trim();
+    return (raw || fallback).replace(/\/+$/, "");
+}
+
+/**
+ * Builds a full backend API URL from NEXT_PUBLIC_BACKEND_URL and a route path.
+ */
+export function buildBackendEndpointUrl(
+    path: string,
+    fallback?: string
+): string {
+    const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+    return `${getPublicBackendUrl(fallback)}${normalizedPath}`;
+}
+

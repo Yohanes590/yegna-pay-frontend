@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Search } from "lucide-react";
+import ThemeToggle from "@/components/theme-toggle";
 import DocsSidebar from "./docs-sidebar";
 import DocsSections from "./docs-sections";
 
@@ -22,34 +23,36 @@ export default function DocumentationPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#060a0f] text-[#F8FAFC] font-sans selection:bg-[#10B981]/30 selection:text-[#34D399]">
-            <header className="fixed top-0 left-0 right-0 h-16 bg-[#060a0f]/80 backdrop-blur-xl border-b border-white/[0.08] z-50 flex items-center justify-between px-6">
-                <div className="flex items-center gap-6">
+        <div className="min-h-screen bg-white dark:bg-[#070b10] text-slate-900 dark:text-[#f1f5f9] font-sans selection:bg-[#10b981]/25 selection:text-[#047857] dark:selection:text-[#34d399]">
+            <header className="fixed top-0 left-0 right-0 h-16 bg-white/90 dark:bg-[#070b10]/85 backdrop-blur-xl border-b border-slate-200 dark:border-white/[0.07] z-50 flex items-center justify-between px-4 sm:px-6">
+                <div className="flex items-center gap-4 sm:gap-6">
                     <Link
                         href="/"
-                        className="flex items-center gap-2 group cursor-pointer text-[#94A3B8] hover:text-[#F8FAFC] transition-colors font-mono text-xs font-bold"
+                        className="flex items-center gap-2 group cursor-pointer text-slate-600 hover:text-slate-950 dark:text-[#94a3b8] dark:hover:text-white transition-colors font-mono text-xs font-medium"
                     >
-                        <ArrowLeft size={16} />
-                        <span>Return to Main Site</span>
+                        <ArrowLeft size={15} />
+                        <span className="hidden sm:inline">Return to Main Site</span>
+                        <span className="sm:hidden">Back</span>
                     </Link>
-                    <div className="h-4 w-px bg-white/10" />
-                    <span className="font-bold text-white flex items-center gap-2 font-mono text-xs">
-                        <span className="px-2 py-0.5 rounded bg-[#10B981] text-[#060a0f] font-black">YP</span>
+                    <div className="h-4 w-px bg-slate-200 dark:bg-white/10" />
+                    <span className="font-semibold text-slate-950 dark:text-white flex items-center gap-2 font-sans text-sm">
+                        <span className="px-2 py-0.5 rounded bg-[#059669] text-white font-mono text-xs font-bold">YP</span>
                         API Documentation
                     </span>
                 </div>
 
-                <div className="flex items-center gap-4">
-                    <div className="hidden sm:flex items-center gap-2 bg-[#0A1118] border border-white/10 rounded-lg px-3 py-1.5 text-[#64748B] focus-within:border-[#10B981]/50 transition-all font-mono text-xs">
+                <div className="flex items-center gap-3">
+                    <div className="hidden sm:flex items-center gap-2 bg-slate-50 dark:bg-[#0c1219] border border-slate-200 dark:border-white/[0.08] rounded-lg px-3 py-1.5 text-slate-400 dark:text-[#64748b] focus-within:border-[#059669] dark:focus-within:border-[#10b981]/50 transition-all font-mono text-xs">
                         <Search size={14} />
                         <input
                             type="text"
                             placeholder="Search endpoints..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="bg-transparent border-none outline-none text-[#F8FAFC] placeholder:text-[#64748B] w-40"
+                            className="bg-transparent border-none outline-none text-slate-900 dark:text-[#F8FAFC] placeholder:text-slate-400 dark:placeholder:text-[#64748B] w-40"
                         />
                     </div>
+                    <ThemeToggle />
                 </div>
             </header>
 

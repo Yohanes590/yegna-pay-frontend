@@ -1,14 +1,23 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/lib/theme-context";
 
-const poppins = Poppins({
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
+const plusJakarta = Plus_Jakarta_Sans({
+  weight: ["400", "500", "600", "700", "800"],
   subsets: ["latin"],
+  variable: "--font-sans",
   display: "swap",
   fallback: ["system-ui", "sans-serif"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+  fallback: ["ui-monospace", "SFMono-Regular", "monospace"],
 });
 
 export const metadata: Metadata = {
@@ -110,14 +119,14 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${poppins.className} dark h-full antialiased bg-[#060a0f]`}
+      className={`${plusJakarta.variable} ${jetbrainsMono.variable} ${plusJakarta.className} dark h-full antialiased bg-white dark:bg-[#070b10]`}
     >
       <head>
         <meta name="google-site-verification" content="4OoJ6t55cvK2bVTcORgbP_2Z2tjvoIhru5DjCc0bfJY" />
       </head>
       <body
         cz-shortcut-listen="true"
-        className="min-h-full flex flex-col bg-[#060a0f] text-[#F1F5F9] selection:bg-[#10B981]/25 selection:text-[#34D399]">
+        className="min-h-full flex flex-col bg-white text-slate-900 dark:bg-[#070b10] dark:text-[#f1f5f9] selection:bg-[#10b981]/20 selection:text-[#047857] dark:selection:text-[#34d399] transition-colors">
         <ThemeProvider>
           <Toaster />
           {children}

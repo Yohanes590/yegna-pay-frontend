@@ -64,14 +64,14 @@ export const mockTransactions: Transaction[] = [
         reference: "BOA-TX-9938102",
     },
     {
-        id: "AFR4401928301",
+        id: "FT26071L9X2B88310491",
         sender: "AFRICA LOGISTICS CO.",
         amount: 32000.0,
         currency: "ETB",
-        bank: "Bank of Africa",
+        bank: "Commercial Bank of Ethiopia",
         status: "verified",
         timestamp: "52 mins ago",
-        reference: "BOA-INT-110293",
+        reference: "CBE-TX-110293",
     },
     {
         id: "-3JNVXXW992-1B32A1",

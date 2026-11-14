@@ -25,11 +25,11 @@ export default function NotificationReceiver() {
         {
             id: "2",
             type: "success",
-            title: "Ledger Reconciliation Synchronized",
-            description: "Awash Bank clearing rail successfully synchronized 142 transactions sub-second.",
+            title: "Awash Bank Receipt Verified",
+            description: "Awash Bank transaction link and QR receipt checks are operational.",
             time: "1 hour ago",
             isRead: false,
-            longDetails: "Bank: Awash Bank\nSuccess Rate: 100%\nLatency: 180ms median",
+            longDetails: "Bank: Awash Bank\nMethod: QR Receipt & Transaction Link\nStatus: VERIFIED",
         },
         {
             id: "3",

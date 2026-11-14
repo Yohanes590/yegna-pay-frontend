@@ -1,148 +1,77 @@
-"use client";
-
 import Link from "next/link";
-import { ArrowUpRight, Check } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import PricingCalculator from "./pricing-calculator";
 
-const capabilities = [
-    {
-        num: "01",
-        title: "Bank Payment Verification",
-        description: "Direct algorithmic inquiry against central banking records confirms that money actually reached your business account before orders ship.",
-        spec: "Direct Core Query",
-    },
-    {
-        num: "02",
-        title: "Transaction Amount Matching",
-        description: "Guarantees the transferred sum matches your invoice to the exact decimal. Partial payments and altered digits are instantly flagged.",
-        spec: "Exact Decimal Match",
-    },
-    {
-        num: "03",
-        title: "Duplicate Transaction Detection",
-        description: "Every verified reference ID is cryptographically signed and archived. Replayed SMS screenshots and dual submissions are immediately rejected.",
-        spec: "Anti-Replay Ledger",
-    },
-    {
-        num: "04",
-        title: "Automated Payment Validation",
-        description: "Replace manual slip reading and human delays with a sub-second webhook callback that triggers instantaneous order release.",
-        spec: "Sub-200ms Processing",
-    },
-    {
-        num: "05",
-        title: "API-Based Integration",
-        description: "A single clean RESTful JSON endpoint with Bearer authentication. Connect your web application, Telegram bot, or mobile app in hours.",
-        spec: "Standard REST / JSON",
-    },
-    {
-        num: "06",
-        title: "Multiple Supported Ethiopian Banks",
-        description: "Unified verification across Commercial Bank of Ethiopia (CBE), Awash Bank, Bank of Abyssinia, and Bank of Africa under one integration.",
-        spec: "4 Native Rails",
-    },
+const INCLUDED_CAPABILITIES = [
+  "All 3 supported banks (CBE, Awash Bank, Bank of Abyssinia)",
+  "Dual verification: Transaction Link (JSON) & Receipt QR Image (multipart)",
+  "Real-time webhook delivery & per-project API keys",
+  "Duplicate transaction protection with 409 YP_03DeFg error codes",
+  "QR-safe receipt archiving and searchable audit history",
+  "Pay-as-you-go balance with no monthly minimums or setup fees",
 ];
 
 export default function FeaturesAndPricing() {
-    return (
-        <section id="pricing" className="relative py-28 sm:py-36 bg-[#060a0f] text-[#f1f5f9] border-b border-white/[0.06] overflow-hidden">
-            <div className="absolute inset-0 bg-grid-architectural opacity-30 pointer-events-none" />
+  return (
+    <section
+      id="pricing"
+      className="relative py-20 lg:py-28 bg-white dark:bg-[#090e15] border-t border-slate-200 dark:border-white/[0.06]"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-2xl mb-12 space-y-3">
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#059669] dark:text-[#34d399]">
+            Transparent Pricing
+          </p>
+          <h2 className="font-sans text-3xl sm:text-4xl font-bold tracking-tight text-slate-950 dark:text-white">
+            0.50 ETB per verified transaction.
+          </h2>
+          <p className="text-slate-600 dark:text-[#94a3b8] text-base leading-relaxed">
+            No monthly subscription, no per-bank surcharge, and no percentage cut on your revenue. Fund your project balance and pay only for completed verifications.
+          </p>
+        </div>
 
-            <div className="max-w-7xl mx-auto px-6 sm:px-8 relative z-10">
-                <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-20 pb-8 border-b border-white/[0.08]">
-                    <div className="max-w-2xl">
-                        <div className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.25em] text-[#34d399] mb-4">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]" />
-                            <span>Transparent Infrastructure Economics</span>
-                        </div>
-                        <h2 className="font-sans font-black text-3xl sm:text-5xl tracking-tight text-white leading-tight">
-                            One transparent rate.<br />
-                            Six core verification capabilities.
-                        </h2>
-                    </div>
-                    <p className="text-sm sm:text-base text-[#94a3b8] max-w-md leading-relaxed font-normal">
-                        No monthly subscriptions, no seat licenses, no hidden minimums. You pay strictly for successful verifications delivered.
-                    </p>
-                </div>
-
-                <div className="mb-24">
-                    <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#64748b] block mb-8">
-                        Technical Capability Matrix // Standard Platform Features
-                    </span>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {capabilities.map((cap) => (
-                            <div
-                                key={cap.num}
-                                className="p-8 rounded-2xl bg-[#0a1118] border border-white/[0.08] hover:border-[#10b981]/40 transition-all duration-300 flex flex-col justify-between group"
-                            >
-                                <div>
-                                    <div className="flex items-center justify-between pb-4 border-b border-white/[0.06] mb-6">
-                                        <span className="font-mono text-xs font-black text-[#34d399]">// {cap.num}</span>
-                                        <span className="font-mono text-[10px] uppercase tracking-wider text-[#64748b] bg-white/[0.03] px-2 py-0.5 rounded border border-white/[0.06]">
-                                            {cap.spec}
-                                        </span>
-                                    </div>
-                                    <h3 className="font-sans font-bold text-lg text-white mb-3 group-hover:text-[#34d399] transition-colors">
-                                        {cap.title}
-                                    </h3>
-                                    <p className="text-sm text-[#94a3b8] leading-relaxed font-normal">{cap.description}</p>
-                                </div>
-                                <div className="mt-8 pt-4 border-t border-white/[0.04] flex items-center justify-between text-xs font-mono text-[#64748b]">
-                                    <span>Included in Base Rate</span>
-                                    <span className="text-[#34d399]">✓ Enabled</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="rounded-3xl border border-white/[0.12] bg-[#0a1118] p-8 sm:p-14 shadow-[0_30px_90px_-20px_rgba(0,0,0,0.9)] grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                    <div className="lg:col-span-6 space-y-6">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-[#064e3b]/30 border border-[#10b981]/30 text-xs font-mono text-[#34d399]">
-                            <span>STANDARD DEVELOPER CLEARING FEE</span>
-                        </div>
-
-                        <div>
-                            <div className="flex items-baseline gap-3">
-                                <span className="font-sans font-black text-6xl sm:text-7xl tracking-tight text-white">0.5</span>
-                                <span className="font-sans font-bold text-2xl sm:text-3xl text-[#34d399]">ETB</span>
-                                <span className="font-mono text-sm text-[#94a3b8]">/ per verification</span>
-                            </div>
-                            <p className="text-sm text-[#94a3b8] mt-4 leading-relaxed font-normal">
-                                Flat, usage-based rate. Billed solely when a transaction hash is successfully interrogated and verified against the banking ledger.
-                            </p>
-                        </div>
-
-                        <div className="space-y-3 pt-4 border-t border-white/[0.08] font-mono text-xs">
-                            <div className="flex items-center gap-3 text-[#cbd5e1]">
-                                <Check size={16} className="text-[#34d399]" />
-                                <span>200 free starter verification queries upon registration</span>
-                            </div>
-                            <div className="flex items-center gap-3 text-[#cbd5e1]">
-                                <Check size={16} className="text-[#34d399]" />
-                                <span>Zero monthly platform access fees or user seat costs</span>
-                            </div>
-                            <div className="flex items-center gap-3 text-[#cbd5e1]">
-                                <Check size={16} className="text-[#34d399]" />
-                                <span>All 4 bank rails included with no surcharge per bank</span>
-                            </div>
-                        </div>
-
-                        <div className="pt-6">
-                            <Link
-                                href="/sign-up"
-                                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg bg-[#059669] hover:bg-[#10b981] text-white font-sans font-bold text-sm uppercase tracking-wider transition-all shadow-[0_10px_30px_-10px_rgba(5,150,105,0.6)] border border-[#34d399]/40"
-                            >
-                                <span>Create Developer Account</span>
-                                <ArrowUpRight size={16} />
-                            </Link>
-                        </div>
-                    </div>
-
-                    <PricingCalculator />
-                </div>
+        <div className="rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-slate-50/70 dark:bg-[#0c1219] p-6 sm:p-10 lg:p-12 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          <div className="lg:col-span-6 space-y-6">
+            <div className="inline-flex items-center px-3 py-1 rounded-md bg-emerald-50 dark:bg-[#064e3b]/40 border border-emerald-200 dark:border-[#10b981]/30 font-mono text-[11px] uppercase tracking-wider text-[#047857] dark:text-[#34d399]">
+              Pay-As-You-Go Clearing Rate
             </div>
-        </section>
-    );
+
+            <div className="flex items-baseline gap-2.5">
+              <span className="font-sans text-5xl sm:text-6xl font-bold tracking-tight text-slate-950 dark:text-white tabular-nums">
+                0.50
+              </span>
+              <span className="font-mono text-lg text-slate-500 dark:text-[#94a3b8]">ETB / verification</span>
+            </div>
+
+            <ul className="space-y-3 pt-2">
+              {INCLUDED_CAPABILITIES.map((item) => (
+                <li key={item} className="flex items-start gap-3 text-sm text-slate-700 dark:text-[#cbd5e1]">
+                  <Check size={16} className="text-[#059669] dark:text-[#34d399] shrink-0 mt-0.5" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="pt-2 flex flex-wrap items-center gap-3">
+              <Link
+                href="/sign-up"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-[#059669] hover:bg-[#047857] dark:hover:bg-[#10b981] text-white text-sm font-semibold transition-colors"
+              >
+                <span>Create Merchant Account</span>
+                <ArrowRight size={15} />
+              </Link>
+              <Link
+                href="/documentation"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-white hover:bg-slate-100 dark:bg-white/[0.04] dark:hover:bg-white/[0.08] border border-slate-300 dark:border-white/[0.08] text-sm font-medium text-slate-800 dark:text-[#e2e8f0] transition-colors"
+              >
+                <span>Read API Docs</span>
+              </Link>
+            </div>
+          </div>
+
+          <PricingCalculator />
+        </div>
+      </div>
+    </section>
+  );
 }

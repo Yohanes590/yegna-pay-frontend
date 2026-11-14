@@ -1,163 +1,153 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowUpRight, ShieldCheck, Activity, Terminal } from "lucide-react";
 
 export default function LongFooter() {
-    const [currentTime, setCurrentTime] = useState("");
-    const [currentYear, setCurrentYear] = useState(2026);
+  const [eatTime, setEatTime] = useState<string>("");
 
-    useEffect(() => {
-        setCurrentYear(new Date().getFullYear());
-        const updateTime = () => {
-            const now = new Date();
-            // Format for East Africa Time (EAT, UTC+3)
-            const eatString = now.toLocaleTimeString("en-US", {
-                timeZone: "Africa/Addis_Ababa",
-                hour12: false,
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-            });
-            setCurrentTime(eatString);
-        };
-        updateTime();
-        const timer = setInterval(updateTime, 1000);
-        return () => clearInterval(timer);
-    }, []);
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const formatter = new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Africa/Addis_Ababa",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      });
+      setEatTime(formatter.format(now));
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
-    return (
-        <footer className="bg-[#04070b] text-[#94a3b8] pt-20 pb-12 px-6 sm:px-8 font-sans border-t border-white/[0.08] relative overflow-hidden">
-            <div className="max-w-7xl mx-auto">
-                {/* Top Row: Brand & Architectural Coordinates */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-16 border-b border-white/[0.08] items-start">
-                    
-                    {/* Brand Column (5 cols) */}
-                    <div className="lg:col-span-5 space-y-6">
-                        <Link href="/" className="flex items-center gap-3 group">
-                            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#064e3b] to-[#022c22] border border-[#10b981]/40 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.15)] group-hover:border-[#10b981] transition-all">
-                                <span className="font-mono text-xs font-black text-[#34d399] tracking-tighter">YP</span>
-                            </div>
-                            <span className="font-sans font-black text-xl tracking-tight text-white">
-                                YEGNA<span className="text-[#34d399] font-light">PAY</span>
-                            </span>
-                        </Link>
+  const currentYear = new Date().getFullYear();
 
-                        <p className="text-sm text-[#94a3b8] max-w-sm leading-relaxed font-normal">
-                            Autonomous payment verification infrastructure engineered specifically for the Ethiopian banking system. Fast, tamper-proof, and developer-first.
-                        </p>
+  return (
+    <footer className="bg-white dark:bg-[#070b10] text-slate-600 dark:text-[#94a3b8] border-t border-slate-200 dark:border-white/[0.07]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 pb-12 border-b border-slate-200 dark:border-white/[0.07]">
+          {/* Brand */}
+          <div className="lg:col-span-5 space-y-5">
+            <Link href="/" className="inline-flex items-center gap-2.5 group">
+              <div className="w-7 h-7 rounded-lg bg-[#059669] flex items-center justify-center text-white font-mono font-bold text-xs">
+                YP
+              </div>
+              <span className="font-sans font-bold text-base tracking-tight text-slate-950 dark:text-white">
+                Yegna Pay
+              </span>
+            </Link>
 
-                        {/* Operational Telemetry Badge */}
-                        <div className="inline-flex items-center gap-3 px-3 py-1.5 rounded-lg bg-[#0a1118] border border-white/[0.08] font-mono text-xs text-[#cbd5e1]">
-                            <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
-                            <span>Addis Ababa (EAT): {currentTime || "14:45:00"}</span>
-                        </div>
-                    </div>
+            <p className="text-sm text-slate-600 dark:text-[#94a3b8] max-w-sm leading-relaxed">
+              Automated Ethiopian bank payment verification API for Commercial Bank of Ethiopia, Awash Bank, and Bank of Abyssinia.
+            </p>
 
-                    {/* Nav Links Grid (7 cols) */}
-                    <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
-                        <div>
-                            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#64748b] block mb-4">
-                                Platform
-                            </span>
-                            <ul className="space-y-3 font-mono text-xs">
-                                <li>
-                                    <Link href="/#product-showcase" className="hover:text-[#34d399] transition-colors">
-                                        Verification Console
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/#bank-infrastructure" className="hover:text-[#34d399] transition-colors">
-                                        Bank Infrastructure
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/#pricing" className="hover:text-[#34d399] transition-colors">
-                                        Transparent Fee Model
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/connected-banks" className="hover:text-[#34d399] transition-colors">
-                                        Active Bank Nodes
-                                    </Link>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div>
-                            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#64748b] block mb-4">
-                                Developers
-                            </span>
-                            <ul className="space-y-3 font-mono text-xs">
-                                <li>
-                                    <Link href="/documentation" className="hover:text-[#34d399] transition-colors flex items-center gap-1">
-                                        <span>API Documentation</span>
-                                        <ArrowUpRight size={12} />
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/documentation#examples" className="hover:text-[#34d399] transition-colors">
-                                        Request Payloads
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/documentation#expected-response" className="hover:text-[#34d399] transition-colors">
-                                        Response Schemas
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/blog" className="hover:text-[#34d399] transition-colors">
-                                        Engineering Dispatches
-                                    </Link>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div>
-                            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#64748b] block mb-4">
-                                Access
-                            </span>
-                            <ul className="space-y-3 font-mono text-xs">
-                                <li>
-                                    <Link href="/sign-in" className="hover:text-[#34d399] transition-colors">
-                                        Merchant Sign In
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/sign-up" className="hover:text-[#34d399] transition-colors">
-                                        Register New Account
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/dashboard" className="hover:text-[#34d399] transition-colors">
-                                        Production Dashboard
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/#contact" className="hover:text-[#34d399] transition-colors">
-                                        Technical Support
-                                    </Link>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                </div>
-
-                {/* Subfooter: Regulatory & Copyright Bar */}
-                <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-6 font-mono text-xs text-[#64748b]">
-                    <div className="flex items-center gap-4">
-                        <span className="text-[#34d399] font-bold">ETHIOPIA CLEARING PROTOCOL</span>
-                        <span>•</span>
-                        <span>0.5 ETB / VERIFICATION</span>
-                    </div>
-
-                    <div className="text-center md:text-right">
-                        © {currentYear} Yegna Pay. All rights reserved. Addis Ababa, Ethiopia.
-                    </div>
-                </div>
+            <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-[#0c1219] border border-slate-200 dark:border-white/[0.07] font-mono text-xs tabular-nums">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]" />
+              <span className="text-slate-500 dark:text-[#64748b]">Addis Ababa (EAT)</span>
+              <span className="text-slate-950 dark:text-white font-medium">{eatTime || "--:--:--"}</span>
             </div>
-        </footer>
-    );
+          </div>
+
+          {/* Columns */}
+          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
+            <div className="space-y-3.5">
+              <span className="font-mono text-[11px] uppercase tracking-wider text-slate-950 dark:text-white block">
+                Product
+              </span>
+              <ul className="space-y-2.5 text-sm">
+                <li>
+                  <Link href="/#bank-infrastructure" className="hover:text-slate-950 dark:hover:text-white transition-colors">
+                    Supported Banks
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/#how-it-works" className="hover:text-slate-950 dark:hover:text-white transition-colors">
+                    How It Works
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/#product-showcase" className="hover:text-slate-950 dark:hover:text-white transition-colors">
+                    Live Console
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/#pricing" className="hover:text-slate-950 dark:hover:text-white transition-colors">
+                    Pricing
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div className="space-y-3.5">
+              <span className="font-mono text-[11px] uppercase tracking-wider text-slate-950 dark:text-white block">
+                Developers
+              </span>
+              <ul className="space-y-2.5 text-sm">
+                <li>
+                  <Link href="/documentation" className="hover:text-slate-950 dark:hover:text-white transition-colors">
+                    API Documentation
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/documentation#error-codes" className="hover:text-slate-950 dark:hover:text-white transition-colors">
+                    Error Codes (YP_*)
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/connected-banks" className="hover:text-slate-950 dark:hover:text-white transition-colors">
+                    Bank Endpoints
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/blog" className="hover:text-slate-950 dark:hover:text-white transition-colors">
+                    Engineering Blog
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div className="space-y-3.5">
+              <span className="font-mono text-[11px] uppercase tracking-wider text-slate-950 dark:text-white block">
+                Account
+              </span>
+              <ul className="space-y-2.5 text-sm">
+                <li>
+                  <Link href="/sign-in" className="hover:text-slate-950 dark:hover:text-white transition-colors">
+                    Sign In
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/sign-up" className="hover:text-slate-950 dark:hover:text-white transition-colors">
+                    Create Account
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/dashboard" className="hover:text-slate-950 dark:hover:text-white transition-colors">
+                    Dashboard
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/#contact" className="hover:text-slate-950 dark:hover:text-white transition-colors">
+                    Contact Support
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="pt-7 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs text-slate-500 dark:text-[#64748b]">
+          <div>
+            CBE · Awash Bank · Bank of Abyssinia · 0.50 ETB / verification
+          </div>
+          <div>
+            © {currentYear} Yegna Pay. Addis Ababa, Ethiopia.
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
 }

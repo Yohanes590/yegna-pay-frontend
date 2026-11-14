@@ -52,11 +52,8 @@ export default function TopSideNav() {
 
                 <div className="flex items-center gap-2 sm:gap-3">
                     <div className="hidden lg:flex items-center gap-2 px-2.5 py-1 bg-[#f8fafc] dark:bg-[#131d2a] border border-[#e2e8f0] dark:border-[#1e293b] rounded-md">
-                        <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10b981] opacity-75" />
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#059669]" />
-                        </span>
-                        <span className="text-[11px] font-semibold text-[#334155] dark:text-[#94a3b8]">6 Banks Connected</span>
+                        <span className="inline-flex rounded-full h-1.5 w-1.5 bg-[#10b981]" />
+                        <span className="text-[11px] font-mono font-medium text-[#334155] dark:text-[#94a3b8]">CBE · Awash · BOA</span>
                     </div>
 
                     <ThemeToggle />

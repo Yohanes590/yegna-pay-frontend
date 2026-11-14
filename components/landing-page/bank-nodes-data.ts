@@ -3,12 +3,10 @@ export interface BankNode {
     name: string;
     shortName: string;
     logo: string;
-    isSvg?: boolean;
     railType: string;
-    latency: string;
-    protocol: string;
+    domain: string;
     hashFormat: string;
-    status: "Operational" | "Optimal";
+    status: "Supported";
     technicalSpecs: string[];
 }
 
@@ -18,16 +16,15 @@ export const bankNodes: BankNode[] = [
         name: "Commercial Bank of Ethiopia",
         shortName: "CBE",
         logo: "/banks/CBE.png",
-        railType: "National Central Rail",
-        latency: "165ms",
-        protocol: "CBE Direct Core Ledger / Telebirr Interconnect",
-        hashFormat: "FT26... (12 Alphanumeric)",
-        status: "Optimal",
+        railType: "State Commercial Bank",
+        domain: "apps.cbe.com.et",
+        hashFormat: "FT... (e.g. FT26063D7W5C11294152)",
+        status: "Supported",
         technicalSpecs: [
-            "Direct ledger confirmation without receipt OCR latency",
-            "Automated CBE Birr and mobile banking verification",
-            "Replay protection caching for every verified transaction ID",
-            "Sub-second status return with 99.98% match precision",
+            "Direct verification via official CBE receipt URL or extracted QR link",
+            "Automatic extraction of transaction reference, payer, receiver, and amount",
+            "Exact decimal amount and normalized recipient name comparison",
+            "Database-level duplicate transaction ID blocking (409 YP_03DeFg)",
         ],
     },
     {
@@ -35,52 +32,31 @@ export const bankNodes: BankNode[] = [
         name: "Awash Bank",
         shortName: "AWASH",
         logo: "/banks/awash.png",
-        railType: "Private Commercial Rail",
-        latency: "180ms",
-        protocol: "Awash Direct Clearing Gateway",
-        hashFormat: "-2KC... (Standard Core Token)",
-        status: "Operational",
+        railType: "Private Commercial Bank",
+        domain: "awashpay.awashbank.com:8225",
+        hashFormat: "AwashPay Token (e.g. -2KCLVVWOY3-4R75E0)",
+        status: "Supported",
         technicalSpecs: [
-            "Full account number and payer name verification",
-            "High-throughput concurrent API query support",
-            "Exact decimal amount validation (ETB currency lock)",
-            "Cryptographic HMAC webhook callback upon settlement",
+            "Supports AwashPay receipt links and uploaded receipt QR images",
+            "Validates bank domain, sender/receiver identity, and ETB amount",
+            "Enforces project transaction eligibility start-date restrictions",
+            "Triggers project webhook callback immediately after verification",
         ],
     },
     {
         id: "abyssinia",
         name: "Bank of Abyssinia",
-        shortName: "ABYSSINIA",
+        shortName: "BOA",
         logo: "/banks/abs.png",
-        railType: "Digital Banking Rail",
-        latency: "172ms",
-        protocol: "BOA Virtual Ledger Adapter",
-        hashFormat: "BOA... (Native Banking Digest)",
-        status: "Optimal",
+        railType: "Private Commercial Bank",
+        domain: "cs.bankofabyssinia.com",
+        hashFormat: "BOA Slip Reference (e.g. FT23123456)",
+        status: "Supported",
         technicalSpecs: [
-            "Synchronous verification for digital banking transfers",
-            "Real-time duplicate submission prevention",
-            "Zero manual slip inspection required",
-            "Continuous automated health telemetry check every 60s",
-        ],
-    },
-    {
-        id: "boa",
-        name: "Bank of Africa",
-        shortName: "BOA-GROUP",
-        logo: "/banks/boa.svg",
-        isSvg: true,
-        railType: "Pan-African Financial Rail",
-        latency: "210ms",
-        protocol: "BOA Enterprise Institutional Rail",
-        hashFormat: "AFR... (Institutional Clearing Token)",
-        status: "Operational",
-        technicalSpecs: [
-            "Enterprise and institutional transfer reconciliation",
-            "Bulk transaction verification pipeline",
-            "Multi-account merchant routing verification",
-            "Standardized Yegna Pay unified JSON schema",
+            "Verifies Bank of Abyssinia digital slip links and QR receipt uploads",
+            "Normalizes payer and recipient names before matching project rules",
+            "Rejects replayed receipt references across concurrent API calls",
+            "Returns unified JSON verification schema across all bank rails",
         ],
     },
 ];
-

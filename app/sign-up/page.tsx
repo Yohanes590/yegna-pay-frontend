@@ -16,8 +16,6 @@ export default function SignUpPage() {
 
     const handleSocialSignUp = async () => {
         setIsLoading(true);
-        localStorage.setItem("yegna_theme", "dark");
-        document.documentElement.classList.add("dark");
         try {
             const redirectUrl = typeof window !== "undefined" ? `${window.location.origin}/dashboard` : "http://localhost:3000/dashboard";
             const res = await authClient.signIn.social({
@@ -44,8 +42,6 @@ export default function SignUpPage() {
         if (!fullName || !email || !password) return toast.error("Please fill in all registration fields.");
 
         setIsLoading(true);
-        localStorage.setItem("yegna_theme", "dark");
-        document.documentElement.classList.add("dark");
         try {
             const { error } = await authClient.signUp.email({
                 email,
@@ -81,18 +77,18 @@ export default function SignUpPage() {
     };
 
     return (
-        <div className="min-h-screen w-full flex bg-[#060a0f] text-[#f1f5f9] font-sans">
+        <div className="min-h-screen w-full flex bg-white dark:bg-[#070b10] text-slate-900 dark:text-[#f1f5f9] font-sans">
             <AuthSidePanel subtitle="Start verifying bank payments with 200 free requests." />
 
             <div className="flex-1 flex items-center justify-center p-6 sm:p-12 relative z-10">
-                <div className="w-full max-w-md space-y-8 bg-[#0a1118] p-8 sm:p-10 rounded-2xl border border-white/[0.08] shadow-2xl">
+                <div className="w-full max-w-md space-y-7 bg-slate-50/80 dark:bg-[#0c1219] p-7 sm:p-9 rounded-2xl border border-slate-200 dark:border-white/[0.08] shadow-sm dark:shadow-none">
                     <div>
-                        <span className="font-mono text-xs uppercase tracking-widest text-[#34d399] font-bold">
+                        <span className="font-mono text-[11px] uppercase tracking-widest text-[#059669] dark:text-[#34d399] font-semibold">
                             Developer Registration
                         </span>
-                        <h2 className="text-2xl font-black text-white mt-1">Create workspace</h2>
-                        <p className="text-xs text-[#94a3b8] mt-1 font-mono">
-                            Includes 200 free sandbox API verification queries
+                        <h1 className="text-2xl font-bold text-slate-950 dark:text-white mt-1 tracking-tight">Create workspace</h1>
+                        <p className="text-xs text-slate-600 dark:text-[#94a3b8] mt-1 font-mono">
+                            Includes 200 free API verification queries
                         </p>
                     </div>
 
@@ -100,62 +96,62 @@ export default function SignUpPage() {
                         type="button"
                         onClick={handleSocialSignUp}
                         disabled={isLoading}
-                        className="w-full py-3 px-4 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-white font-mono text-xs font-bold flex items-center justify-center gap-3 transition-all"
+                        className="w-full py-3 px-4 rounded-xl bg-white hover:bg-slate-100 dark:bg-white/[0.05] dark:hover:bg-white/[0.1] border border-slate-300 dark:border-white/10 text-slate-900 dark:text-white font-mono text-xs font-bold flex items-center justify-center gap-3 transition-all"
                     >
                         <Github size={16} /> Sign up with GitHub
                     </button>
 
-                    <div className="flex items-center gap-4 text-xs font-mono text-[#64748b]">
-                        <span className="flex-1 h-px bg-white/10" /> OR REGISTER <span className="flex-1 h-px bg-white/10" />
+                    <div className="flex items-center gap-4 text-xs font-mono text-slate-400 dark:text-[#64748b]">
+                        <span className="flex-1 h-px bg-slate-200 dark:bg-white/10" /> OR REGISTER <span className="flex-1 h-px bg-slate-200 dark:bg-white/10" />
                     </div>
 
                     <form onSubmit={handleEmailSignUp} className="space-y-4">
                         <div className="space-y-1.5 font-mono text-xs">
-                            <label className="text-[#94a3b8]">Full Legal Name / Company</label>
+                            <label className="text-slate-600 dark:text-[#94a3b8]">Full Legal Name / Company</label>
                             <div className="relative flex items-center">
-                                <User size={16} className="absolute left-3 text-[#64748b]" />
+                                <User size={16} className="absolute left-3 text-slate-400 dark:text-[#64748b]" />
                                 <input
                                     type="text"
                                     required
                                     value={fullName}
                                     onChange={(e) => setFullName(e.target.value)}
                                     placeholder="Abebe Kebede"
-                                    className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[#060a0f] border border-white/10 text-white placeholder:text-[#475569] focus:outline-none focus:border-[#10b981]"
+                                    className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-white dark:bg-[#060a0f] border border-slate-300 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-[#475569] focus:outline-none focus:border-[#059669] dark:focus:border-[#10b981]"
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-1.5 font-mono text-xs">
-                            <label className="text-[#94a3b8]">Work Email</label>
+                            <label className="text-slate-600 dark:text-[#94a3b8]">Work Email</label>
                             <div className="relative flex items-center">
-                                <Mail size={16} className="absolute left-3 text-[#64748b]" />
+                                <Mail size={16} className="absolute left-3 text-slate-400 dark:text-[#64748b]" />
                                 <input
                                     type="email"
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="abebe@fintech.et"
-                                    className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[#060a0f] border border-white/10 text-white placeholder:text-[#475569] focus:outline-none focus:border-[#10b981]"
+                                    className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-white dark:bg-[#060a0f] border border-slate-300 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-[#475569] focus:outline-none focus:border-[#059669] dark:focus:border-[#10b981]"
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-1.5 font-mono text-xs">
-                            <label className="text-[#94a3b8]">Secret Password</label>
+                            <label className="text-slate-600 dark:text-[#94a3b8]">Secret Password</label>
                             <div className="relative flex items-center">
-                                <Lock size={16} className="absolute left-3 text-[#64748b]" />
+                                <Lock size={16} className="absolute left-3 text-slate-400 dark:text-[#64748b]" />
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="••••••••••••"
-                                    className="w-full pl-10 pr-10 py-2.5 rounded-lg bg-[#060a0f] border border-white/10 text-white placeholder:text-[#475569] focus:outline-none focus:border-[#10b981]"
+                                    className="w-full pl-10 pr-10 py-2.5 rounded-lg bg-white dark:bg-[#060a0f] border border-slate-300 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-[#475569] focus:outline-none focus:border-[#059669] dark:focus:border-[#10b981]"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 text-[#64748b] hover:text-white"
+                                    className="absolute right-3 text-slate-400 hover:text-slate-900 dark:text-[#64748b] dark:hover:text-white"
                                 >
                                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                 </button>
@@ -165,7 +161,7 @@ export default function SignUpPage() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full py-3 rounded-lg bg-[#059669] hover:bg-[#10b981] text-white font-sans text-xs uppercase tracking-widest font-bold flex items-center justify-center gap-2 transition-all shadow-lg border border-[#34d399]/40 disabled:opacity-50"
+                            className="w-full py-3 rounded-lg bg-[#059669] hover:bg-[#047857] dark:hover:bg-[#10b981] text-white font-sans text-xs uppercase tracking-widest font-bold flex items-center justify-center gap-2 transition-all shadow-lg border border-[#34d399]/40 disabled:opacity-50"
                         >
                             {isLoading ? <Loader2 size={16} className="animate-spin" /> : (
                                 <>
@@ -176,8 +172,8 @@ export default function SignUpPage() {
                         </button>
                     </form>
 
-                    <div className="pt-4 border-t border-white/[0.06] text-center font-mono text-xs text-[#94a3b8]">
-                        Already registered? <Link href="/sign-in" className="text-[#34d399] font-bold hover:underline">Sign in here</Link>
+                    <div className="pt-4 border-t border-slate-200 dark:border-white/[0.06] text-center font-mono text-xs text-slate-600 dark:text-[#94a3b8]">
+                        Already registered? <Link href="/sign-in" className="text-[#059669] dark:text-[#34d399] font-bold hover:underline">Sign in here</Link>
                     </div>
                 </div>
             </div>

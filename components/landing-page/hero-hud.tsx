@@ -1,91 +1,163 @@
 "use client";
 
-import Image from "next/image";
-import { ShieldCheck } from "lucide-react";
+import React, { useState } from "react";
+import { CheckCircle2, ImageUp, Link2, ShieldCheck } from "lucide-react";
 
-interface VerificationItem {
-    bank: string;
-    code: string;
-    txId: string;
-    amount: string;
-    sender: string;
-    status: string;
-    latency: string;
-}
+export default function HeroHud() {
+    const [method, setMethod] = useState<"link" | "receipt">("link");
+    const [outcome, setOutcome] = useState<"verified" | "duplicate">("verified");
 
-export default function HeroHud({
-    activeVerification,
-    liveCount,
-}: {
-    activeVerification: VerificationItem;
-    liveCount: number;
-}) {
     return (
-        <div className="lg:col-span-5 relative w-full mt-6 lg:mt-0">
-            <div className="relative rounded-2xl overflow-hidden border border-white/[0.12] bg-[#0a1118] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.9)]">
-                <div className="relative aspect-[4/3] sm:aspect-[16/11] w-full overflow-hidden">
-                    <Image
-                        src="/assets/hero-laptop-workspace.jpg"
-                        alt="Yegna Pay Payment Verification Console"
-                        fill
-                        priority
-                        className="object-cover object-center filter brightness-[0.92] contrast-[1.08] transition-transform duration-700 hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#060a0f] via-transparent to-transparent opacity-80" />
-                    <div className="absolute top-4 left-4 font-mono text-[10px] uppercase tracking-widest px-2.5 py-1 rounded bg-[#060a0f]/80 backdrop-blur border border-white/10 text-[#cbd5e1]">
-                        Console View // Production Node
-                    </div>
+        <div className="rounded-xl border border-white/[0.1] bg-[#0c1219] overflow-hidden shadow-[0_24px_60px_-20px_rgba(0,0,0,0.85)]">
+            {/* Top Bar */}
+            <div className="px-4 py-3 bg-[#070b10] border-b border-white/[0.08] flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2 font-mono text-xs text-[#cbd5e1]">
+                    <span className="px-2 py-0.5 rounded bg-[#064e3b] text-[#34d399] font-semibold">POST</span>
+                    <span>/api/transaction-create</span>
                 </div>
 
-                <div className="p-6 bg-[#0a1118] border-t border-white/[0.08]">
-                    <div className="flex items-center justify-between pb-4 border-b border-white/[0.06]">
-                        <div className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
-                            <span className="font-mono text-xs font-bold text-white uppercase tracking-wider">
-                                Live Verification Pipe
-                            </span>
-                        </div>
-                        <span className="font-mono text-[10px] text-[#64748b]">TX #{liveCount}</span>
-                    </div>
-
-                    <div className="mt-4 space-y-3 font-mono text-xs">
-                        <div className="flex justify-between items-center">
-                            <span className="text-[#64748b]">Active Bank Rail</span>
-                            <span className="text-[#f1f5f9] font-bold flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#34d399]" />
-                                {activeVerification.bank}
-                            </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                            <span className="text-[#64748b]">Transaction Hash</span>
-                            <span className="text-[#34d399] bg-[#064e3b]/30 px-2 py-0.5 rounded border border-[#10b981]/30">
-                                {activeVerification.txId}
-                            </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                            <span className="text-[#64748b]">Extracted Amount</span>
-                            <span className="text-white font-bold text-sm">{activeVerification.amount}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                            <span className="text-[#64748b]">Payer Ledger Match</span>
-                            <span className="text-[#cbd5e1] truncate max-w-[190px]">{activeVerification.sender}</span>
-                        </div>
-                        <div className="pt-2 flex items-center justify-between border-t border-white/[0.06]">
-                            <span className="text-[10px] text-[#64748b] uppercase">Settlement Verdict</span>
-                            <span className="inline-flex items-center gap-1.5 text-[11px] font-black text-[#10b981] uppercase tracking-wider bg-[#10b981]/10 px-2.5 py-1 rounded border border-[#10b981]/30">
-                                <ShieldCheck size={13} />
-                                200 OK — Verified ({activeVerification.latency})
-                            </span>
-                        </div>
-                    </div>
+                <div className="flex items-center gap-1 bg-white/[0.04] p-0.5 rounded-md font-mono text-[11px]">
+                    <button
+                        type="button"
+                        onClick={() => setMethod("link")}
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded transition-colors ${
+                            method === "link"
+                                ? "bg-[#064e3b] text-[#34d399] font-semibold"
+                                : "text-[#94a3b8] hover:text-white"
+                        }`}
+                    >
+                        <Link2 size={12} />
+                        <span>Transaction Link</span>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setMethod("receipt")}
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded transition-colors ${
+                            method === "receipt"
+                                ? "bg-[#064e3b] text-[#34d399] font-semibold"
+                                : "text-[#94a3b8] hover:text-white"
+                        }`}
+                    >
+                        <ImageUp size={12} />
+                        <span>QR Receipt</span>
+                    </button>
                 </div>
             </div>
 
-            <div className="hidden sm:flex justify-between items-center mt-3 text-[10px] font-mono text-[#475569]">
-                <span>LAT: 9.0300° N, LON: 38.7400° E</span>
-                <span>ADDIS ABABA FINANCIAL DISTRICT</span>
+            {/* Request Block */}
+            <div className="p-4 sm:p-5 border-b border-white/[0.08]">
+                <div className="flex items-center justify-between mb-2.5 font-mono text-[11px] text-[#64748b]">
+                    <span>
+                        {method === "link"
+                            ? "Content-Type: application/json"
+                            : "Content-Type: multipart/form-data (FormData)"}
+                    </span>
+                    <span className="text-[#94a3b8]">Authorization: Bearer yegna_live_...</span>
+                </div>
+
+                {method === "link" ? (
+                    <pre className="p-3.5 rounded-lg bg-[#070b10] border border-white/[0.06] font-mono text-xs text-[#e2e8f0] overflow-x-auto leading-relaxed">
+{`{
+  "full_name": "MULUGETA KASSAW CLEANING SERVICE",
+  "price_amount": "4000",
+  "platform": "cbe",
+  "currency": "ETB",
+  "transaction_id": "https://apps.cbe.com.et:100/?id=FT26063D7W5C11294152"
+}`}
+                    </pre>
+                ) : (
+                    <div className="p-3.5 rounded-lg bg-[#070b10] border border-white/[0.06] font-mono text-xs text-[#e2e8f0] space-y-1.5">
+                        <div className="flex justify-between gap-4">
+                            <span className="text-[#94a3b8]">full_name</span>
+                            <span>JOHN DOE ENTERPRISE</span>
+                        </div>
+                        <div className="flex justify-between gap-4">
+                            <span className="text-[#94a3b8]">platform / currency</span>
+                            <span>AWASH / ETB</span>
+                        </div>
+                        <div className="flex justify-between gap-4">
+                            <span className="text-[#94a3b8]">price_amount</span>
+                            <span>1050</span>
+                        </div>
+                        <div className="flex justify-between gap-4 pt-1 border-t border-white/[0.06]">
+                            <span className="text-[#34d399]">receipt_image (File)</span>
+                            <span className="text-[#cbd5e1]">bank-receipt.png (QR decoded)</span>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Response Preview */}
+            <div className="p-4 sm:p-5 bg-[#090e15]">
+                <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2 font-mono text-xs">
+                        {outcome === "verified" ? (
+                            <span className="inline-flex items-center gap-1.5 text-[#34d399] font-semibold">
+                                <CheckCircle2 size={14} />
+                                <span>200 OK — Verified</span>
+                            </span>
+                        ) : (
+                            <span className="inline-flex items-center gap-1.5 text-amber-300 font-semibold">
+                                <ShieldCheck size={14} />
+                                <span>409 Conflict — Replay Blocked</span>
+                            </span>
+                        )}
+                    </div>
+
+                    <div className="flex items-center gap-1 font-mono text-[11px]">
+                        <button
+                            type="button"
+                            onClick={() => setOutcome("verified")}
+                            className={`px-2 py-0.5 rounded transition-colors ${
+                                outcome === "verified"
+                                    ? "bg-white/10 text-white"
+                                    : "text-[#64748b] hover:text-[#cbd5e1]"
+                            }`}
+                        >
+                            200 OK
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setOutcome("duplicate")}
+                            className={`px-2 py-0.5 rounded transition-colors ${
+                                outcome === "duplicate"
+                                    ? "bg-white/10 text-white"
+                                    : "text-[#64748b] hover:text-[#cbd5e1]"
+                            }`}
+                        >
+                            409 Duplicate
+                        </button>
+                    </div>
+                </div>
+
+                {outcome === "verified" ? (
+                    <pre className="p-3.5 rounded-lg bg-[#070b10] border border-white/[0.06] font-mono text-xs text-[#cbd5e1] overflow-x-auto leading-relaxed">
+{`{
+  "status": 200,
+  "success": true,
+  "transaction_status": "VERIFIED",
+  "message": "Transaction Verified Successfully",
+  "data": {
+    "transaction_id": "${method === "link" ? "FT26063D7W5C11294152" : "-2KCLVVWOY3-4R75E0"}",
+    "transaction_amount": ${method === "link" ? 4000 : 1050},
+    "method": "${method === "link" ? "CBE" : "AWASH"}",
+    "status": "verified",
+    "currency": "ETB"
+  }
+}`}
+                    </pre>
+                ) : (
+                    <pre className="p-3.5 rounded-lg bg-[#070b10] border border-amber-500/20 font-mono text-xs text-amber-200/90 overflow-x-auto leading-relaxed">
+{`{
+  "status": 409,
+  "success": false,
+  "message": "This transaction has already been verified",
+  "error_code": "YP_03DeFg",
+  "data": null
+}`}
+                    </pre>
+                )}
             </div>
         </div>
     );
 }
-

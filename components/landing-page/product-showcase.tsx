@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Check, Clock, AlertTriangle, Search } from "lucide-react";
-import { mockTransactions, Transaction } from "./product-types";
+import { mockTransactions } from "./product-types";
 import ProductTable from "./product-table";
 import ProductInspector from "./product-inspector";
 
@@ -27,78 +27,57 @@ export default function ProductShowcase() {
     const activeTx = mockTransactions.find((t) => t.id === selectedTxId) || mockTransactions[0];
 
     return (
-        <section id="product-showcase" className="relative py-28 sm:py-36 bg-[#060a0f] text-[#f1f5f9] border-b border-white/[0.06] overflow-hidden">
-            <div className="absolute inset-0 bg-grid-architectural opacity-30 pointer-events-none" />
-
-            <div className="max-w-7xl mx-auto px-6 sm:px-8 relative z-10">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 pb-8 border-b border-white/[0.08]">
+        <section id="product-showcase" className="py-20 sm:py-28 bg-slate-50 dark:bg-[#070b10] text-slate-900 dark:text-[#f1f5f9] border-b border-slate-200 dark:border-white/[0.07]">
+            <div className="max-w-7xl mx-auto px-5 sm:px-8">
+                <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
                     <div className="max-w-2xl">
-                        <div className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.25em] text-[#34d399] mb-4">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]" />
-                            <span>Product Console // Real Data Architecture</span>
-                        </div>
-                        <h2 className="font-sans font-black text-3xl sm:text-5xl tracking-tight text-white leading-tight">
-                            The verification console.<br />
-                            Engineered for zero human doubt.
+                        <span className="font-mono text-xs text-[#059669] dark:text-[#34d399] uppercase tracking-wider block mb-3">
+                            Verification Console
+                        </span>
+                        <h2 className="font-sans font-bold text-3xl sm:text-4xl tracking-tight text-slate-950 dark:text-white">
+                            Audit every transfer, amount match, and replay attempt.
                         </h2>
                     </div>
-                    <p className="text-sm sm:text-base text-[#94a3b8] max-w-md font-normal leading-relaxed">
-                        Every incoming transfer is interrogated across bank core records, amount exactness, and anti-replay ledger trees in under 200 milliseconds.
+                    <p className="text-sm sm:text-base text-slate-600 dark:text-[#94a3b8] max-w-md leading-relaxed">
+                        Inspect transaction IDs, bank rails, normalized payer/recipient names, and QR receipt audit
+                        records from one workspace.
                     </p>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    <div className="p-5 rounded-xl bg-[#0a1118] border border-white/[0.08]">
-                        <span className="font-mono text-[10px] uppercase tracking-widest text-[#64748b]">Total Interrogations</span>
-                        <div className="mt-2 text-2xl font-black text-white font-mono">1,482</div>
-                        <span className="text-[11px] text-[#34d399] font-mono mt-1 block">Live workspace session</span>
-                    </div>
-                    <div className="p-5 rounded-xl bg-[#0a1118] border border-white/[0.08]">
-                        <span className="font-mono text-[10px] uppercase tracking-widest text-[#64748b]">Clearance Rate</span>
-                        <div className="mt-2 text-2xl font-black text-white font-mono">99.4%</div>
-                        <span className="text-[11px] text-[#34d399] font-mono mt-1 block">1,465 validated matches</span>
-                    </div>
-                    <div className="p-5 rounded-xl bg-[#0a1118] border border-white/[0.08]">
-                        <span className="font-mono text-[10px] uppercase tracking-widest text-[#64748b]">Duplicates Blocked</span>
-                        <div className="mt-2 text-2xl font-black text-[#f59e0b] font-mono">17</div>
-                        <span className="text-[11px] text-[#64748b] font-mono mt-1 block">Replay fraud prevented</span>
-                    </div>
-                    <div className="p-5 rounded-xl bg-[#0a1118] border border-white/[0.08]">
-                        <span className="font-mono text-[10px] uppercase tracking-widest text-[#64748b]">Median Ledger Query</span>
-                        <div className="mt-2 text-2xl font-black text-white font-mono">180ms</div>
-                        <span className="text-[11px] text-[#34d399] font-mono mt-1 block">Sub-second settlement</span>
-                    </div>
-                </div>
-
-                <div className="rounded-2xl border border-white/[0.12] bg-[#0a1118] shadow-[0_30px_90px_-20px_rgba(0,0,0,0.9)] overflow-hidden">
-                    <div className="h-12 px-6 bg-[#060a0f] border-b border-white/[0.08] flex items-center justify-between">
+                <div className="rounded-xl border border-slate-200 dark:border-white/[0.1] bg-white dark:bg-[#0c1219] overflow-hidden shadow-lg dark:shadow-[0_24px_60px_-20px_rgba(0,0,0,0.85)]">
+                    <div className="h-11 px-5 bg-slate-100 dark:bg-[#070b10] border-b border-slate-200 dark:border-white/[0.08] flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="flex items-center gap-1.5">
-                                <div className="w-3 h-3 rounded-full bg-[#ef4444]/80" />
-                                <div className="w-3 h-3 rounded-full bg-[#f59e0b]/80" />
-                                <div className="w-3 h-3 rounded-full bg-[#10b981]/80" />
+                                <div className="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-white/15" />
+                                <div className="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-white/15" />
+                                <div className="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-white/15" />
                             </div>
-                            <span className="h-4 w-px bg-white/10 ml-2" />
-                            <span className="font-mono text-xs text-[#94a3b8] font-bold">console.yegnapay.et / verification / ledger-stream</span>
+                            <span className="font-mono text-xs text-slate-500 dark:text-[#94a3b8]">
+                                dashboard / verifications / ledger
+                            </span>
                         </div>
-                        <span className="hidden sm:flex items-center gap-1.5 font-mono text-xs text-[#34d399]">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#10b981] animate-ping" /> SYNC_MODE: REALTIME_POLL
+                        <span className="hidden sm:inline font-mono text-[11px] text-slate-400 dark:text-[#64748b]">
+                            Interactive Preview
                         </span>
                     </div>
 
-                    <div className="p-6 border-b border-white/[0.06] flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-[#0a1118]">
-                        <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 font-mono text-xs">
+                    <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-white/[0.08] flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-white dark:bg-[#0c1219]">
+                        <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 font-mono text-xs">
                             {(["all", "verified", "pending", "rejected"] as const).map((tab) => (
                                 <button
                                     key={tab}
+                                    type="button"
                                     onClick={() => setSelectedTab(tab)}
-                                    className={`px-3 py-1.5 rounded font-bold uppercase transition-colors flex items-center gap-1.5 ${
+                                    className={`px-3 py-1.5 rounded-md font-semibold uppercase transition-colors flex items-center gap-1.5 ${
                                         selectedTab === tab
-                                            ? tab === "verified" ? "bg-[#064e3b] text-[#34d399] border border-[#10b981]/50"
-                                            : tab === "pending" ? "bg-[#78350f]/60 text-[#fbbf24] border border-[#f59e0b]/50"
-                                            : tab === "rejected" ? "bg-[#450a0a]/60 text-[#f87171] border border-[#ef4444]/50"
-                                            : "bg-white text-[#060a0f]"
-                                            : "bg-white/[0.05] text-[#94a3b8] hover:text-white"
+                                            ? tab === "verified"
+                                                ? "bg-emerald-50 text-[#047857] border border-emerald-200 dark:bg-[#064e3b] dark:text-[#34d399] dark:border-[#10b981]/40"
+                                                : tab === "pending"
+                                                ? "bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-500/40"
+                                                : tab === "rejected"
+                                                ? "bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-500/40"
+                                                : "bg-slate-900 text-white dark:bg-white dark:text-[#070b10]"
+                                            : "bg-slate-100 text-slate-600 hover:text-slate-950 dark:bg-white/[0.04] dark:text-[#94a3b8] dark:hover:text-white"
                                     }`}
                                 >
                                     {tab === "verified" && <Check size={12} />}
@@ -109,14 +88,14 @@ export default function ProductShowcase() {
                             ))}
                         </div>
 
-                        <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-[#060a0f] border border-white/10 text-xs font-mono">
-                            <Search size={14} className="text-[#64748b]" />
+                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-[#070b10] border border-slate-200 dark:border-white/[0.08] text-xs font-mono">
+                            <Search size={14} className="text-slate-400 dark:text-[#64748b]" />
                             <input
                                 type="text"
-                                placeholder="Filter hash, sender, bank..."
+                                placeholder="Filter reference, sender, bank..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="bg-transparent border-none outline-none text-[#f1f5f9] placeholder:text-[#64748b] w-48 sm:w-60"
+                                className="bg-transparent border-none outline-none text-slate-900 dark:text-[#f1f5f9] placeholder:text-slate-400 dark:placeholder:text-[#64748b] w-full sm:w-56"
                             />
                         </div>
                     </div>
