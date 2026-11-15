@@ -1,59 +1,50 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Check, Trash2, ShieldAlert, CheckCircle2, Info, Bell } from "lucide-react";
 import NotificationModal, { NotificationItem } from "./notification-modal";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 export default function NotificationReceiver() {
     const [notifications, setNotifications] = useState<NotificationItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedNotification, setSelectedNotification] = useState<NotificationItem | null>(null);
 
-    const demoMessages: NotificationItem[] = useMemo(() => [
-        {
-            id: "1",
-            type: "security",
-            title: "Duplicate Transfer Replay Blocked",
-            description: "An SMS receipt replay attack was intercepted and blocked for Commercial Bank of Ethiopia transaction.",
-            time: "2 mins ago",
-            isRead: false,
-            longDetails: "Hash: FT26133F833J\nStatus: BLOCKED\nReason: Duplicate hash signature already marked verified in master ledger.",
-        },
-        {
-            id: "2",
-            type: "success",
-            title: "Awash Bank Receipt Verified",
-            description: "Awash Bank transaction link and QR receipt checks are operational.",
-            time: "1 hour ago",
-            isRead: false,
-            longDetails: "Bank: Awash Bank\nMethod: QR Receipt & Transaction Link\nStatus: VERIFIED",
-        },
-        {
-            id: "3",
-            type: "info",
-            title: "API Quota Alert",
-            description: "Your workspace has verified transactions this cycle with 0 false positives.",
-            time: "5 hours ago",
-            isRead: true,
-        },
-    ], []);
+    const loadNotifications = useCallback(async () => {
+        try {
+            const res = await fetch("/api/user/notifications");
+            const data = await res.json();
+            if (data?.success && Array.isArray(data.notifications)) {
+                setNotifications(data.notifications);
+            }
+        } catch {
+            // keep current list on network failure
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setNotifications(demoMessages);
-            setIsLoading(false);
-        }, 300);
-        return () => clearTimeout(timer);
-    }, [demoMessages]);
+        loadNotifications();
+    }, [loadNotifications]);
 
-    const markAllRead = () => {
+    const markAllRead = async () => {
         setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+        try {
+            await fetch("/api/user/notifications", { method: "PATCH" });
+        } catch {
+            // ignore
+        }
     };
 
-    const clearAll = () => setNotifications([]);
+    const clearAll = async () => {
+        setNotifications([]);
+        try {
+            await fetch("/api/user/notifications", { method: "DELETE" });
+        } catch {
+            // ignore
+        }
+    };
 
     return (
         <div className="space-y-6 max-w-4xl pb-12">
@@ -87,7 +78,7 @@ export default function NotificationReceiver() {
             <div className="space-y-3">
                 {isLoading ? (
                     <div className="p-12 text-center text-[#94a3b8] text-sm bg-[#0b131e] rounded-xl border border-[#1e293b]">
-                        Loading security logs...
+                        Loading system notifications...
                     </div>
                 ) : notifications.length === 0 ? (
                     <div className="p-12 text-center text-[#94a3b8] text-sm bg-[#0b131e] rounded-xl border border-[#1e293b]">

@@ -4,16 +4,17 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { BuyRequestFunction } from '@/lib/api_end_poing';
 import BankPaymentStep from './bank-payment-step';
+import { usePublicConfig } from '@/lib/hooks/use-public-config';
 
 export default function BuyRequest() {
+    const { requestCurrency, currency } = usePublicConfig();
     const [activeTab, setActiveTab] = useState(1);
     const [requestCount, setRequestCount] = useState(1);
     const [transactionId, setTransactionId] = useState('');
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const COST_PER_REQUEST = 0.5;
-    const totalCost = requestCount * COST_PER_REQUEST;
+    const totalCost = requestCount * requestCurrency;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -88,7 +89,7 @@ export default function BuyRequest() {
                             />
                             <div className="mt-2 text-right">
                                 <span className="text-xs text-gray-500">Total Price: </span>
-                                <span className="text-sm font-bold text-gray-800">{totalCost.toFixed(2)} ETB</span>
+                                <span className="text-sm font-bold text-gray-800">{totalCost.toFixed(2)} {currency}</span>
                             </div>
                         </div>
 

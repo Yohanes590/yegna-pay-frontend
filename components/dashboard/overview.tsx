@@ -6,12 +6,14 @@ import DashboardChartRender from "@/components/dashboard/dashboard-chart";
 import DashboardTable from "@/components/dashboard/dashboard-table";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { usePublicConfig } from "@/lib/hooks/use-public-config";
 
 interface OverviewProps {
     project: any;
 }
 
 export default function DashboardOverview({ project }: OverviewProps) {
+    const { requestCurrency, currency } = usePublicConfig();
     const transactions = useMemo(() => project?.transactions || [], [project]);
 
     const stats = useMemo(() => {
@@ -20,13 +22,13 @@ export default function DashboardOverview({ project }: OverviewProps) {
         const rejected = transactions.filter((t: any) => t.transaction_status === "rejected").length;
         const pending = transactions.filter((t: any) => t.transaction_status === "pending").length;
         const successRate = total > 0 ? ((verified / total) * 100).toFixed(1) : "100.0";
-        const totalFees = (total * 0.5).toFixed(2);
+        const totalFees = (total * requestCurrency).toFixed(2);
         const totalVolume = transactions
             .reduce((acc: number, t: any) => acc + Number(t.transaction_amount || 0), 0)
             .toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
         return { total, verified, rejected, pending, successRate, totalFees, totalVolume };
-    }, [transactions]);
+    }, [transactions, requestCurrency]);
 
     return (
         <div className="space-y-6">
@@ -92,10 +94,10 @@ export default function DashboardOverview({ project }: OverviewProps) {
                         </div>
                         <div className="mt-3">
                             <h3 className="text-3xl font-black text-[#0f172a] dark:text-[#f8fafc] font-mono tracking-tight">
-                                {stats.totalFees} <span className="text-xs font-semibold text-[#64748b] dark:text-[#94a3b8]">ETB</span>
+                                {stats.totalFees} <span className="text-xs font-semibold text-[#64748b] dark:text-[#94a3b8]">{currency}</span>
                             </h3>
                             <p className="text-xs text-[#64748b] dark:text-[#94a3b8] mt-1 font-medium">
-                                Fixed tariff of <span className="font-bold text-[#064e3b] dark:text-[#34d399]">0.50 ETB</span> per verification
+                                Fixed tariff of <span className="font-bold text-[#064e3b] dark:text-[#34d399]">{requestCurrency.toFixed(2)} {currency}</span> per verification
                             </p>
                         </div>
                         <div className="mt-4 pt-3 border-t border-[#f1f5f9] dark:border-[#1e293b] flex items-center justify-between text-xs">

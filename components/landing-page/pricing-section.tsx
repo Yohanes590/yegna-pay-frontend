@@ -1,8 +1,11 @@
 "use client"
 import { CheckCheck } from "lucide-react"
 import { motion } from "framer-motion"
+import { usePublicConfig } from "@/lib/hooks/use-public-config"
 
 export default function PricingRender() {
+    const { requestCurrency, currency, freeRequests } = usePublicConfig();
+
     const PricingData = [
         {
             title: "Starter",
@@ -10,7 +13,7 @@ export default function PricingRender() {
             name: "Free Tier",
             description: "Perfect for testing and small integrations.",
             features: [
-                "200 free API requests",
+                `${freeRequests} free API requests`,
                 "Basic transaction verification",
                 "Duplicate check protection",
                 "Email support",
@@ -21,13 +24,13 @@ export default function PricingRender() {
         },
         {
             title: "Pay As You Go",
-            price: "0.5 ETB",
+            price: `${requestCurrency} ${currency}`,
             suffix: "/ request",
             name: "Usage Based",
             description: "Pay only for what you use. No monthly commitment.",
             features: [
                 "All Starter features",
-                "Pay per API request (0.5 ETB)",
+                `Pay per API request (${requestCurrency} ${currency})`,
                 "Multi-layer fraud detection",
                 "Webhook support",
                 "Real-time transaction verification",
@@ -57,7 +60,7 @@ export default function PricingRender() {
     return (
         <section id="pricing" className="min-h-screen bg-[#020617] py-32 px-6 font-sans text-[#F8FAFC] border-t border-[#1E293B] overflow-hidden">
             <div className="max-w-7xl mx-auto text-center relative z-10">
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}

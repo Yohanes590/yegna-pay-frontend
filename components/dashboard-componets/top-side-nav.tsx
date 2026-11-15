@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Bell, Menu, Calendar, X, ExternalLink, User } from "lucide-react";
@@ -15,6 +15,22 @@ export default function TopSideNav() {
     const router = useRouter();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [imgError, setImgError] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    useEffect(() => {
+        let isMounted = true;
+        fetch("/api/user/notifications")
+            .then((res) => res.json())
+            .then((data) => {
+                if (isMounted && data?.success && typeof data.unreadCount === "number") {
+                    setUnreadCount(data.unreadCount);
+                }
+            })
+            .catch(() => {});
+        return () => {
+            isMounted = false;
+        };
+    }, [pathname]);
 
     const pathSegments = pathname.split("/").filter(Boolean);
     const projectId = pathSegments.length >= 2 && pathSegments[0] === "dashboard" ? pathSegments[1] : (user?.projects?.[0]?.id || "");
@@ -67,7 +83,9 @@ export default function TopSideNav() {
                         title="Notifications"
                     >
                         <Bell size={16} />
-                        <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#059669] rounded-full" />
+                        {unreadCount > 0 && (
+                            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#059669] rounded-full animate-pulse" />
+                        )}
                     </Link>
 
                     {/* Profile Avatar Header Item */}

@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import { ShieldCheck, Terminal, Cpu } from "lucide-react";
+import { usePublicConfig } from "@/lib/hooks/use-public-config";
 
 export default function AuthSidePanel({ subtitle }: { subtitle: string }) {
+  const { requestCurrency, currency } = usePublicConfig();
+
   return (
     <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center p-12 border-r border-slate-200 dark:border-white/[0.07] bg-slate-50 dark:bg-[#090e15]">
       <div className="relative z-10 max-w-md space-y-8">
@@ -36,7 +39,7 @@ export default function AuthSidePanel({ subtitle }: { subtitle: string }) {
           </div>
           <div className="flex items-center gap-3 text-slate-700 dark:text-[#cbd5e1]">
             <Cpu size={15} className="text-[#059669] dark:text-[#34d399] shrink-0" />
-            <span>0.50 ETB flat rate per verified transaction</span>
+            <span>{requestCurrency.toFixed(2)} {currency} flat rate per verified transaction</span>
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { CheckCircle2, XCircle, Clock, ShieldCheck, ArrowRight, Building2, Hash,
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { formatDate, formatPlatformLabel, formatTransactionId, getReceiptUrl, getTransactionPlatform } from "@/lib/utils";
+import { usePublicConfig } from "@/lib/hooks/use-public-config";
 
 interface VerificationModalProps {
     open: boolean;
@@ -12,6 +13,7 @@ interface VerificationModalProps {
 }
 
 export default function VerificationModal({ open, onOpenChange, record }: VerificationModalProps) {
+    const { requestCurrency, currency } = usePublicConfig();
     if (!record) return null;
 
     const isVerified = record.transaction_status === "verified";
@@ -98,7 +100,7 @@ export default function VerificationModal({ open, onOpenChange, record }: Verifi
                         </div>
                         <div className="flex items-center justify-between text-xs py-1">
                             <span className="text-[#334155] dark:text-[#94a3b8] font-medium">Tariff Settlement</span>
-                            <span className="font-mono font-bold text-[#0f172a] dark:text-[#f8fafc]">0.50 ETB</span>
+                            <span className="font-mono font-bold text-[#0f172a] dark:text-[#f8fafc]">{requestCurrency.toFixed(2)} {currency}</span>
                         </div>
                     </div>
 

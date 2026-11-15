@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 import PricingCalculator from "./pricing-calculator";
+import { usePublicConfig } from "@/lib/hooks/use-public-config";
 
 const INCLUDED_CAPABILITIES = [
   "All 3 supported banks (CBE, Awash Bank, Bank of Abyssinia)",
@@ -12,6 +15,9 @@ const INCLUDED_CAPABILITIES = [
 ];
 
 export default function FeaturesAndPricing() {
+  const { requestCurrency, currency } = usePublicConfig();
+  const priceDisplay = requestCurrency.toFixed(2);
+
   return (
     <section
       id="pricing"
@@ -23,7 +29,7 @@ export default function FeaturesAndPricing() {
             Transparent Pricing
           </p>
           <h2 className="font-sans text-3xl sm:text-4xl font-bold tracking-tight text-slate-950 dark:text-white">
-            0.50 ETB per verified transaction.
+            {priceDisplay} {currency} per verified transaction.
           </h2>
           <p className="text-slate-600 dark:text-[#94a3b8] text-base leading-relaxed">
             No monthly subscription, no per-bank surcharge, and no percentage cut on your revenue. Fund your project balance and pay only for completed verifications.
@@ -38,9 +44,9 @@ export default function FeaturesAndPricing() {
 
             <div className="flex items-baseline gap-2.5">
               <span className="font-sans text-5xl sm:text-6xl font-bold tracking-tight text-slate-950 dark:text-white tabular-nums">
-                0.50
+                {priceDisplay}
               </span>
-              <span className="font-mono text-lg text-slate-500 dark:text-[#94a3b8]">ETB / verification</span>
+              <span className="font-mono text-lg text-slate-500 dark:text-[#94a3b8]">{currency} / verification</span>
             </div>
 
             <ul className="space-y-3 pt-2">

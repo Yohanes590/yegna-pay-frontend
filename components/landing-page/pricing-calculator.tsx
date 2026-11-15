@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { usePublicConfig } from "@/lib/hooks/use-public-config";
 
 export default function PricingCalculator() {
+  const { requestCurrency, currency } = usePublicConfig();
   const [monthlyVolume, setMonthlyVolume] = useState<number>(2000);
-  const estimatedCost = (monthlyVolume * 0.5).toFixed(0);
+  const estimatedCost = (monthlyVolume * requestCurrency).toFixed(0);
 
   return (
     <div className="lg:col-span-6 p-6 sm:p-8 rounded-xl bg-white dark:bg-[#070b10] border border-slate-200 dark:border-white/[0.08] space-y-6 shadow-sm dark:shadow-none">
@@ -13,7 +15,7 @@ export default function PricingCalculator() {
           Monthly Volume Estimator
         </span>
         <span className="font-mono text-xs text-[#059669] dark:text-[#34d399] tabular-nums">
-          0.50 ETB / query
+          {requestCurrency.toFixed(2)} {currency} / query
         </span>
       </div>
 
@@ -51,7 +53,7 @@ export default function PricingCalculator() {
             Estimated monthly clearing fee
           </span>
           <span className="text-2xl font-bold font-mono text-[#059669] dark:text-[#34d399] tabular-nums">
-            {Number(estimatedCost).toLocaleString()} ETB
+            {Number(estimatedCost).toLocaleString()} {currency}
           </span>
         </div>
         <div className="pt-3 border-t border-slate-200 dark:border-white/[0.06] text-xs text-slate-600 dark:text-[#94a3b8] leading-relaxed">

@@ -2,8 +2,10 @@
 
 import { Database } from "lucide-react";
 import { Transaction } from "./product-types";
+import { usePublicConfig } from "@/lib/hooks/use-public-config";
 
 export default function ProductInspector({ activeTx }: { activeTx: Transaction }) {
+    const { requestCurrency } = usePublicConfig();
     return (
         <div className="lg:col-span-5 p-6 bg-slate-50/70 dark:bg-[#060a0f]/40 border-t lg:border-t-0 lg:border-l border-slate-200 dark:border-white/[0.06] flex flex-col justify-between">
             <div>
@@ -75,7 +77,7 @@ export default function ProductInspector({ activeTx }: { activeTx: Transaction }
         currency: "ETB",
         platform: activeTx.bank,
         verified: activeTx.status === "verified",
-        verification_fee_etb: 0.50,
+        verification_fee_etb: requestCurrency,
     },
     null,
     2

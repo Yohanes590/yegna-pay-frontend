@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePublicConfig } from "@/lib/hooks/use-public-config";
 
 export default function LongFooter() {
+  const { requestCurrency, currency } = usePublicConfig();
   const [eatTime, setEatTime] = useState<string>("");
 
   useEffect(() => {
@@ -141,7 +143,7 @@ export default function LongFooter() {
 
         <div className="pt-7 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs text-slate-500 dark:text-[#64748b]">
           <div>
-            CBE · Awash Bank · Bank of Abyssinia · 0.50 ETB / verification
+            CBE · Awash Bank · Bank of Abyssinia · {requestCurrency.toFixed(2)} {currency} / verification
           </div>
           <div>
             © {currentYear} Yegna Pay. Addis Ababa, Ethiopia.

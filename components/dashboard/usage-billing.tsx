@@ -47,8 +47,7 @@ export default function DashboardBilling({ user }: BillingProps) {
 
     const handleBuyRequest = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!txId.trim()) return toast.error("Please enter the payment transaction reference ID.");
-        if (requestCount < 1) return toast.error("Minimum purchase is 1 request.");
+        if (!txId.trim()) return toast.error("Please enter the payment transaction reference ID or URL.");
 
         setSubmitting(true);
         try {
@@ -56,7 +55,7 @@ export default function DashboardBilling({ user }: BillingProps) {
             if (res && res.success === false) {
                 toast.error(res.message || "Payment verification failed.");
             } else {
-                toast.success(`Verified payment! Added ${requestCount} credits.`);
+                toast.success(res.message || `Verified payment! Credited ${res?.data?.requests_credited || requestCount} requests.`);
                 setTxId("");
                 await loadBilling();
             }
