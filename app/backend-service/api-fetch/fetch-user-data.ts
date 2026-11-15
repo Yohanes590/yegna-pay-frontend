@@ -1,7 +1,15 @@
 import Cookies from "js-cookie";
 
 export async function UserDataFetch() {
-    const token = Cookies.get("access_token");
+    let token = Cookies.get("access_token");
+    if (!token && typeof window !== "undefined") {
+        const searchParams = new URLSearchParams(window.location.search);
+        const urlToken = searchParams.get("token");
+        if (urlToken) {
+            token = urlToken;
+            Cookies.set("access_token", urlToken, { expires: 7 });
+        }
+    }
     try {
         const fetchingUserInformation = await fetch("/api/user/info", {
             method: "POST",

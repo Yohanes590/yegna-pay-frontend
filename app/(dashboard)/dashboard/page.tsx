@@ -21,6 +21,14 @@ export default function DashboardWorkspaces() {
     const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
+        if (typeof window !== "undefined") {
+            const searchParams = new URLSearchParams(window.location.search);
+            const urlToken = searchParams.get("token");
+            if (urlToken) {
+                Cookies.set("access_token", urlToken, { expires: 7 });
+                window.history.replaceState({}, "", window.location.pathname);
+            }
+        }
         fetchUser();
     }, [fetchUser]);
 

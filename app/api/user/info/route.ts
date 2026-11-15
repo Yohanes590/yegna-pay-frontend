@@ -9,6 +9,7 @@ export async function POST(req: Request) {
         };
         const cookie = req.headers.get("cookie");
         if (cookie) headers["cookie"] = cookie;
+        if (body?.token) headers["Authorization"] = `Bearer ${body.token}`;
 
         const backendRes = await fetch(`${getBackendUrl()}/auth/check`, {
             method: "POST",

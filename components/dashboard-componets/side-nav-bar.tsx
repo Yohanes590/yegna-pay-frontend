@@ -25,12 +25,22 @@ export default function SideNavRender() {
     const [showSignOut, setShowSignOut] = useState(false);
     const [imgError, setImgError] = useState(false);
 
-    useEffect(() => { fetchUser(); }, [fetchUser]);
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const params = new URLSearchParams(window.location.search);
+            const urlToken = params.get("token");
+            if (urlToken) {
+                Cookies.set("access_token", urlToken, { expires: 7 });
+            }
+        }
+        fetchUser();
+    }, [fetchUser]);
 
     useEffect(() => {
         if (loading) return;
+        const hasUrlToken = typeof window !== "undefined" && new URLSearchParams(window.location.search).has("token");
         const token = Cookies.get("access_token") || Cookies.get("better-auth.session_token");
-        if (!token && !user) router.push("/sign-in");
+        if (!token && !user && !hasUrlToken) router.push("/sign-in");
     }, [user, loading, router]);
 
     const pathSegments = pathname.split("/").filter(Boolean);
