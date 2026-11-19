@@ -1,47 +1,48 @@
 [
   {
-    "package_name": "Starter",
+    "package_name": "Free",
     "pricing": 0,
     "requests": 200,
     "features": [
-      "Free tier for testing",
-      "Basic dashboard access",
-      "Community support"
+      "200 new receipts / month",
+      "All 17 banks & wallets",
+      "App + API access",
+      "200 screenshot reads / month"
     ]
   },
   {
-    "package_name": "Basic",
-    "pricing": 50,
-    "requests": 1000,
+    "package_name": "Shop",
+    "pricing": 499,
+    "requests": 2000,
+    "requests_period": "day",
     "features": [
-      "Standard API access",
-      "Payment verification",
-      "Basic analytics dashboard",
-      "Email support"
+      "Everything in Free",
+      "1,000 screenshot reads / month",
+      "REST API + streamed results",
+      "Standard priority"
     ]
   },
   {
-    "package_name": "Growth",
-    "pricing": 200,
-    "requests": 5000,
+    "package_name": "Developer",
+    "pricing": 999,
+    "requests": 30000,
     "features": [
-      "Every thing basic",
-      "Detailed analytics dashboard",
-      "Webhook support",
-      "Priority email support"
+      "Everything in Shop",
+      "2,000 screenshot reads / month",
+      "Faster priority queue",
+      "Overage 0.05 ETB / receipt (opt-in)"
     ]
   },
   {
-    "package_name": "Pro",
-    "pricing": 600,
-    "requests": 20000,
+    "package_name": "Scale",
+    "pricing": 2999,
+    "requests": 150000,
     "features": [
-      "Full API access",
-      "Advanced fraud detection (future-ready)",
-      "Transaction logs & insights",
-      "Webhook + retry system",
-      "Priority support",
-      "Early access to new features"
+      "Everything in Developer",
+      "6,000 screenshot reads / month",
+      "Top priority under 3s at peak",
+      "Overage 0.03 ETB / receipt (opt-in)",
+      "SLA + priority support"
     ]
   }
 ]

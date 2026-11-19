@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Search } from "lucide-react";
 import ThemeToggle from "@/components/theme-toggle";
+import AgentDownloadButton from "@/components/agent-download-button";
 import DocsSidebar from "./docs-sidebar";
 import DocsSections from "./docs-sections";
 
@@ -42,6 +43,7 @@ export default function DocumentationPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
+                    <AgentDownloadButton className="hidden sm:inline-flex h-9" label="Agent Download" />
                     <div className="hidden sm:flex items-center gap-2 bg-slate-50 dark:bg-[#0c1219] border border-slate-200 dark:border-white/[0.08] rounded-lg px-3 py-1.5 text-slate-400 dark:text-[#64748b] focus-within:border-[#059669] dark:focus-within:border-[#10b981]/50 transition-all font-mono text-xs">
                         <Search size={14} />
                         <input

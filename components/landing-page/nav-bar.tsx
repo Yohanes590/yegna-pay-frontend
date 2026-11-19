@@ -6,6 +6,7 @@ import { ChevronDown, Menu, X, ArrowRight } from "lucide-react";
 import ThemeToggle from "@/components/theme-toggle";
 import MobileNavDrawer from "./mobile-nav-drawer";
 import { productItems, developerItems } from "./nav-data";
+import AgentDownloadButton from "@/components/agent-download-button";
 
 export default function NavigationBarRender() {
     const [scrolled, setScrolled] = useState(false);
@@ -111,6 +112,7 @@ export default function NavigationBarRender() {
                 </nav>
 
                 <div className="hidden md:flex items-center gap-2.5 shrink-0">
+                    <AgentDownloadButton variant="ghost" className="h-9" />
                     <ThemeToggle />
                     <Link
                         href="/sign-in"

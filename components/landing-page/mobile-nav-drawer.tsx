@@ -27,6 +27,7 @@ const navGroups = [
             { href: "/documentation#error-codes", label: "Error Codes Reference" },
             { href: "/#developer-api", label: "Integration Examples" },
             { href: "/blog", label: "Engineering Blog" },
+            { href: "/api/agent-download", label: "Agent Download" },
             { href: "/connected-banks", label: "Bank Specifications" },
         ],
     },

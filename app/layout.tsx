@@ -119,7 +119,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${plusJakarta.variable} ${jetbrainsMono.variable} ${plusJakarta.className} dark h-full antialiased bg-white dark:bg-[#070b10]`}
+      className={`${plusJakarta.variable} ${jetbrainsMono.variable} ${plusJakarta.className} dark h-full antialiased bg-slate-50 dark:bg-[#060a10]`}
     >
       <head>
         <meta name="google-site-verification" content="4OoJ6t55cvK2bVTcORgbP_2Z2tjvoIhru5DjCc0bfJY" />

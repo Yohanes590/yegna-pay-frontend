@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BookOpen } from "lucide-react";
+import AgentDownloadButton from "@/components/agent-download-button";
 
 export default function HeroSectionRender() {
     return (
@@ -56,6 +57,8 @@ export default function HeroSectionRender() {
                             <BookOpen size={16} className="text-[#059669] dark:text-[#34d399]" />
                             <span>API Documentation</span>
                         </Link>
+
+                        <AgentDownloadButton className="h-12 px-7" label="Agent Download" />
                     </div>
                 </div>
             </div>

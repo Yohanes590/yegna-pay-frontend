@@ -12,6 +12,7 @@ import {
     AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
     AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
+import VerificationModeToggle from "@/components/dashboard/verification-mode-toggle";
 
 function toDateInputValue(raw?: string | null): string {
     if (!raw || /^\d+[mh]$/i.test(raw.trim())) return "";
@@ -25,6 +26,9 @@ export default function DashboardSettings({ project }: { project: any }) {
     const [projectDescription, setProjectDescription] = useState(project?.project_description || "");
     const [receiverName, setReceiverName] = useState(project?.receiver_name || "");
     const [acceptPaymentsAfter, setAcceptPaymentsAfter] = useState(() => toDateInputValue(project?.before_expires));
+    const [detailVerification, setDetailVerification] = useState<boolean>(
+        project?.detail_verification !== false
+    );
 
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [saveLoading, setSaveLoading] = useState(false);
@@ -36,8 +40,11 @@ export default function DashboardSettings({ project }: { project: any }) {
         const token = Cookies.get("access_token");
         const id = pathName.split("/")[2];
 
-        if (!projectName || !projectDescription || !receiverName) {
-            return toast.error("Please fill in project name, description, and receiver name.");
+        if (!projectName || !projectDescription) {
+            return toast.error("Please fill in project name and description.");
+        }
+        if (detailVerification && !receiverName) {
+            return toast.error("Receiver name is required when detailed verification is enabled.");
         }
 
         setSaveLoading(true);
@@ -48,6 +55,7 @@ export default function DashboardSettings({ project }: { project: any }) {
                 project_description: projectDescription,
                 receiver_name: receiverName,
                 before_expires: acceptPaymentsAfter,
+                detail_verification: detailVerification,
                 api_sec_key: project?.api_sec_key,
             };
 
@@ -116,6 +124,8 @@ export default function DashboardSettings({ project }: { project: any }) {
                 </CardHeader>
                 <CardContent className="pt-4">
                     <form onSubmit={saveChanges} className="space-y-4">
+                        <VerificationModeToggle enabled={detailVerification} onChange={setDetailVerification} />
+
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label className="text-[11px] font-bold text-[#475569] dark:text-[#94a3b8] uppercase block mb-1">Project Name</label>
@@ -141,9 +151,12 @@ export default function DashboardSettings({ project }: { project: any }) {
                                 value={acceptPaymentsAfter}
                                 onChange={(e) => setAcceptPaymentsAfter(e.target.value)}
                                 className="h-9"
+                                disabled={!detailVerification}
                             />
                             <p className="text-[11px] text-[#64748b] dark:text-[#94a3b8] mt-1">
-                                Rejects bank receipts dated before this project start date across all supported banks.
+                                {detailVerification
+                                    ? "Rejects bank receipts dated before this project start date across all supported banks."
+                                    : "Not enforced while payment-only verification is enabled."}
                             </p>
                         </div>
 

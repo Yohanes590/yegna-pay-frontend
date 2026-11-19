@@ -27,6 +27,15 @@ export default function DocsIntroAuth({ copiedCode, onCopy }: DocsIntroAuthProps
                     Abyssinia (BOA) through a single endpoint supporting both QR receipt image uploads and direct
                     bank transaction links.
                 </p>
+                <p className="text-sm text-slate-600 dark:text-[#94A3B8] mb-4">
+                    Each API key can run <strong className="font-semibold text-slate-800 dark:text-white">detailed verification</strong>{" "}
+                    (receiver name, amount, date rules) or <strong className="font-semibold text-slate-800 dark:text-white">payment-only</strong>{" "}
+                    (amount + duplicate detection). Configure this in Dashboard → Create project or Settings. Download the{" "}
+                    <a href="/api/agent-download" className="text-[#059669] dark:text-[#34D399] font-medium hover:underline">
+                        agent integration guide
+                    </a>{" "}
+                    for AI-assisted setup.
+                </p>
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#0c1219] border border-slate-200 dark:border-white/[0.08] font-mono text-xs text-slate-700 dark:text-[#cbd5e1] flex flex-wrap items-center justify-between gap-2">
                     <span>
                         Active Base URL (<code className="text-[#059669] dark:text-[#34D399]">NEXT_PUBLIC_BACKEND_URL</code>):{" "}

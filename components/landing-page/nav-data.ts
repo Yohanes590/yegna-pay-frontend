@@ -44,6 +44,11 @@ export const developerItems: NavDropdownItem[] = [
         href: "/#developers",
     },
     {
+        label: "Agent Download",
+        description: "Markdown guide for AI assistants and quick integrations.",
+        href: "/api/agent-download",
+    },
+    {
         label: "Engineering Blog",
         description: "Architecture notes and platform updates.",
         href: "/blog",

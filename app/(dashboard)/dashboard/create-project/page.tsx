@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ApiKeyField from "./api-key-field";
+import VerificationModeToggle from "@/components/dashboard/verification-mode-toggle";
 
 function getLocalDateString(): string {
     const now = new Date();
@@ -27,6 +28,7 @@ export default function ProjectCreationRender() {
     const [projectDiscription, setDisc] = useState<string>("");
     const [expiresDate, setExpiresDate] = useState<string>(() => getLocalDateString());
     const [paymentReceiverName, setPaymentReceiverName] = useState<string>("");
+    const [detailVerification, setDetailVerification] = useState<boolean>(true);
 
     useEffect(() => {
         const genAPIKey = `yegna_live_${cryptoRandomString({ length: 32, type: "hex" })}`;
@@ -35,8 +37,12 @@ export default function ProjectCreationRender() {
 
     const createProjectHandler = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!projectName || !generatedKey || !projectDiscription || !paymentReceiverName || !expiresDate) {
-            toast.error("Please fill in project name, receiver name, start date, and description.");
+        if (!projectName || !generatedKey || !projectDiscription) {
+            toast.error("Please fill in project name and description.");
+            return;
+        }
+        if (detailVerification && (!paymentReceiverName || !expiresDate)) {
+            toast.error("Detailed verification requires payment receiver name and eligibility start date.");
             return;
         }
 
@@ -55,7 +61,8 @@ export default function ProjectCreationRender() {
                     discription: projectDiscription,
                     date_expire: expiresDate,
                     transaction_start_date: expiresDate,
-                    receiver_name: paymentReceiverName
+                    receiver_name: paymentReceiverName,
+                    detail_verification: detailVerification,
                 })
             });
             const serverResponse = await requestServer.json();
@@ -93,6 +100,11 @@ export default function ProjectCreationRender() {
                 </CardHeader>
                 <CardContent className="pt-4">
                     <form onSubmit={createProjectHandler} className="space-y-4">
+                        <VerificationModeToggle
+                            enabled={detailVerification}
+                            onChange={setDetailVerification}
+                        />
+
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label className="text-[11px] font-bold text-[#475569] dark:text-[#94a3b8] uppercase block mb-1">Project Name</label>
@@ -105,13 +117,18 @@ export default function ProjectCreationRender() {
                                 />
                             </div>
                             <div>
-                                <label className="text-[11px] font-bold text-[#475569] dark:text-[#94a3b8] uppercase block mb-1">Payment Receiver Name</label>
+                                <label className="text-[11px] font-bold text-[#475569] dark:text-[#94a3b8] uppercase block mb-1">
+                                    Payment Receiver Name
+                                    {!detailVerification && (
+                                        <span className="text-[#94a3b8] font-normal normal-case"> (optional in payment-only mode)</span>
+                                    )}
+                                </label>
                                 <Input
                                     value={paymentReceiverName}
                                     onChange={(e) => setPaymentReceiverName(e.target.value)}
                                     placeholder="e.g. Yegna Merchant LLC"
                                     className="h-9"
-                                    required
+                                    required={detailVerification}
                                 />
                             </div>
                         </div>
@@ -137,10 +154,13 @@ export default function ProjectCreationRender() {
                                 value={expiresDate}
                                 onChange={(e) => setExpiresDate(e.target.value)}
                                 className="h-9"
-                                required
+                                required={detailVerification}
+                                disabled={!detailVerification}
                             />
                             <p className="text-[11px] text-[#64748b] dark:text-[#94a3b8] mt-1">
-                                Only bank transactions dated on or after this date will be eligible for verification.
+                                {detailVerification
+                                    ? "Only bank transactions dated on or after this date will be eligible for verification."
+                                    : "Not used while payment-only verification is enabled."}
                             </p>
                         </div>
 
