@@ -10,7 +10,8 @@ import {
     LogOut, Plus, FolderKanban
 } from "lucide-react";
 import { useUserData } from "@/lib/hooks/user_data_fetch";
-import { authClient } from "@/lib/auth-client";
+import { authClient, useSession } from "@/lib/auth-client";
+import { resolveProfileDisplay } from "@/lib/user-profile";
 import ThemeToggle from "@/components/theme-toggle";
 import {
     AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -22,6 +23,7 @@ export default function SideNavRender() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { user, loading, function: fetchUser } = useUserData();
+    const { data: session } = useSession();
     const [showSignOut, setShowSignOut] = useState(false);
     const [imgError, setImgError] = useState(false);
 
@@ -49,7 +51,12 @@ export default function SideNavRender() {
     const currentProject = user?.projects?.find((p: any) => p.id === projectId) || user?.projects?.[0];
 
     const currentTab = searchParams.get("tab") || "overview";
-    const avatarUrl = user?.avatar_url || (user as any)?.image || "";
+    const profile = resolveProfileDisplay(user, session?.user);
+    const avatarUrl = profile.avatarUrl;
+
+    useEffect(() => {
+        setImgError(false);
+    }, [avatarUrl]);
 
     const navItems = useMemo(() => [
         { label: "Overview", icon: LayoutDashboard, tab: "overview" },
@@ -146,20 +153,18 @@ export default function SideNavRender() {
                             {avatarUrl && !imgError ? (
                                 <img
                                     src={avatarUrl}
-                                    alt={user?.full_name || "Profile"}
+                                    alt={profile.displayName}
                                     onError={() => setImgError(true)}
                                     className="w-8 h-8 rounded-full object-cover border-2 border-[#059669] shrink-0"
                                 />
                             ) : (
                                 <div className="w-8 h-8 rounded-full bg-[#064e3b] text-white flex items-center justify-center text-xs font-bold uppercase shrink-0">
-                                    {user?.full_name?.charAt(0) || user?.email?.charAt(0) || "U"}
+                                    {profile.rawHandle?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || "U"}
                                 </div>
                             )}
                             <div className="min-w-0">
-                                <p className="text-xs font-bold text-[#0f172a] dark:text-[#f8fafc] truncate">{user?.full_name || "Merchant"}</p>
-                                <p className="text-[10px] text-[#059669] dark:text-[#34d399] font-semibold truncate font-mono">
-                                    {user?.request_available ?? 200} reqs left
-                                </p>
+                                <p className="text-xs font-bold text-[#0f172a] dark:text-[#f8fafc] truncate">{profile.displayName}</p>
+                                <p className="text-[10px] text-[#64748b] dark:text-[#94a3b8] truncate">{profile.subtitle}</p>
                             </div>
                         </div>
                         <button

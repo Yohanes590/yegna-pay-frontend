@@ -4,6 +4,7 @@ import { UserDataFetch } from '@/app/backend-service/api-fetch/fetch-user-data';
 type UserData = {
     email: string;
     avatar_url: string;
+    github_username?: string;
     projects: any;
     payment_plan: string;
     full_name: string;
@@ -28,10 +29,6 @@ export const useUserData = create<StorageType>((set, get) => ({
     loading: true,
     message: "",
     function: async () => {
-        if (get().user) {
-            set({ loading: false });
-            return;
-        }
         set({ loading: true });
         try {
             const userInfo: any = await UserDataFetch();

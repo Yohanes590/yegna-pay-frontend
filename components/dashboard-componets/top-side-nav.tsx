@@ -5,12 +5,15 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Bell, Menu, Calendar, X, ExternalLink, User } from "lucide-react";
 import { useUserData } from "@/lib/hooks/user_data_fetch";
+import { useSession } from "@/lib/auth-client";
+import { resolveProfileDisplay } from "@/lib/user-profile";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/theme-toggle";
 
 export default function TopSideNav() {
     const { user } = useUserData();
+    const { data: session } = useSession();
     const pathname = usePathname();
     const router = useRouter();
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -35,7 +38,12 @@ export default function TopSideNav() {
     const pathSegments = pathname.split("/").filter(Boolean);
     const projectId = pathSegments.length >= 2 && pathSegments[0] === "dashboard" ? pathSegments[1] : (user?.projects?.[0]?.id || "");
     const currentProject = user?.projects?.find((p: any) => p.id === projectId);
-    const avatarUrl = user?.avatar_url || (user as any)?.image || "";
+    const profile = resolveProfileDisplay(user, session?.user);
+    const avatarUrl = profile.avatarUrl;
+
+    useEffect(() => {
+        setImgError(false);
+    }, [avatarUrl]);
 
     const handleMobileNav = (tab: string) => {
         setMobileOpen(false);
@@ -93,21 +101,21 @@ export default function TopSideNav() {
                         {avatarUrl && !imgError ? (
                             <img
                                 src={avatarUrl}
-                                alt={user?.full_name || "Profile"}
+                                alt={profile.displayName}
                                 onError={() => setImgError(true)}
                                 className="w-8 h-8 rounded-full object-cover border-2 border-[#059669] shrink-0"
                             />
                         ) : (
                             <div className="w-8 h-8 rounded-full bg-[#064e3b] text-white flex items-center justify-center text-xs font-bold shrink-0">
-                                {user?.full_name?.charAt(0) || user?.email?.charAt(0) || <User size={13} />}
+                                {profile.rawHandle?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || <User size={13} />}
                             </div>
                         )}
                         <div className="hidden md:block leading-tight">
-                            <span className="text-xs font-bold text-[#0f172a] dark:text-[#f8fafc] block truncate max-w-[120px]">
-                                {user?.full_name || "Merchant"}
+                            <span className="text-xs font-bold text-[#0f172a] dark:text-[#f8fafc] block truncate max-w-[140px]">
+                                {profile.displayName}
                             </span>
-                            <span className="text-[10px] text-[#059669] dark:text-[#34d399] font-medium block">
-                                {user?.payment_plan === "free" ? "Free Tier" : "Pro Merchant"}
+                            <span className="text-[10px] text-[#64748b] dark:text-[#94a3b8] font-medium block truncate max-w-[140px]">
+                                {profile.subtitle}
                             </span>
                         </div>
                     </div>
@@ -154,8 +162,8 @@ export default function TopSideNav() {
                                 </div>
                             )}
                             <div className="min-w-0">
-                                <p className="text-xs font-bold text-[#0f172a] dark:text-[#f8fafc] truncate">{user?.full_name || "Merchant"}</p>
-                                <p className="text-[10px] text-[#64748b] dark:text-[#94a3b8] truncate">{user?.email}</p>
+                                <p className="text-xs font-bold text-[#0f172a] dark:text-[#f8fafc] truncate">{profile.displayName}</p>
+                                <p className="text-[10px] text-[#64748b] dark:text-[#94a3b8] truncate">{profile.subtitle}</p>
                             </div>
                         </div>
                     </div>
