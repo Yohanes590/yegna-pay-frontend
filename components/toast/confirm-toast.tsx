@@ -1,6 +1,6 @@
 "use client"
 import { ShieldAlert, AlertTriangle } from "lucide-react"
-import Cookies from "js-cookie"
+import { postUserApi } from "@/lib/user-api-client"
 import { useState } from "react"
 import { ClipLoader } from "react-spinners"
 
@@ -15,25 +15,16 @@ export default function Confirm({ project_id, project_name, SendResponse }: Tran
 
     const ActionFunction = async (actionType: string) => {
         const ToastConfirmation = document.querySelector(".delete-toast") as HTMLElement;
-        const token = Cookies.get("access_token")
-
         if (actionType == "cancel") {
             ToastConfirmation.classList.remove("flex")
             ToastConfirmation.classList.add("hidden")
         } else {
             setButtonLoading(true)
             try {
-                const RequestServer = await fetch("/api/user/delete-project", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        id: project_id,
-                        token: token
-                    })
+                const { data: serverResponse } = await postUserApi("/api/user/delete-project", {
+                    project_id,
+                    id: project_id,
                 })
-                const serverResponse = await RequestServer.json()
                 SendResponse(serverResponse)
             } catch (error) {
                 console.error(error)

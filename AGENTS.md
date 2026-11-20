@@ -9,7 +9,7 @@ Download the full integration brief (**verification modes, curl examples, field 
 
 1. **Verification mode is per project (API key)** — `detail_verification` on `Projects`.
    - **ON (default):** receiver name, amount, eligibility date, duplicate checks.
-   - **OFF:** amount match + duplicate detection only; still fetches bank receipt.
+   - **OFF:** receipt/transaction-ID validation (bank domains) + duplicate detection only; no amount/receiver/date match.
 
 2. **Never expose** `yegna_live_*` keys in frontend bundles.
 

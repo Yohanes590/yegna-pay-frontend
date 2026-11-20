@@ -1,20 +1,19 @@
 import { NextResponse } from "next/server";
-import { getBackendUrl } from "@/lib/backend-url";
+import { buildBffBackendHeaders } from "@/lib/bff-auth-headers";
+import { fetchBackendJson } from "@/lib/bff-upstream";
+
+async function proxyBuyRequest(req: Request, method: string, body?: string) {
+    const headers = buildBffBackendHeaders(req);
+    const init: RequestInit = { method, headers, cache: "no-store" };
+    if (body !== undefined) init.body = body;
+
+    const result = await fetchBackendJson("/user/buy-request", init, "api/user/buy-request");
+    return NextResponse.json(result.data, { status: result.status });
+}
 
 export async function GET(req: Request) {
     try {
-        const headers: Record<string, string> = { "Content-Type": "application/json" };
-        const cookie = req.headers.get("cookie");
-        if (cookie) headers["cookie"] = cookie;
-        const auth = req.headers.get("authorization");
-        if (auth) headers["authorization"] = auth;
-
-        const backendRes = await fetch(`${getBackendUrl()}/user/buy-request`, {
-            method: "GET",
-            headers,
-        });
-        const data = await backendRes.json();
-        return NextResponse.json(data, { status: backendRes.status });
+        return await proxyBuyRequest(req, "GET");
     } catch {
         return NextResponse.json({ success: false, message: "Backend connection error" }, { status: 502 });
     }
@@ -22,22 +21,9 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json();
-        const headers: Record<string, string> = { "Content-Type": "application/json" };
-        const cookie = req.headers.get("cookie");
-        if (cookie) headers["cookie"] = cookie;
-        const auth = req.headers.get("authorization");
-        if (auth) headers["authorization"] = auth;
-
-        const backendRes = await fetch(`${getBackendUrl()}/user/buy-request`, {
-            method: "POST",
-            headers,
-            body: JSON.stringify(body),
-        });
-        const data = await backendRes.json();
-        return NextResponse.json(data, { status: backendRes.status });
+        const body = await req.text().catch(() => "{}");
+        return await proxyBuyRequest(req, "POST", body);
     } catch {
         return NextResponse.json({ success: false, message: "Backend connection error" }, { status: 502 });
     }
 }
-

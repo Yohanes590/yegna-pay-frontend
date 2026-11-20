@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { postUserApi } from "@/lib/user-api-client";
 import { Settings, Save, Loader2, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -80,16 +81,13 @@ export default function DashboardSettings({ project }: { project: any }) {
 
     const handleDeleteProject = async () => {
         const id = pathName.split("/")[2];
-        const token = Cookies.get("access_token");
 
         setDeleteLoading(true);
         try {
-            const res = await fetch("/api/user/delete-project", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id, token }),
+            const { data } = await postUserApi("/api/user/delete-project", {
+                project_id: id,
+                id,
             });
-            const data = await res.json();
             if (data?.success) {
                 toast.success("Project deleted successfully");
                 router.push("/dashboard");

@@ -72,12 +72,11 @@ Use for: shops that must confirm money landed in the **correct named account**.
 
 Lightweight mode for the same API key:
 
-- Fetches receipt from the bank
-- Matches **amount** to `price_amount` (payment valid)
+- Fetches receipt from the bank (transaction ID must resolve on allowed receipt domains)
 - Blocks **duplicate** `transaction_id`
-- **Skips** receiver-name and eligibility-date checks
+- **Skips** amount, receiver-name, and eligibility-date checks
 
-Use for: “is this payment real and not already used?” without enforcing account holder name rules.
+Use for: “is this transaction ID real and not already used?” without enforcing amount or account-holder rules.
 
 > Duplicate detection always runs in both modes (pre-check + database unique constraint).
 

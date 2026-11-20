@@ -15,6 +15,16 @@ export async function proxyUserPost(req: Request, backendPath: string) {
         body.token = bearer;
     }
 
+    if (backendPath === "/user/delete-project") {
+        const pid =
+            (typeof body.project_id === "string" ? body.project_id : "") ||
+            (typeof body.id === "string" ? body.id : "");
+        if (pid) {
+            body.project_id = pid;
+            body.id = pid;
+        }
+    }
+
     if (process.env.BFF_AUTH_DEBUG === "1") {
         const cookie = req.headers.get("cookie") || "";
         console.info("[bff proxy]", backendPath, {

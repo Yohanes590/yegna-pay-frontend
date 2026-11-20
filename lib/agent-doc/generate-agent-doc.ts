@@ -126,7 +126,7 @@ ${formatBanksTable(publicCtx.banks)}
 
 ${
     workspace?.verificationMode === "payment_only"
-        ? `**Payment-only** — amount match + duplicate check. Receiver name and eligibility date checks are **skipped**.`
+        ? `**Payment-only** — valid bank receipt for the transaction ID (allowed receipt domains from server config) + duplicate check. Amount, receiver name, and eligibility date checks are **skipped**.`
         : `**Detailed** — amount, receiver name (vs \`${receiverName}\`), eligibility date${workspace?.eligibilityStartDate ? ` (on/after ${workspace.eligibilityStartDate})` : ""}, and duplicate checks.`
 }
 

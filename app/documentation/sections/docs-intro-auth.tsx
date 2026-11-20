@@ -30,7 +30,7 @@ export default function DocsIntroAuth({ copiedCode, onCopy }: DocsIntroAuthProps
                 <p className="text-sm text-slate-600 dark:text-[#94A3B8] mb-4">
                     Each API key can run <strong className="font-semibold text-slate-800 dark:text-white">detailed verification</strong>{" "}
                     (receiver name, amount, date rules) or <strong className="font-semibold text-slate-800 dark:text-white">payment-only</strong>{" "}
-                    (amount + duplicate detection). Configure this in Dashboard → Create project or Settings. Download the{" "}
+                    (receipt/transaction ID on allowed bank domains + duplicate detection; amount not compared). Configure this in Dashboard → Create project or Settings. Download the{" "}
                     <a href="/api/agent-download" className="text-[#059669] dark:text-[#34D399] font-medium hover:underline">
                         agent integration guide
                     </a>{" "}

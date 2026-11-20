@@ -6,6 +6,7 @@ import { Plus, ArrowRight, Trash2, Building2, ShieldCheck, Activity } from "luci
 import { toast } from "sonner";
 import Cookies from "js-cookie";
 import { useUserData } from "@/lib/hooks/user_data_fetch";
+import { postUserApi } from "@/lib/user-api-client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -38,15 +39,12 @@ export default function DashboardWorkspaces() {
     const confirmDelete = async () => {
         if (!projectToDelete) return;
         setDeleting(true);
-        const token = Cookies.get("access_token");
 
         try {
-            const res = await fetch("/api/user/delete-project", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id: projectToDelete.id, token }),
+            const { data } = await postUserApi("/api/user/delete-project", {
+                project_id: projectToDelete.id,
+                id: projectToDelete.id,
             });
-            const data = await res.json();
             if (data?.success) {
                 toast.success("Workspace deleted successfully");
                 setTimeout(() => window.location.reload(), 1000);

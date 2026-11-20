@@ -27,7 +27,7 @@ export default function VerificationModeToggle({
                     <p className="text-xs text-[#64748b] dark:text-[#94a3b8] leading-relaxed max-w-md">
                         {enabled
                             ? "Match receiver name, amount, eligibility date, and block duplicate transaction IDs."
-                            : "Confirm amount against the bank receipt and block duplicates only — no receiver or date rules."}
+                            : "Confirm the transaction ID against the bank receipt URL (configured domains) and block duplicates only — no amount, receiver, or date rules."}
                     </p>
                 </div>
                 <button
@@ -64,7 +64,7 @@ export default function VerificationModeToggle({
                 </span>
                 <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-[#e2e8f0] dark:border-[#334155] text-[#64748b]">
                     <Zap size={12} />
-                    Amount + duplicate (always on)
+                    Receipt ID + duplicate (always on)
                 </span>
             </div>
         </div>
