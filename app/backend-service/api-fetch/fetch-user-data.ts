@@ -22,6 +22,7 @@ export async function UserDataFetch() {
     try {
         const fetchingUserInformation = await fetch("/api/user/info", {
             method: "POST",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json"
             },

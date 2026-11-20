@@ -22,7 +22,7 @@ export default function TopSideNav() {
 
     useEffect(() => {
         let isMounted = true;
-        fetch("/api/user/notifications")
+        fetch("/api/user/notifications", { credentials: "include" })
             .then((res) => res.json())
             .then((data) => {
                 if (isMounted && data?.success && typeof data.unreadCount === "number") {

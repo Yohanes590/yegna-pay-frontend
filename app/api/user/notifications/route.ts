@@ -1,60 +1,38 @@
 import { NextResponse } from "next/server";
 import { getBackendUrl } from "@/lib/backend-url";
+import { buildBffBackendHeaders } from "@/lib/bff-auth-headers";
 
-export async function GET(req: Request) {
+async function proxyToBackend(req: Request, method: string) {
+    let backendUrl: string;
     try {
-        const headers: Record<string, string> = { "Content-Type": "application/json" };
-        const cookie = req.headers.get("cookie");
-        if (cookie) headers["cookie"] = cookie;
-        const auth = req.headers.get("authorization");
-        if (auth) headers["authorization"] = auth;
+        backendUrl = getBackendUrl();
+    } catch {
+        return NextResponse.json({ success: false, notifications: [], unreadCount: 0 }, { status: 500 });
+    }
 
-        const backendRes = await fetch(`${getBackendUrl()}/api/user/notifications`, {
-            method: "GET",
-            headers,
-            cache: "no-store",
-        });
-        const data = await backendRes.json();
+    try {
+        const headers = buildBffBackendHeaders(req);
+        const init: RequestInit = { method, headers, cache: "no-store" };
+        if (method !== "GET" && method !== "DELETE") {
+            init.body = await req.text().catch(() => undefined);
+        }
+
+        const backendRes = await fetch(`${backendUrl}/api/user/notifications`, init);
+        const data = await backendRes.json().catch(() => ({}));
         return NextResponse.json(data, { status: backendRes.status });
     } catch {
         return NextResponse.json({ success: false, notifications: [], unreadCount: 0 }, { status: 502 });
     }
 }
 
-export async function PATCH(req: Request) {
-    try {
-        const headers: Record<string, string> = { "Content-Type": "application/json" };
-        const cookie = req.headers.get("cookie");
-        if (cookie) headers["cookie"] = cookie;
-        const auth = req.headers.get("authorization");
-        if (auth) headers["authorization"] = auth;
+export async function GET(req: Request) {
+    return proxyToBackend(req, "GET");
+}
 
-        const backendRes = await fetch(`${getBackendUrl()}/api/user/notifications`, {
-            method: "PATCH",
-            headers,
-        });
-        const data = await backendRes.json();
-        return NextResponse.json(data, { status: backendRes.status });
-    } catch {
-        return NextResponse.json({ success: false, message: "Backend connection error" }, { status: 502 });
-    }
+export async function PATCH(req: Request) {
+    return proxyToBackend(req, "PATCH");
 }
 
 export async function DELETE(req: Request) {
-    try {
-        const headers: Record<string, string> = { "Content-Type": "application/json" };
-        const cookie = req.headers.get("cookie");
-        if (cookie) headers["cookie"] = cookie;
-        const auth = req.headers.get("authorization");
-        if (auth) headers["authorization"] = auth;
-
-        const backendRes = await fetch(`${getBackendUrl()}/api/user/notifications`, {
-            method: "DELETE",
-            headers,
-        });
-        const data = await backendRes.json();
-        return NextResponse.json(data, { status: backendRes.status });
-    } catch {
-        return NextResponse.json({ success: false, message: "Backend connection error" }, { status: 502 });
-    }
+    return proxyToBackend(req, "DELETE");
 }
