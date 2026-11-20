@@ -1,42 +1,51 @@
 import Cookies from "js-cookie";
 import { authClient } from "@/lib/auth-client";
 
-/** JWT or Better Auth session token for BFF → API calls (cross-domain). */
-export async function getClientAuthToken(): Promise<string | null> {
-    const cookieToken = Cookies.get("access_token")?.trim();
-    if (cookieToken) return cookieToken;
+async function collectCandidateTokens(): Promise<string[]> {
+    const candidates: string[] = [];
+    const push = (value?: string | null) => {
+        const trimmed = value?.trim();
+        if (trimmed && !candidates.includes(trimmed)) candidates.push(trimmed);
+    };
 
+    push(Cookies.get("access_token"));
+    if (typeof window !== "undefined") {
+        push(new URLSearchParams(window.location.search).get("token"));
+    }
     try {
         const session = await authClient.getSession();
-        const sessionToken = session?.data?.session?.token?.trim();
-        if (sessionToken) return sessionToken;
+        push(session?.data?.session?.token);
     } catch {
         // ignore
     }
-
-    return null;
+    return candidates;
 }
 
-/** Refresh app JWT via /api/user/info when session exists but access_token expired. */
-export async function ensureFreshAuthToken(): Promise<string | null> {
-    const existing = await getClientAuthToken();
-    const infoRes = await fetch("/api/user/info", {
+async function exchangeForAppToken(token: string): Promise<string | null> {
+    const res = await fetch("/api/user/info", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: existing || "" }),
+        body: JSON.stringify({ token }),
     }).catch(() => null);
+    if (!res?.ok) return null;
+    const data = await res.json().catch(() => ({}));
+    return typeof data?.token === "string" && data.token ? data.token : null;
+}
 
-    if (infoRes?.ok) {
-        const data = await infoRes.json().catch(() => ({}));
-        if (data?.token) {
-            Cookies.set("access_token", data.token, { expires: 7 });
-            return data.token as string;
-        }
-        if (data?.user) {
-            return Cookies.get("access_token") || existing;
+/**
+ * Returns a fresh app JWT, exchanging any available JWT or Better Auth session token
+ * through /api/user/info. Returns null when the user has no valid session.
+ */
+export async function ensureFreshAuthToken(): Promise<string | null> {
+    const candidates = await collectCandidateTokens();
+    for (const candidate of [...candidates, ""]) {
+        const appToken = await exchangeForAppToken(candidate);
+        if (appToken) {
+            Cookies.set("access_token", appToken, { expires: 7 });
+            return appToken;
         }
     }
-
-    return existing;
+    Cookies.remove("access_token");
+    return null;
 }
