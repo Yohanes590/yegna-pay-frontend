@@ -9,11 +9,15 @@ export function getBackendUrl(): string {
     const onVercel = process.env.VERCEL === "1" || Boolean(process.env.VERCEL_ENV);
 
     if (onVercel) {
-        if (!publicUrl) {
-            console.error("[getBackendUrl] NEXT_PUBLIC_BACKEND_URL is missing on Vercel");
-            throw new Error("NEXT_PUBLIC_BACKEND_URL is required in production");
+        const serverOnly = (process.env.BACKEND_URL || "").trim().replace(/\/+$/, "");
+        const resolved = publicUrl || serverOnly;
+        if (!resolved) {
+            console.error(
+                "[getBackendUrl] Missing NEXT_PUBLIC_BACKEND_URL and BACKEND_URL on Vercel"
+            );
+            throw new Error("NEXT_PUBLIC_BACKEND_URL or BACKEND_URL is required in production");
         }
-        return publicUrl;
+        return resolved;
     }
 
     return internalUrl || publicUrl || "http://localhost:4000";

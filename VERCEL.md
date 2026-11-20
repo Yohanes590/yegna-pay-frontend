@@ -7,7 +7,9 @@ The dashboard at `www.yegnapay.com` proxies API calls through Next.js routes (`/
 | Variable | Example | Notes |
 |----------|---------|--------|
 | `NEXT_PUBLIC_BACKEND_URL` | `https://apiyegna.yonas.cloud` | Public API; used by browser **and** Vercel serverless BFF |
+| `BACKEND_URL` | Same as above | Server-only fallback if `NEXT_PUBLIC_*` was missing at build time |
 | `NEXT_PUBLIC_APP_URL` | `https://www.yegnapay.com` | Optional; links in UI |
+| `BFF_UPSTREAM_DEBUG` | `1` | Log Dokploy response status/body on `/api/user/*` errors (Vercel Functions logs) |
 
 ## Do **not** set on Vercel
 

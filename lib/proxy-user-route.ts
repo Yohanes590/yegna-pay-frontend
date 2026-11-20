@@ -1,5 +1,5 @@
-import { getBackendUrl } from "@/lib/backend-url";
 import { buildBffBackendHeaders } from "@/lib/bff-auth-headers";
+import { fetchBackendJson } from "@/lib/bff-upstream";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -20,17 +20,20 @@ export async function proxyUserPost(req: Request, backendPath: string) {
         console.info("[bff proxy]", backendPath, {
             hasAuthorization: Boolean(headers.Authorization),
             cookieHasAccess: cookie.includes("access_token="),
-            cookieHasBetterAuth: cookie.includes("better-auth.session_token"),
-            cookieHasSecureBetterAuth: cookie.includes("__Secure-better-auth.session_token"),
             bodyHasToken: Boolean(body.token),
         });
     }
 
-    const backendRes = await fetch(`${getBackendUrl()}${backendPath}`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify(body),
-    });
-    const data = await backendRes.json().catch(() => ({}));
-    return { data, status: backendRes.status };
+    const logTag = `api/user proxy → ${backendPath}`;
+    const result = await fetchBackendJson(
+        backendPath,
+        {
+            method: "POST",
+            headers,
+            body: JSON.stringify(body),
+        },
+        logTag
+    );
+
+    return { data: result.data, status: result.status };
 }

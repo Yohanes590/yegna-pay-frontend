@@ -1,24 +1,8 @@
 import { NextResponse } from "next/server";
-import { getBackendUrl } from "@/lib/backend-url";
 import { buildBffBackendHeaders, readAuthTokenFromCookieHeader } from "@/lib/bff-auth-headers";
+import { fetchBackendJson } from "@/lib/bff-upstream";
 
 export async function POST(req: Request) {
-    let backendUrl: string;
-    try {
-        backendUrl = getBackendUrl();
-    } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Backend URL not configured";
-        console.error("[api/user/info]", message);
-        return NextResponse.json(
-            {
-                status: false,
-                message: "Server misconfiguration: set NEXT_PUBLIC_BACKEND_URL on Vercel (Production).",
-                detail: message,
-            },
-            { status: 500 }
-        );
-    }
-
     try {
         const body = await req.json().catch(() => ({}));
         const bodyToken = typeof body?.token === "string" ? body.token : "";
@@ -26,28 +10,19 @@ export async function POST(req: Request) {
         const token = bodyToken.trim() || cookieToken;
         const headers = buildBffBackendHeaders(req, token);
 
-        const backendRes = await fetch(`${backendUrl}/auth/check`, {
-            method: "POST",
-            headers,
-            body: JSON.stringify({ ...body, token }),
-        });
+        const result = await fetchBackendJson(
+            "/auth/check",
+            {
+                method: "POST",
+                headers,
+                body: JSON.stringify({ ...body, token }),
+            },
+            "api/user/info"
+        );
 
-        const rawText = await backendRes.text();
-        let data: Record<string, unknown> = {};
-        try {
-            data = rawText ? JSON.parse(rawText) : {};
-        } catch {
-            console.error("[api/user/info] non-JSON backend response", backendRes.status, rawText.slice(0, 200));
-            return NextResponse.json(
-                {
-                    status: false,
-                    message: "Authentication server returned an invalid response.",
-                },
-                { status: 502 }
-            );
-        }
+        const data = result.data;
 
-        if (backendRes.ok && data?.fetchEmail) {
+        if (result.ok && data?.fetchEmail) {
             const response = NextResponse.json({
                 user: data.fetchEmail,
                 token: data.token,
@@ -66,23 +41,30 @@ export async function POST(req: Request) {
 
         const message =
             (typeof data?.message === "string" && data.message) ||
+            result.fetchError ||
             "Failed to retrieve user information";
         const hint = typeof data?.hint === "string" ? data.hint : undefined;
+        const detail =
+            (typeof data?.detail === "string" && data.detail) ||
+            (typeof result.fetchError === "string" ? result.fetchError : undefined);
+
+        const clientStatus =
+            result.status >= 400 && result.status < 600 ? result.status : result.ok ? 400 : result.status;
 
         return NextResponse.json(
-            { message, hint, status: false },
-            { status: backendRes.status >= 400 && backendRes.status < 600 ? backendRes.status : 401 }
+            { message, hint, detail, status: false },
+            { status: clientStatus }
         );
     } catch (err: unknown) {
         const detail = err instanceof Error ? err.message : "unknown";
-        console.error("[api/user/info] upstream error", detail);
+        console.error("[api/user/info] unhandled", detail);
         return NextResponse.json(
             {
-                message: "Unable to connect to authentication server",
+                message: "BFF handler error",
                 status: false,
                 detail,
             },
-            { status: 502 }
+            { status: 500 }
         );
     }
 }
