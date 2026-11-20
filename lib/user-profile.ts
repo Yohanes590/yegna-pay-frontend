@@ -28,10 +28,13 @@ export function resolveProfileDisplay(
         if (dbName && !GENERIC_NAMES.has(dbName.toLowerCase())) displayName = dbName;
         else if (sessionName && !GENERIC_NAMES.has(sessionName.toLowerCase())) displayName = sessionName;
     }
-    if (!displayName && user?.email) {
-        displayName = user.email.split("@")[0] || "Account";
+    if (!displayName && sessionName && !GENERIC_NAMES.has(sessionName.toLowerCase())) {
+        displayName = sessionName;
     }
-    if (!displayName) displayName = "Account";
+    if (!displayName && user?.email) {
+        displayName = user.email.split("@")[0] || "";
+    }
+    if (!displayName) displayName = sessionName || "Account";
 
     const avatarUrl =
         sessionUser?.image?.trim() ||

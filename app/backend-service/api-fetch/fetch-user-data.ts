@@ -31,21 +31,27 @@ export async function UserDataFetch() {
             })
         });
 
-        const serverResponse = await fetchingUserInformation.json();
+        const serverResponse = await fetchingUserInformation.json().catch(() => ({}));
         if (fetchingUserInformation.ok && serverResponse.user) {
             if (serverResponse.token) {
                 Cookies.set("access_token", serverResponse.token, { expires: 7 });
             }
             return {
                 message: "success",
-                user: serverResponse.user
-            };
-        } else {
-            return {
-                message: serverResponse?.message || "error",
-                user: null
+                user: serverResponse.user,
+                statusCode: fetchingUserInformation.status,
             };
         }
+        const errText =
+            serverResponse?.message ||
+            serverResponse?.detail ||
+            serverResponse?.hint ||
+            `HTTP ${fetchingUserInformation.status}`;
+        return {
+            message: errText,
+            user: null,
+            statusCode: fetchingUserInformation.status,
+        };
     } catch {
         return {
             message: "network_error",

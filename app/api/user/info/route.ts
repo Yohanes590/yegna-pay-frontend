@@ -67,9 +67,10 @@ export async function POST(req: Request) {
         const message =
             (typeof data?.message === "string" && data.message) ||
             "Failed to retrieve user information";
+        const hint = typeof data?.hint === "string" ? data.hint : undefined;
 
         return NextResponse.json(
-            { message, status: false },
+            { message, hint, status: false },
             { status: backendRes.status >= 400 && backendRes.status < 600 ? backendRes.status : 401 }
         );
     } catch (err: unknown) {

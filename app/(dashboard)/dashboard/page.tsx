@@ -14,9 +14,10 @@ import {
     AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
     AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle
 } from "@/components/ui/alert-dialog";
+import DashboardLoadError from "@/components/dashboard/dashboard-load-error";
 
 export default function DashboardWorkspaces() {
-    const { user, loading, function: fetchUser } = useUserData();
+    const { user, loading, message, function: fetchUser } = useUserData();
     const [projectToDelete, setProjectToDelete] = useState<{ id: string; name: string } | null>(null);
     const [deleting, setDeleting] = useState(false);
 
@@ -60,8 +61,13 @@ export default function DashboardWorkspaces() {
         }
     };
 
+    const loadFailed = !loading && !user && message !== "success";
+
     return (
         <div className="space-y-8 pb-12">
+            {loadFailed && (
+                <DashboardLoadError message={message} onRetry={() => fetchUser()} />
+            )}
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#e2e8f0] dark:border-[#1e293b]">
                 <div>
