@@ -5,7 +5,7 @@ import { Settings2, Plus, ArrowLeft, Loader2, KeyRound } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import cryptoRandomString from "crypto-random-string";
-import Cookies from "js-cookie";
+import { ensureFreshAuthToken } from "@/lib/client-auth-token";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,14 +47,21 @@ export default function ProjectCreationRender() {
         }
 
         setLoading(true);
-        const cookieToken = Cookies.get("access_token");
+        const authToken = await ensureFreshAuthToken();
+        if (!authToken) {
+            toast.error("Your session expired. Please sign in again.");
+            setLoading(false);
+            window.location.href = "/sign-in";
+            return;
+        }
 
         try {
             const requestServer = await fetch("/api/user/create-project", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                credentials: "include",
                 body: JSON.stringify({
-                    token: cookieToken,
+                    token: authToken,
                     project_name: projectName,
                     apiKey: generatedKey,
                     call_back: webcall_back,
