@@ -42,8 +42,9 @@ export default function SideNavRender() {
         if (loading) return;
         const hasUrlToken = typeof window !== "undefined" && new URLSearchParams(window.location.search).has("token");
         const token = Cookies.get("access_token") || Cookies.get("better-auth.session_token");
-        if (!token && !user && !hasUrlToken) router.push("/sign-in");
-    }, [user, loading, router]);
+        const hasBetterAuthSession = Boolean(session?.user);
+        if (!token && !user && !hasUrlToken && !hasBetterAuthSession) router.push("/sign-in");
+    }, [user, loading, router, session?.user]);
 
     const pathSegments = pathname.split("/").filter(Boolean);
     const isProjectDetail = pathSegments.length >= 2 && pathSegments[0] === "dashboard" && pathSegments[1] !== "create-project" && pathSegments[1] !== "notification";
@@ -116,9 +117,9 @@ export default function SideNavRender() {
                     </Link>
                     <Link
                         href="/dashboard/create-project"
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#059669] dark:text-[#34d399] hover:bg-[#ecfdf5] dark:hover:bg-[#064e3b]/20 transition-colors"
+                        className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-white bg-[#059669] hover:bg-[#047857] dark:bg-[#059669] dark:hover:bg-[#047857] shadow-sm transition-colors"
                     >
-                        <Plus size={14} /> <span>New Workspace</span>
+                        <Plus size={15} strokeWidth={2.5} /> <span>New workspace</span>
                     </Link>
                 </div>
 

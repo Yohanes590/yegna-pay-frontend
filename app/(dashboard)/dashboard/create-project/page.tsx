@@ -5,7 +5,8 @@ import { Settings2, Plus, ArrowLeft, Loader2, KeyRound } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import cryptoRandomString from "crypto-random-string";
-import { ensureFreshAuthToken } from "@/lib/client-auth-token";
+import { getMutationAuthToken } from "@/lib/client-auth-token";
+import { authClient } from "@/lib/auth-client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,11 +48,17 @@ export default function ProjectCreationRender() {
         }
 
         setLoading(true);
-        const authToken = await ensureFreshAuthToken();
-        if (!authToken) {
-            toast.error("Your session expired. Please sign in again.");
+        const authToken = await getMutationAuthToken();
+        const hasSession = Boolean((await authClient.getSession().catch(() => null))?.data?.user);
+        if (!authToken && !hasSession) {
+            toast.error("Please sign in to create a workspace.");
             setLoading(false);
             window.location.href = "/sign-in";
+            return;
+        }
+        if (!authToken) {
+            toast.error("Could not load your session. Refresh the page or sign in again.");
+            setLoading(false);
             return;
         }
 
@@ -188,9 +195,13 @@ export default function ProjectCreationRender() {
                         </div>
 
                         <div className="pt-4 border-t border-[#f1f5f9] dark:border-[#1e293b] flex justify-end">
-                            <Button type="submit" disabled={loading} className="h-9 px-6 gap-2 text-xs bg-[#064e3b] hover:bg-[#022c22]">
-                                {loading ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
-                                <span>Create Workspace</span>
+                            <Button
+                                type="submit"
+                                disabled={loading}
+                                className="h-10 px-8 gap-2 text-sm font-bold bg-[#059669] hover:bg-[#047857] text-white shadow-sm"
+                            >
+                                {loading ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} strokeWidth={2.5} />}
+                                <span>Save new workspace</span>
                             </Button>
                         </div>
                     </form>

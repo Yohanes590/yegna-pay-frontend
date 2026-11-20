@@ -1,7 +1,16 @@
 import Cookies from "js-cookie";
+import { authClient } from "@/lib/auth-client";
 
 export async function UserDataFetch() {
     let token = Cookies.get("access_token");
+    if (!token) {
+        try {
+            const session = await authClient.getSession();
+            token = session?.data?.session?.token;
+        } catch {
+            // ignore
+        }
+    }
     if (!token && typeof window !== "undefined") {
         const searchParams = new URLSearchParams(window.location.search);
         const urlToken = searchParams.get("token");
