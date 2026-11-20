@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Code2, Copy, Check, Terminal, ExternalLink } from "lucide-react";
+import AgentDownloadButton from "@/components/agent-download-button";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -48,12 +49,20 @@ export default function DashboardDevelopers({ project }: DevProps) {
                         Verify transactions via bank transaction link (JSON) or QR receipt image upload (FormData)
                     </p>
                 </div>
-                <a href="/documentation" target="_blank" rel="noreferrer">
-                    <Button variant="outline" size="sm" className="gap-2 text-xs">
-                        <span>Full Specification</span>
-                        <ExternalLink size={13} />
-                    </Button>
-                </a>
+                <div className="flex flex-wrap gap-2">
+                    <AgentDownloadButton
+                        projectId={project?.id}
+                        variant="secondary"
+                        label="Agent guide (.md)"
+                        className="h-9 text-xs"
+                    />
+                    <a href="/documentation" target="_blank" rel="noreferrer">
+                        <Button variant="outline" size="sm" className="gap-2 text-xs h-9">
+                            <span>Full Specification</span>
+                            <ExternalLink size={13} />
+                        </Button>
+                    </a>
+                </div>
             </div>
 
             <Card className="border-[#e2e8f0] dark:border-[#1e293b] bg-white dark:bg-[#0c141f] shadow-xs overflow-hidden">

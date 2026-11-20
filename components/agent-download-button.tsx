@@ -7,13 +7,19 @@ type AgentDownloadButtonProps = {
     className?: string;
     variant?: "primary" | "secondary" | "ghost";
     label?: string;
+    /** When set, downloads workspace-specific guide (requires sign-in). */
+    projectId?: string;
 };
 
 export default function AgentDownloadButton({
     className,
     variant = "secondary",
     label = "Agent Download",
+    projectId,
 }: AgentDownloadButtonProps) {
+    const href = projectId
+        ? `/api/user/generate-agent-doc?projectId=${encodeURIComponent(projectId)}`
+        : "/api/agent-download";
     const base =
         variant === "primary"
             ? "bg-[#059669] hover:bg-[#047857] text-white border-transparent"
@@ -23,8 +29,8 @@ export default function AgentDownloadButton({
 
     return (
         <a
-            href="/api/agent-download"
-            download="yegna-pay-agent-integration.md"
+            href={href}
+            download="yegnapay-agent-integration.md"
             className={cn(
                 "inline-flex items-center justify-center gap-2 h-10 px-4 rounded-lg text-sm font-semibold border transition-colors",
                 base,

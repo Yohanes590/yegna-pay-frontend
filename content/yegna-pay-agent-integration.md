@@ -9,7 +9,9 @@ Use this guide when wiring Yegna Pay into a storefront, mobile app, or backend s
 3. Choose a **verification mode** on the project (see §4).
 4. Call `POST /api/transaction-create` with the customer’s bank receipt reference or URL.
 
-**Base URL (production):** set via your deployment — typically your Yegna Pay API host + `/api/transaction-create`.
+**Note:** This file is a legacy template. Downloads are now **generated at runtime** via `/api/agent-download` (public) or `/api/user/generate-agent-doc` (signed-in, includes your live key). See `client/lib/agent-doc/generate-agent-doc.ts`.
+
+**Base URL (production):** your configured API host + `/api/transaction-create` (e.g. `https://apiyegna.yonas.cloud/api/transaction-create`).
 
 **Auth:** `Authorization: Bearer <API_KEY>` or header `x-api-key: <API_KEY>`.
 
