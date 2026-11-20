@@ -14,46 +14,43 @@ async function exchangeForAppJwt(token: string): Promise<string | null> {
     return typeof data?.token === "string" && data.token ? data.token : null;
 }
 
-/**
- * Token for dashboard mutations (create/edit/delete project).
- * Cross-site: UI is www.yegnapay.com, auth API is on another host — use Better Auth
- * session token from the browser when the yegnapay.com cookie is stale or wrong.
- */
-export async function getMutationAuthToken(): Promise<string | null> {
+async function collectCandidateTokens(): Promise<string[]> {
+    const candidates: string[] = [];
+    const push = (value?: string | null) => {
+        const trimmed = value?.trim();
+        if (trimmed && !candidates.includes(trimmed)) candidates.push(trimmed);
+    };
+
+    push(Cookies.get("access_token"));
+    if (typeof window !== "undefined") {
+        push(new URLSearchParams(window.location.search).get("token"));
+    }
     try {
         const session = await authClient.getSession();
-        const sessionToken = session?.data?.session?.token?.trim();
-        if (sessionToken) {
-            void exchangeForAppJwt(sessionToken).then((jwt) => {
-                if (jwt) Cookies.set("access_token", jwt, { expires: 7 });
-            });
-            return sessionToken;
-        }
+        push(session?.data?.session?.token);
     } catch {
-        // continue
+        // ignore
     }
-
-    const cookieToken = Cookies.get("access_token")?.trim();
-    if (cookieToken) return cookieToken;
-
-    if (typeof window !== "undefined") {
-        const urlToken = new URLSearchParams(window.location.search).get("token")?.trim();
-        if (urlToken) return urlToken;
-    }
-
-    return null;
+    return candidates;
 }
 
-/** @deprecated Use getMutationAuthToken — does not clear cookies or force sign-out. */
-export async function ensureFreshAuthToken(): Promise<string | null> {
-    const token = await getMutationAuthToken();
-    if (!token) return null;
+/**
+ * Token for dashboard mutations (create/edit/delete project). The UI and the auth API
+ * live on different sites, so any JWT or Better Auth session token is exchanged for a
+ * fresh app JWT via /api/user/info. Never clears cookies or forces sign-out.
+ */
+export async function getMutationAuthToken(): Promise<string | null> {
+    const candidates = await collectCandidateTokens();
 
-    const jwt = await exchangeForAppJwt(token);
-    if (jwt) {
-        Cookies.set("access_token", jwt, { expires: 7 });
-        return jwt;
+    for (const candidate of candidates) {
+        const jwt = await exchangeForAppJwt(candidate);
+        if (jwt) {
+            Cookies.set("access_token", jwt, { expires: 7 });
+            return jwt;
+        }
     }
 
-    return token;
+    return candidates[0] ?? null;
 }
+
+export const ensureFreshAuthToken = getMutationAuthToken;
