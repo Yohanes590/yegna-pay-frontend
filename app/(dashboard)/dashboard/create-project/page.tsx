@@ -65,7 +65,10 @@ export default function ProjectCreationRender() {
         try {
             const requestServer = await fetch("/api/user/create-project", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${authToken}`,
+                },
                 credentials: "include",
                 body: JSON.stringify({
                     token: authToken,

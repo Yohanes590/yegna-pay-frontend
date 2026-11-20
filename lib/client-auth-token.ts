@@ -1,5 +1,6 @@
 import Cookies from "js-cookie";
 import { authClient } from "@/lib/auth-client";
+import { BETTER_AUTH_SESSION_COOKIE_NAMES } from "@/lib/bff-auth-headers";
 
 async function exchangeForAppJwt(token: string): Promise<string | null> {
     const res = await fetch("/api/user/info", {
@@ -14,6 +15,26 @@ async function exchangeForAppJwt(token: string): Promise<string | null> {
     return typeof data?.token === "string" && data.token ? data.token : null;
 }
 
+function readClientCookieTokens(): string[] {
+    const out: string[] = [];
+    const push = (v?: string | null) => {
+        const t = v?.trim();
+        if (t && !out.includes(t)) out.push(t);
+    };
+    for (const name of BETTER_AUTH_SESSION_COOKIE_NAMES) {
+        push(Cookies.get(name));
+    }
+    if (typeof document !== "undefined") {
+        for (const name of BETTER_AUTH_SESSION_COOKIE_NAMES) {
+            const match = document.cookie.match(
+                new RegExp(`(?:^|;\\s*)${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}=([^;]*)`)
+            );
+            if (match?.[1]) push(decodeURIComponent(match[1]));
+        }
+    }
+    return out;
+}
+
 async function collectCandidateTokens(): Promise<string[]> {
     const candidates: string[] = [];
     const push = (value?: string | null) => {
@@ -21,23 +42,26 @@ async function collectCandidateTokens(): Promise<string[]> {
         if (trimmed && !candidates.includes(trimmed)) candidates.push(trimmed);
     };
 
-    push(Cookies.get("access_token"));
-    if (typeof window !== "undefined") {
-        push(new URLSearchParams(window.location.search).get("token"));
-    }
+    // Live Better Auth session (browser → API with credentials) — most reliable cross-domain.
     try {
         const session = await authClient.getSession();
         push(session?.data?.session?.token);
     } catch {
         // ignore
     }
+
+    for (const t of readClientCookieTokens()) push(t);
+
+    if (typeof window !== "undefined") {
+        push(new URLSearchParams(window.location.search).get("token"));
+    }
+
     return candidates;
 }
 
 /**
- * Token for dashboard mutations (create/edit/delete project). The UI and the auth API
- * live on different sites, so any JWT or Better Auth session token is exchanged for a
- * fresh app JWT via /api/user/info. Never clears cookies or forces sign-out.
+ * Token for create/edit/delete. Prefers a fresh app JWT; falls back to Better Auth session token
+ * so Dokploy can authenticate via DB session lookup when JWT exchange fails.
  */
 export async function getMutationAuthToken(): Promise<string | null> {
     const candidates = await collectCandidateTokens();
@@ -45,7 +69,7 @@ export async function getMutationAuthToken(): Promise<string | null> {
     for (const candidate of candidates) {
         const jwt = await exchangeForAppJwt(candidate);
         if (jwt) {
-            Cookies.set("access_token", jwt, { expires: 7 });
+            Cookies.set("access_token", jwt, { expires: 7, sameSite: "Lax" });
             return jwt;
         }
     }

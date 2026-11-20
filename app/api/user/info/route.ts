@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getBackendUrl } from "@/lib/backend-url";
-import { buildBffBackendHeaders, readAccessTokenFromCookie } from "@/lib/bff-auth-headers";
+import { buildBffBackendHeaders, readAuthTokenFromCookieHeader } from "@/lib/bff-auth-headers";
 
 export async function POST(req: Request) {
     let backendUrl: string;
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     try {
         const body = await req.json().catch(() => ({}));
         const bodyToken = typeof body?.token === "string" ? body.token : "";
-        const cookieToken = readAccessTokenFromCookie(req.headers.get("cookie"));
+        const cookieToken = readAuthTokenFromCookieHeader(req.headers.get("cookie"));
         const token = bodyToken.trim() || cookieToken;
         const headers = buildBffBackendHeaders(req, token);
 
